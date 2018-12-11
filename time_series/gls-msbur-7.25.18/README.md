@@ -8,6 +8,11 @@ The program files require a working copy of GAUSS 18+. Many can be run on earlie
 
 In addition it requires the [Time Series MT](https://store.aptech.com/gauss-applications-category/time-series-mt.html) application from Aptech and the **msbur** library included in this repository.
 
+The **msbur** library includes:
+1. The original GAUSS code GLS-MSBUR code along provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) and based on the code provided by Serena Ng and Pierre Perron (Econometrica, 2001).
+2. All data files used in the Aptech blog.
+3. All program files for replicating the examples in the Aptech blog.
+
 ### Installing
 The **msbur** library can be easily installed using the GAUSS application installation wizard, as shown below:
 
@@ -27,8 +32,13 @@ The data used in the blog is contained in three files
 
 ## Program files
 Two program files are included:
-1. [sb_unit_root.gss](sb_unit_root.gss) - This file contains the GAUSS code to perform all unit root testing done in the blog. It requires both the *tsmt* and *msbur* libraries to run.
-2. [glsmsbur_plots.gss](glsmsbur_plots.gss) - This file contains the GAUSS code to generate all graphs included in the blog.
+1. [sb_unit_root.e](sb_unit_root.e) - This file contains the GAUSS code to perform all unit root testing done in the blog. It requires both the *tsmt* and *msbur* libraries to run.
+2. [glsmsbur_plots.e](glsmsbur_plots.e) - This file contains the GAUSS code to generate all graphs included in the blog.
+3. [sample.e](sample.e) - This file contains the original example provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) .
+
+::: info
+**Note:** All data files and program files for the blog will be installed in with the **msbur** library in the gaussHome/pkgs/msbur/examples folder.
+:::
 
 ## Authors
 *  Erica Clower - [Aptech Systems, Inc](www.aptech.com)
