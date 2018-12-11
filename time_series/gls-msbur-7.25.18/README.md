@@ -9,7 +9,7 @@ The program files require a working copy of GAUSS 18+. Many can be run on earlie
 In addition it requires the [Time Series MT](https://store.aptech.com/gauss-applications-category/time-series-mt.html) application from Aptech and the **msbur** library included in this repository.
 
 The **msbur** library includes:
-1. The original GAUSS code GLS-MSBUR code along provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) and based on the code provided by Serena Ng and Pierre Perron (Econometrica, 2001).
+1. The original GAUSS GLS-MSBUR code along provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) and based on the code provided by Serena Ng and Pierre Perron (Econometrica, 2001).
 2. All data files used in the Aptech blog.
 3. All program files for replicating the examples in the Aptech blog.
 
