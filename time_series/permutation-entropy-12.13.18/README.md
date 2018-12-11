@@ -1,0 +1,39 @@
+# GAUSS blog: GLS testing with multiple structural breaks
+This code accompanies the Aptech blog [Understanding permutation entropy](https://www.aptech.com/blog/permutation-entropy/) which was published on 7/25/2018.
+
+## Getting Started
+### Prerequisites
+The program files require a working copy of GAUSS 18+. Many can be run on earlier versions with some small revisions.
+
+In addition it requires the **pe** library included in this repository.
+
+The **pe** library includes:
+1. The original permutation entropy source code.
+2. All data files used in the Aptech blog.
+3. All program files for replicating the examples in the Aptech blog.
+
+### Installing
+The **pe** library can be easily installed using the GAUSS application installation wizard, as shown below:
+
+1. Download the zipped folder [pe.zip](msbur.zip).
+2. Use the [GAUSS Application Installer](https://www.aptech.com/support/installation/using-the-applications-installer-wizard/) by selecting **Tools>Install Application**.
+3. Before using the functions created by **pe** you will need to load the newly created **pe** library. This can be done in a number of ways:
+  *  Navigate to the library tool view window and click the small wrench located next to the **pe** library. Select **Load Library**.
+  *  Enter `library pe` on the command line.
+  *  Put the line `library pe;` at the beginning of your program files.
+
+## Data
+The data used in the blog is contained in three files
+1. [djia_1901to2018.csv](djia_1901to2018.csv) - This contains the daily [Dow Jones Industrial Average](https://us.spindices.com/indices/equity/dow-jones-industrial-average) from 1901 to 2018.  
+2. [segmented_djia.dat](setmented_djia.dat) - This contains to the DJIA data in [djia_1901to2018.csv](djia_1901to2018.csv) segmented for the rolling window permutation entropy estimation.
+
+## Example files
+Three program files are included:
+1. [blog1_example.e](blog1_example.e) - This file contains the GAUSS code to compute the permutation entropy.
+2. [segment_data.e](segment_data.e) - This file contains the GAUSS code to segment the DJIA data prior to running the rolling window permutation entropy estimation.
+3. [tventropy.e](tventropy.e) - This file contains the GAUSS code to compute the rolling window permutation entropy.
+
+**Note:** All data files and program files for the blog will be installed in with the **per** library in the gaussHome/pkgs/pe/examples folder.
+
+## Authors
+*  Erica Clower - [Aptech Systems, Inc](www.aptech.com)

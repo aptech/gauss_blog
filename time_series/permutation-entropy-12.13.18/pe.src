@@ -1,0 +1,331 @@
+#include pe.sdf
+#include dynargs.dec
+
+/*
+**
+** Purpose: The tvPentropy function calculates a rolling window 
+**          permutation entropy of data series.
+**
+** Format:  H = tvPentropy(x, n, tau, method, accu, norm, relfreq)
+**
+** Input:
+**  X           Vector, data
+**
+**  N           Scalar, permutation order
+**
+**  tau         Scalar, time lags
+**
+**  method      String treatment of equal values
+**              'noise' - add small noise
+**              'equal' - allow same rank for equal values
+**              'order' - consider order of appearance (first occurence --> lower
+**              rank)
+**
+**  accu        Scalar, parameter describing accuracy of the values in X
+**              by number of decimal places
+**
+**  norm        Scalar, indicator variable whether normalized entropy should be 
+**              computed. 1 to compute normalized entropy, 0 not to compute normalized
+**              entropy. Default = 1.
+**
+**  relfreq     Scalar, indicator variable whether relative frequencies should 
+**              be computed. 1 to compute relative frequencies, 0 not to compute 
+**              relative frequencies. Default = 1.
+**
+**  Output:
+**  h_mat       Vector, rolling window normalized permutation entropies. 
+*/
+
+proc(1) = tvPentropy(x_mat, n, tau, ...);
+    local h_mat, tmp, tmpmss;
+    
+    h_mat = zeros(1, cols(x_mat));
+    struct peOut pOut;
+    for i(1, cols(x_mat), 1);
+        pOut = pentropy(x_mat[.,i], n, tau, ...);
+        h_mat[1,i] = pOut.h_norm;
+    endfor;
+    
+    retp(h_mat);
+endp;
+
+/*
+**
+** Purpose: The pentropy function calculates the permutation entropy of data series.
+**
+** Format:  H = pentropy(x, n, tau, method, accu, norm, relfreq)
+**
+** Input:
+**  X           Vector, data
+**
+**  N           Scalar, permutation order
+**
+**  tau         Scalar, time lags
+**
+**  method      String treatment of equal values
+**              'noise' - add small noise
+**              'equal' - allow same rank for equal values
+**              'order' - consider order of appearance (first occurence --> lower
+**              rank)
+**
+**  accu        Scalar, parameter describing accuracy of the values in X
+**              by number of decimal places
+**
+**  norm        Scalar, indicator variable whether normalized entropy should be 
+**              computed. 1 to compute normalized entropy, 0 not to compute normalized
+**              entropy. Default = 1.
+**
+**  relfreq     Scalar, indicator variable whether relative frequencies should 
+**              be computed. 1 to compute relative frequencies, 0 not to compute 
+**              relative frequencies. Default = 1.
+**
+**  Output:
+**  peOut       An instance of the peOut structure containing the following members: 
+**                  
+**      h           Scalar, the permutation entropy.
+**
+**      h_norm      Scalar, the normalized permutation entropy.
+**
+**      relfreq     Vector, the relative frequencies of the ordinal patterns.
+**
+** References:
+**
+** Bandt, C.; Pompe, B. Permutation Entropy: A Natural Complexity
+** Measure for Time Series. Phys. Rev. Lett. 88 (2002) 17, 174102
+**
+** Riedl, M.; M¸ller, A.; Wessel, N.: Practical considerations of
+** permutation entropy. The European Physical Journal Special Topics
+** 222 (2013) 2, 249ñ262
+**
+**
+** Example:
+**
+** H = petropy([6,9,11,12,8,13,5],3,1,'order');
+** H = 1.5219
+*/
+
+proc (1) = pentropy(x, n, tau, ...);
+    local n_dynargs, accu, method, M, equal, tmp, shift_map,
+    k, j, shift_mat_ind, tmp2, tmp3, shift_mat, ind_mat, ind_vec, sort_ind_mat, ia, ic,
+    tmp_sort, permpat_num, refreq, size,tmp0, denom, H, Hnorm, factor, relfreq, normalized;
+    
+    n_dynargs = COUNT_DYNARGS;
+    
+    // Set up output structure
+    struct peOut pOut;
+    
+    // Set up relfreq
+    if n_dynargs < 4;
+        relfreq = 1; // default
+    else;
+        relfreq = sysstate(GET_ONE_DYNARG, 4);
+    endif;
+    
+    // Set up norm
+    if n_dynargs < 3;
+        normalized = 1; // default
+    else;
+        normalized = sysstate(GET_ONE_DYNARG, 3);
+    endif;
+    
+    // Set accu
+    if n_dynargs < 2;
+        accu = 4;           // default
+    else;
+        accu = sysstate(GET_ONE_DYNARG, 2);
+    endif;
+    
+    // Set method
+    if n_dynargs < 1;
+        method = "order";   // default
+    else;
+        method = sysstate(GET_ONE_DYNARG, 1);
+    endif;
+    
+    // Get length of x
+    M = rows(x);
+    
+    equal = 0;
+    
+    if n*log(n)>15;
+            errorlogat "Permutation dimension too high";
+        end;
+    endif;
+    
+    if (rows(tau)) > 1 and (rows(tau) != n-1);
+        errorlogat "Time lag vector has to have n-1 entries";
+        end;
+    endif;
+        if ((n-1)*minc(tau) >=M) or maxc(tau) >= M;
+        errorlogat  "Too few data points for desired dimension and lags";
+    endif;
+    
+    if lower(method) == "noise";
+        print "Method: Add small noise.";
+        x = x + rndn(M, 1)*10^(-accu - 1);
+    elseif lower(method) == "equal";
+        print "Method: Allow equal ranks.";
+        equal = 1;
+    elseif lower(method) == "order";
+        print "Method: Consider order of occurrence.";
+    else;
+        errorlogat "Unknown method. Default method 'order' used";
+    endif;
+    print;
+    
+    if rows(tau) > 1;
+        tau = reshape(tau, rows(tau), 1);
+        tmp = 0|tau;
+        tau = sortc(tmp);
+        
+        // build n x (M-tau(n))-matrix from shifted values in x
+        shift_mat = zeros(n,  M-tau[n]);
+        
+        for ii(1, n, 1);
+            k = tau[ii] + 1;
+            j = M - tau[n] + tau[ii];
+            shift_mat[ii, .] = x[k:j];
+        endfor;
+        
+    else;
+        shift_mat_ind = zeros((M-(n-1)*tau)*n, 1);
+        
+        // Vectorized
+        tmp0 = seqa(1, tau, n/*(n-1)*tau+1*/);   // Column vector
+        shift_mat_ind[1:n] = tmp0;
+
+        for i(1, (M-(n-1)*tau)-1, 1);   
+            shift_mat_ind[(i*n+1):((i+1)*n)] = tmp0 + i;
+        endfor;
+
+        shift_mat = reshape(x[shift_mat_ind], (M-(n-1)*tau), n)';   // D x (M-D+1) matrix
+
+    endif;
+    
+    if equal;
+        // allow equal values the same index
+        ind_mat = zeros(size(shift_mat));
+        for ii(1, cols(ind_mat), 1);
+            
+            //Get unique values
+            tmp = unique(shift_mat[., ii]);
+            
+            //Find old values in the new mat
+            ind_mat[., ii] = indnv(shift_mat[., ii], tmp);
+           
+            /*
+            ** [~ , ~, ind_mat[.,ii]] = unique(shift_mat[., ii],'first');
+            ** 
+            ** So this finds the indices such that
+            ** In column ii of shift_mat :
+            ** C = unique(shift_mat[., ii]);
+            ** shift_mat[.,ii] = C(ind_mat[. , ii]
+            ** From Matlab:
+            ** [C,ia,ic] = unique(___) also returns index vectors ia and ic using any of the previous syntaxes.
+            ** If A is a vector, then C = A(ia) and A = C(ic).
+            */
+        endfor;
+    else;
+        /*
+        ** sort matrix along rows to build rank orders, equal values retain
+        ** order of appearance
+        */
+        
+        // Index orders of smallest to largest
+        // D x (M-D+1) matrix
+        sort_ind_mat = sortmatind(shift_mat);                       
+        
+        // Storage matrix of dimension D x (M-D+1)
+        ind_mat = zeros(rows(sort_ind_mat), cols(sort_ind_mat));    
+        
+        // Filling the zero matrix with rank orders
+        for ii(1, cols(ind_mat), 1);    
+            ind_mat[sort_ind_mat[., ii], ii] = seqa(1, 1, n);       
+        endfor;
+    endif; 
+    
+    // assign unique number to each pattern (base-n number system)
+    /*
+    ** n.^(seqa(0, 1, n))' is 1xD and 
+    ** (ind_mat-1) is D*(M-D+1) --> 1 x (M-D+1)
+    */
+    ind_vec = n.^(seqa(0, 1, n))' * (ind_mat - 1);    
+    
+    /*
+    ** find first occurence of unique values in 'ind_vec' and use
+    ** difference to determine length of sequence of the same numbers; e.g.
+    ** sort_ind_vec = [21 21 11 19 11], unique_values = [11 19 21],
+    ** ia = [1 3 4]: 11 occurs on places #1 and #2, 19 on #3 and 21 on #4
+    ** and #5
+    */
+    // 1 x (M-D+1) sorting ind_vec from smallest to largest
+    tmp_sort = sortc(ind_vec', 1);   
+    
+    // From tmp_sort keep unique values only --> row vector; length of tmp2 is <= length of tmp_sort
+    tmp2 = unique(tmp_sort);   
+
+    // column vector
+    ia = indnv(tmp2, tmp_sort);     
+    
+    tmp = ia|(cols(ind_vec) + 1);     
+    
+    // Permutation patter number
+    // Values of the counters (the ones in the numerator of each PERMUTATION p[i])
+    permpat_num = diff(tmp);                 
+
+    // Relative frequencies of permutations p[i]
+    refreq = permpat_num/sumc(permpat_num); 
+     
+    // Compute the permutation entropy statistic of order n
+    H = -sumc(refreq .* log2(refreq));
+    
+    // Compute the normalized permutation entropy statistic of order n
+    if normalized==1 ;
+        factor = n!;
+        Hnorm = (1/log2(factor)) * H;
+        pOut.h_norm = Hnorm;
+    endif;
+    
+    
+    pOut.h = H;
+    
+    // Relative frequencies 
+    if relfreq==1;
+        pOut.relfreq = refreq;
+    endif;
+    
+    retp(pOut);   
+endp;
+
+proc (1) = log2(x);
+    retp( log(x)/log(2));
+endp;
+
+proc (1) = diff(x);
+    local tmp;
+    tmp = x[2:rows(x)] - x[1:rows(x)-1];
+    retp(tmp);
+endp;
+
+proc (1) = sortmatind(x_mat);
+    local sort_ind_mat;
+    
+    sort_ind_mat = zeros(rows(x_mat), cols(x_mat));
+    
+    for i(1, cols(x_mat), 1);
+        sort_ind_mat[.,i] = sortind(x_mat[.,i]);
+    endfor;
+    retp(sort_ind_mat);
+endp;
+
+proc(1) = segmentEntropyData(data, win);
+    local mat;
+    
+    // Pre-allocate return matrix
+    mat = zeros(win,rows(data)-win+1);
+    for i(1, rows(data)-win+1, 1);
+        mat[.,i] = data[i:i+win-1];
+    endfor;
+        
+    retp(mat);
+endp;
