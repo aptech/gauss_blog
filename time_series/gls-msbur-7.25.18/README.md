@@ -21,8 +21,8 @@ The **msbur** library can be easily installed using the GAUSS application instal
 ## Data
 The data used in the blog is contained in three files
 
-1. [housing_wa.dat](https://github.com/ec78/gauss_blog/blob/master/time_series/gls-msbur-7.25.18/housing_wa.dat) - This contains the Washington Housing Price Index, Seasonally Adjusted from the [Federal Housing Finance Agency's House Price Index Dataset](https://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index-Datasets.aspx), observed quarterly.  
-2. [housing_ar.dat](https://github.com/ec78/gauss_blog/blob/master/time_series/gls-msbur-7.25.18/housing_ar.dat) - This contains the Arizona Housing Price Index, Seasonally Adjusted from the [Federal Housing Finance Agency's House Price Index Dataset](https://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index-Datasets.aspx), observed quarterly.
+1. [housing_wa.dat](housing_wa.dat) - This contains the Washington Housing Price Index, Seasonally Adjusted from the [Federal Housing Finance Agency's House Price Index Dataset](https://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index-Datasets.aspx), observed quarterly.  
+2. [housing_ar.dat](housing_ar.dat) - This contains the Arizona Housing Price Index, Seasonally Adjusted from the [Federal Housing Finance Agency's House Price Index Dataset](https://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index-Datasets.aspx), observed quarterly.
 3. [zhvi_cities.csv](zhvi_cities.csv) -- This contains the historic [Zillow Home Value Index](https://www.zillow.com/research/data/) in Phoenix and Seattle, observed monthly.
 
 ## Program files
