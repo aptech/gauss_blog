@@ -14,13 +14,13 @@
 */
 
 // Load the data
-housing_wa = loadd("housing_wa");
+housing_wa = loadd(__FILE_DIR $+ "housing_wa");
 y_wa = housing_wa[., 5];
 
-housing_ar = loadd("housing_ar");
+housing_ar = loadd(__FILE_DIR $+ "housing_ar");
 y_ar= housing_ar[., 4];
 
-zhvi = loadd("zhvi_cities.csv");
+zhvi = loadd(__FILE_DIR $+ "zhvi_cities.csv");
 y_seattle = zhvi[., 2];
 y_phoenix = zhvi[., 3];
 
