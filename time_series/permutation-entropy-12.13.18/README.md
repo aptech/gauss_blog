@@ -1,5 +1,5 @@
-# GAUSS blog: GLS testing with multiple structural breaks
-This code accompanies the Aptech blog [Understanding permutation entropy](https://www.aptech.com/blog/permutation-entropy/) which was published on 7/25/2018.
+# GAUSS blog: Permutation Entropy
+This code accompanies the Aptech blog [Understanding permutation entropy](https://www.aptech.com/blog/permutation-entropy/) which was published on 12/13/2018.
 
 ## Getting Started
 ### Prerequisites
@@ -23,7 +23,7 @@ The **pe** library can be easily installed using the GAUSS application installat
   *  Put the line `library pe;` at the beginning of your program files.
 
 ## Data
-The data used in the blog is contained in three files
+The data used in the blog is contained in two files
 1. [djia_1901to2018.csv](djia_1901to2018.csv) - This contains the daily [Dow Jones Industrial Average](https://us.spindices.com/indices/equity/dow-jones-industrial-average) from 1901 to 2018.  
 2. [segmented_djia.dat](setmented_djia.dat) - This contains to the DJIA data in [djia_1901to2018.csv](djia_1901to2018.csv) segmented for the rolling window permutation entropy estimation.
 
