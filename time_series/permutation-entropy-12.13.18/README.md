@@ -1,5 +1,5 @@
 # GAUSS blog: Permutation Entropy
-This code accompanies the Aptech blog [Understanding permutation entropy](https://www.aptech.com/blog/permutation-entropy/) which was published on 12/13/2018.
+This code accompanies the Aptech blog [Permutation entropy](https://www.aptech.com/blog/permutation-entropy/) which was published on 12/14/2018.
 
 ## Getting Started
 ### Prerequisites
