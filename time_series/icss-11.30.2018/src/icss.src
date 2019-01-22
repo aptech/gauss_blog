@@ -1,0 +1,418 @@
+/* GAUSS routines for computing the ICSS algorithm with the tests proposed in:
+** Sanso, Aragó & Carrion (2002): "Testing for changes in the unconditional 
+** variance of financial time series"
+**
+*/
+
+
+
+/**************/
+/* Procedures */
+/**************/
+
+/*
+** Procedure to compute the Iterated Cumulative Sums of Squares (ICSS)
+** algorithm of Inclan and Tiao (JASA, 1994).
+**
+** Sintaxis:
+**
+**     {cp, nbre} = icss(e,test,cri);
+**
+** Input:
+**
+**      e       (Tx1)-vector of zero meam stochastic process to be analysed
+**
+**      test    The test to be conducted:
+**                  test = 0 for the Inclan-Tiao test
+**                  test = 1 for the kappa1 test
+**                  test = 2 for the kappa2 test
+**
+**      cri     (3x1)-vector with options for the kappa2 test
+**
+**                  cri[1] = 0, 1 Barlett or quadratic spectral kernel
+**                  cri[2] = 0, 1 manual or automatic bandwidth selection  
+**                  cri[3] = scalar initial value to select the bandwidth (usually 4)
+**
+** Output:
+**
+**      cp      vector containing the change points (the first and the last element denotes 
+**              the first and the last time periods of the time series !!)
+**
+**      nbre    number of structural breaks
+**
+**
+*/
+
+
+
+proc(2)=icss(e,test,cri);
+
+    local cp, j, tini, tfin, temp1, temp2, tbprev, nbre, cpi, imax;
+    
+    {cp,nbre}=nbreaks(e,test,cri);
+    
+    cp=cp[.,1];
+    
+    imax=1;
+    
+    cpi=cp;
+    
+    origin:
+    
+    cp=sortc(cp,1);
+   
+    j=1;
+    do until j>rows(cp)-2;    
+        tini = cp[j,1]+1;
+        tfin = cp[j+2,1];
+        {temp1,temp2,tbprev}=bypass(e,tini,tfin,test,cri);      
+        if (temp2 == 0);
+            cpi=selif(cpi,cpi .ne cp[j+1,1]);
+        endif;
+        j=j+1;
+    endo;
+   
+    if (rows(cpi) < rows(cp));
+        imax=imax+1;
+        if imax < 20;
+            cp=cpi;
+            goto origin;
+        else;
+            goto theend;
+        endif;
+        
+    else;
+        j=1;
+        do until j>rows(cp);
+            if abs(cp[j]-cpi[j])>2;
+                imax=imax+1;
+                cp=cpi;
+                if imax>20;
+                    goto theend;
+                endif;
+                goto origin;
+             endif;
+             j=j+1;
+        endo;
+        cp=cpi;      
+    endif;
+    
+    theend:    
+    
+    cp=sortc(cpi,1);
+    
+    nbre=rows(cp)-2; @ Number of breaks @ 
+        
+    retp(cp,nbre);
+
+endp;    
+
+
+
+/*
+**
+** This procedure carries out the steps 1, 2a, 2b and 2c of the Inclan and Tiao algorithm.
+**
+** The output need to be tuned through step 3; this is made in proc ICSS.
+**
+*/
+
+proc(2)=nbreaks(e,test,cri);
+
+    local cp, nbre, cpit, temp, i, kf, kl, indt, t1, t2;
+    
+    i=0;
+    cpit=(1|rows(e))~(i|i);
+    
+    origin:
+    cpit=sortc(cpit,1);   
+    indt=selif(cpit, cpit[.,2] .eq i);   
+    t1=minc(indt[.,1]);
+    t2=maxc(indt[.,1]);
+   
+    {cp, nbre} = nbrseq(e[t1:t2],test,cri);
+    
+    temp = selif(cp, cp[.,2] .ne 0); @ We exclude the extremes @
+    
+    if temp[.,1] > 0; @ There are breaks @   
+        kf = minc(temp[.,1])+t1-1; @ First break @
+        kl = maxc(temp[.,1])+t1-1; @ Last break @        
+        if (kf == kl) or (abs(kl-kf) < 2);
+            i=i+1;
+            cpit=cpit|(kf~i);
+            goto theend; @ This is the last break @
+        elseif abs(kl-kf) > 2;
+            i=i+1;
+            cpit=cpit|((kf~i)|(kl~i));
+            goto origin;
+        endif;
+    else;
+        goto theend;        
+    endif;
+
+    theend:
+
+    cpit=sortc(cpit,1);
+    nbre=rows(cpit)-2;                
+    retp(cpit, nbre);
+
+endp;   
+    
+
+
+
+
+/*
+**
+** This procedure computes the structural breaks sequentially 
+**
+*/
+
+proc(2)=nbrseq(e,test,cri);
+
+    local cp, j, tini, tfin, temp1, temp2, tbprev, nbre, i;
+
+    i=0;
+
+    cp=(0|rows(e))~(i|i);
+
+    origin:
+    
+    cp=sortc(cp,1);
+    
+    j=1;
+    do until j>rows(cp)-1;    
+        tini = cp[j,1]+1;
+        tfin = cp[j+1,1];
+        {temp1,temp2,tbprev}=bypass(e,tini,tfin,test,cri); 
+
+        if (temp2 ne 0) and (temp2 ne tfin);
+            i=i+1;
+            cp=cp|(temp2~i);     
+            goto origin;
+	elseif (temp2 ne 0) and (temp2 eq tfin);
+	    goto theend;
+        endif;        
+        j=j+1;
+    endo;
+
+    theend:
+    
+    nbre=rows(cp)-2; @ Number of breaks @ 
+        
+    retp(cp,nbre);
+
+endp;
+
+
+/*
+**
+** This procedure indicates where's the break
+**
+*/
+
+
+proc(3)=bypass(e,t1,t2,test,cri);
+    local m1, cv, tb, senyal, tbprev;
+    
+    tbprev=0;
+    
+    step1:
+
+    {m1,cv,tb,senyal} = selec(e,t1,t2,test,cri); 
+
+    if senyal == 2; @ The break exists, but not in the extremes @  
+        t1=t1;
+        t2=tb;
+        tbprev=tb;
+        goto step1;        
+    elseif senyal == 1; @ The break is at the end @    
+        t2=tb;         
+    elseif senyal == 3; @ There's no break @    
+        if tbprev ne 0;
+            t2=tbprev; @ We store the previous break point @
+        else;
+            t2=0; @ Unreal value: we need to stop here the process @
+        endif;        
+    endif;
+
+    retp(t1,t2,tbprev);
+endp;
+
+
+
+
+/*
+**
+** This procedure selects the break date between to points 
+**
+*/
+
+proc(4)=selec(e,t1,t2,test,cri);
+
+    local aa, m1, cv, tb1, tb, senyal;
+
+    aa=e[t1:t2];    
+    {m1,cv,tb1}=testkappa(aa,test,cri);
+    
+    if m1>cv;
+        if (tb1+t1-1) == t1;
+            tb=t1;
+            senyal=0; @ The break is at the begining @
+        elseif (tb1+t1-1) == t2;
+            tb=t2;
+            senyal=1; @ The break is at the end @
+        else;
+            tb=(tb1+t1-1);
+            senyal=2; @ The break exists, but not in the extremes @
+        endif;
+     else;
+        tb=-1;
+        senyal=3; @ There's no break @
+     endif;
+     
+     retp(m1,cv,tb,senyal);
+     
+endp;
+
+
+
+
+/***********************************/
+/* Procedures to compute the tests */
+/***********************************/
+
+proc(3)=testkappa(a,test,cri);
+  local m, tb, tv, cv, nn;
+  tv=rows(a);
+  if test==0;
+    {m,tb}=i_tiao(a);
+    cv=1.35916702161-0.691555872065/tv-0.737020411768/tv^(1/2);     
+  elseif test==1;
+    {m,tb}=kappa1(a);
+    cv=1.36393394011+0.500405392256/tv-0.942936124935/tv^(1/2);    
+  elseif test==2;
+    if cri[2]==1; 
+      if cri[1]==0; nn=nb(cri[3],tv); endif;
+      if cri[1]==1; nn=nqs(cri[3],tv); endif;
+    elseif cri[2]==0; nn=cri[3];
+    endif;
+    {m,tb}=kappa2(a,(cri[1:2]|nn));
+    cv=0.376035908994-3882905.1062/tv^4+350603.023145/tv^3-605.377401312/tv^(2/3)
+        -16685.0174926/tv^2+184.011220614/tv^(1/2)+1194.76624277/tv+16485653.7171/tv^5;
+  else;
+    errorlog("wrong type of test: enter test={0,1,2}");
+    end;
+  endif;
+  retp(m,cv,tb);
+endp;
+
+
+
+/* Computes Inclan & Tiao test
+**
+** {it,tb}=i_tiao(e);
+**
+** Inputs: e
+**	
+** Ouput: it, tb
+** 
+*/
+
+proc(2)=i_tiao(e);
+
+local t, k, dk, ct, tb, it;
+
+t=rows(e);
+dk=zeros(t,1);
+ct=sumc(e^2);
+k=1; do until k>t;
+   dk[k]=abs(sumc(e[1:k]^2)/ct-k/t);
+k=k+1; endo;
+
+   tb=maxindc(dk);
+   it=sqrt(t/2)*dk[tb];
+
+retp(it,tb);
+
+endp;
+
+
+
+
+/* Computes kappa1 test
+**
+** {kap1,tb}=kappa1(e);
+**
+** Inputs: e
+**	
+** Ouput: kap1, tb
+**
+*/
+
+proc(2)=kappa1(e);
+
+local t, k, dk, ct, tb, kap1, a4, s2, c;
+
+t=rows(e);
+dk=zeros(t,1);
+ct=sumc(e^2);
+a4=sumc(e^4)/t;
+s2=ct/t;
+c=sqrt(a4-s2^2);
+k=1; do until k>t;
+   dk[k]=abs(sumc(e[1:k]^2)-k*s2);
+k=k+1; endo;
+
+   tb=maxindc(dk);
+   kap1=sqrt(1/t)*dk[tb]/c;
+
+retp(kap1,tb);
+
+endp;
+
+
+
+
+
+
+/* Computes kappa 2 test
+**
+** It uses non-parametric estimation of the long run  
+** forth moment
+**
+** {kap2,tb}=kappa2(e, cri);
+**
+** Inputs: e: vector of zero mean observations
+**     cri[1] = 0, 1 Barlett or quadratic spectral kernel
+**     cri[2] = 0, 1 manual or automatic bandwidth selection  
+**     cri[3] = scalar initial bandwidth         
+**	
+** Ouput: kap2, tb
+** 
+*/
+
+#include variance.src;
+
+proc(2)=kappa2(e,cri);
+
+local t, k, dk, ct, tb, kap2, e2, s2, c;
+
+t=rows(e);
+dk=zeros(t,1);
+ct=sumc(e^2);
+s2=ct/t;
+e2=e^2-ones(t,1)*s2;
+c=sqrt(lvar(e2,cri[1],cri[2:3]));
+k=1; do until k>t;
+   dk[k]=abs(sumc(e[1:k]^2)-k*s2);
+k=k+1; endo;
+
+   tb=maxindc(dk);
+   kap2=sqrt(1/t)*dk[tb]/c;
+
+retp(kap2,tb);
+
+endp;
+
+

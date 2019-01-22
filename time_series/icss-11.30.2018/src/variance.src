@@ -1,0 +1,567 @@
+/* index of procedures
+**
+**P_R
+**MAD
+**STRIM
+**LVAR_AR
+**LVAR
+**BARLETT
+**QS
+**LAGSEL
+**NB
+**NQS
+**MB
+**MQS
+**AUTOCOV
+**
+*/
+
+
+
+/*
+** Procedure P_R
+**
+** Purpose:
+** Estimates the variance as autocov(0)-autocov(s)
+**
+**Format:
+**pr=p_r(x,s)
+**
+**Input:
+**x vector of data
+**s order of seasonality
+**
+**Output
+**pr: estimated variance
+*/
+
+proc(1)=p_r(x,s);
+
+local t, pr;
+
+t=rows(x);
+pr=x'x/t-x[1+s:t]'x[1:t-s]/t;
+
+retp(pr);
+endp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+** Procedure mad
+**
+** Purpose:
+** Estimates the median absolute deviation
+**
+**Format:
+**smad=mad(x)
+**
+**Input:
+**x vector of data
+**
+**Output
+**smad: median absolute deviation
+*/
+
+proc(1)=mad(x);
+
+local me, t, jj, smad,am;
+
+t=rows(x);
+me=sortc(x,1);     
+jj=int(t/2);
+
+if t/2==jj; me=(me[jj]+me[jj+1])/2;
+   elseif t/2>jj; me=me[jj+1];
+endif;
+am=abs(x-ones(t,1)*me);
+am=sortc(am,1);
+if t/2==jj; am=(am[jj]+am[jj+1])/2;
+   elseif t/2>jj; am=am[jj+1];
+endif;
+smad=1.483*am;
+
+retp(smad);
+endp;
+
+
+
+
+
+
+
+/*
+** Procedure strim
+**
+** Purpose:
+** Estimates the trimmed standard diviation
+**
+**Format:
+**str=strim(x,alpha)
+**
+**Input:
+**x: vector of data
+**alpha: scalar: % of trimmed observations. 
+**
+**Output
+**str: trimmed standard diviation
+*/
+
+proc(1)=strim(x,alpha);
+
+local t, xtr, str, tt, mtr;
+
+if (alpha< 0) or (alpha>=1) ;
+     errorlog("wrong trimmed %");
+     end;
+endif;
+
+t=rows(x);
+xtr=x~abs(x);
+xtr=sortc(xtr,2);     
+tt=t-int(t*alpha);
+xtr=xtr[1:tt,1];
+mtr=sumc(xtr)/tt;
+str=(sumc((xtr-ones(tt,1)*mtr)^2/tt))^(1/2);
+
+retp(str);
+endp;
+
+
+
+
+
+
+
+
+
+/*
+** Procedure lvar_ar
+**
+** Purpose:
+** Autoregressive estimation the log run variance 
+**
+**Format:
+** {lr,ek}=lvar_ar(x,cri,kmax)
+**
+**Input:
+**x vector of data (detrended and demeaned)
+**cri: scalar: information criteria
+**    = 0: AIC
+**    = 1: BIC.
+**kmax: scalar initial maximun k 
+**
+**Output
+**lr_ar: longrun variance estimation
+**ek: efective k used
+*/
+
+proc(2)=lvar_ar(x,cri,kmax);
+
+local t, ek, ct, lr_ar, dep, ars, i, ic, beta, err, s2, nk;
+
+t=rows(x);
+
+if (kmax<1) ;
+     errorlog("wrong kmax (>0)");
+     end;
+endif;
+
+if cri==0; ct=2/t;
+elseif cri==1; ct=log(t)/t;
+else;
+     errorlog("wrong information criteria");
+     end;
+endif;
+
+ic=zeros(kmax+1,3);
+s2=x'x/t;
+ic[1,2]=log(s2);
+ic[1,3]=s2;
+
+nk=kmax; do until nk<1;
+
+   dep=x[nk+1:t]; 
+   ars=x[nk:t-1];           
+   i=2; do until i>nk;
+      ars=ars~x[nk+1-i:t-i,1]; 
+   i=i+1; endo;
+
+   beta=dep/ars;        
+   err=dep-ars*beta;
+   s2=err'*err/(rows(ars)-cols(ars));
+   ic[nk+1,1]=nk; 
+   ic[nk+1,2]=log(s2)+nk*ct;
+   ic[nk+1,3]=s2/(1-sumc(beta))^2;
+
+nk=nk-1; endo;
+
+ek=minindc(ic[.,2])-1;
+lr_ar=ic[ek+1,3];
+
+retp(lr_ar,ek);
+endp;
+
+
+
+
+
+
+
+/*
+** Procedure lvar
+**
+** Purpose:
+** Estimates the log run variance
+**
+**Format:
+** lr=lvar(x,kernel,cri)
+**
+**Input:
+**x vector of data
+**kernel: 0: Barlett
+**        1: quadratic spectral
+**cri: (2x1) vector of criteria to select the bandwidth
+**   cri[1] = 0 manual procedure,
+**   cri[1] = 1 automatic procedure.
+**   cri[2] = scalar with the initial bandwidth 
+**            (it is necessary to use NB or NQS procedures in case of using the automatic procedure) 
+**
+**Output
+**lr: longrun variance estimation
+*/
+
+proc(1)=lvar(x,kernel,cri);
+
+local t, acov, m, kern, k, lr;
+
+t=rows(x);
+acov = autocov(x);
+
+if ( cri[1] == 0 );
+     m = cri[2];
+elseif ( cri[1] == 1 );
+	if rows(acov)<cri[2]+1;
+		m=rows(acov);
+	else; 
+                m = lagsel( kernel, acov, cri[2] );
+	endif;
+else;
+     errorlog("wrong lag selection variable: cri");
+     end;
+endif;
+
+if (kernel == 0);
+     kern = bartlett( T , m );
+elseif ( kernel == 1 );
+     kern = qs( T , m );
+else;
+     errorlog("wrong kernel selection: kernel");
+     end;
+endif;
+
+   k = 2.*ones(T,1);
+   k[1] = 1;
+   lr = k'*(acov.*kern);
+
+retp(lr);
+endp;
+
+
+
+
+
+
+
+/*
+** Procedure Bartlett:
+**
+** Purpose:
+** Calculates Bartlett kernel.
+**
+** Format:
+** kern = Bartlett( T , m )
+**
+** Input:
+** T    scalar, sample size.
+** m    scalar, bandwidth.
+**
+** Output:
+** kern (Tx1)-vector, kernel weights for the estimated autocovariances for the
+**       estimation of the smoothed periodogram.
+**
+** Note:
+** k(m,j) = ( 1 - (j/(m+1)) )       for j <= m
+**        = 0                       otherwise
+*/
+
+proc(1) = bartlett( T , m );
+
+local j , kern;
+
+j = seqa(0,1,T);
+kern = ( 1 - j./(m+1));
+kern = kern.*(kern.>0);
+
+retp(kern);
+endp;
+
+
+/*
+** Procedure QS
+**
+** Purpose:
+** Calculates Quadratic Spectral kernel.
+**
+** Format:
+** kern = QS( T , m )
+**
+** Input:
+** T    scalar, sample size.
+** m    scalar, bandwidth.
+**
+** Output:
+** kern (Tx1)-vector, kernel weights for the estimated autocovariances for the
+**       estimation of the smoothed periodogram.
+**
+** Note:
+** Quadratic spectral kernel in Andrews (1991,ECTA): "Heteroskedasticity and
+** Autocorrelation Consistent Covariance Matrix Estimation".
+*/
+proc(1) = QS( T , m );
+
+local j , kern;
+
+if ( m > 0 );
+    j = seqa(1,1,T-1);
+
+    j = j./m;
+    kern = (25./(12.*pi^2.*j^2)).*
+        ( sin(1.2.*pi.*j)./(1.2.*pi.*j) - cos( 1.2.*pi.*j ) );
+elseif ( m == 0 );
+    kern = zeros(T-1,1);
+else;
+    errorlog("wrong bandwidth selection");
+    end;
+endif;
+
+kern = 1|kern;
+
+retp(kern);
+endp;
+
+
+
+/*
+** Procedure lagsel:
+**
+** Purpose:
+** Automatic lag selection procedure from Newey and West (1994)
+** (No prewhitening of the time series)
+**
+** Format:
+** m = lagsel( kerntype , acov , n )
+**
+** Input:
+** kerntype     scalar, = 0     Bartlett-kernel.
+**                      = 1     Quadratic Spectral-kernel.
+** acov         (Tx1)-vector, autocovariances of time series; output of
+**                      procedure AUTOCOV.
+** n            scalar, bandwidth parameter (integer).
+**
+** Output:
+** m            scalar, bandwidth selected by procedure.
+**
+** Reference:
+** Newey, W.K. and K.D. West (1994,RES), "Automatic Lag Selection in Covari-
+** ance Matrix Estimation", pp. 631-653.
+*/
+Proc(1) = lagsel( kerntype , acov , n );
+
+local t , s0 , s1 , s2 , j , gam , m ;
+
+if ( kerntype /= 0 ) and ( kerntype /= 1 );
+    errorlog("Wrong input of kernel choice");
+    end;
+endif;
+
+If ( n > 0 );
+
+    t = rows(acov);
+
+    j = 2.*ones(n+1,1);
+    j[1] = 1;
+	if rows(acov)<n+1;
+		s0=rows(acov); "rows acov ";; s0;
+		"n ";; n;
+	endif;
+    s0 = j'*acov[1:n+1];
+
+    /* Procedure for Bartlett kernel */
+    if ( kerntype == 0 );
+        j = 2.*seqa(0,1,n+1);
+        s1 = j'*acov[1:n+1];
+        gam = 1.1447.*((s1./s0)^2)^(1./3);
+        m = minc(T|trunc(gam.*T^(1./3)));
+
+    /* Procedure for Quadratic Spectral kernel */
+    elseif ( kerntype == 1 );
+        j = 2.*(seqa(0,1,n+1)^2);
+        s2 = j'*acov[1:n+1];
+        gam = 1.3221.*((s2./s0)^2)^(1./5);
+        m = minc(T|(gam.*T^(1./5)));
+
+    endif;
+elseif (n == 0 );
+    m = 0;
+else;
+    errorlog("wrong bandwidth choice");
+    end;
+endif;
+
+retp(m);
+endp;
+
+
+/*
+** Procedure Nb:
+**
+** Purpose:
+** Bandwidth sequence for Bartlett kernel with automatic lag selection.
+** Sequence based on Newey and West (1994), table IIC, page 641.
+**
+** Format:
+** n = nb(x,T);
+**
+** Input:
+** x    scalar, parameter chosen by user.
+** T    Sample size.
+**
+** Output:
+** n    scalar, bandwith used as input for LAGSEL procedure.
+*/
+Proc(1) = nb(x,T);
+
+local n;
+
+n = trunc( x.*(T./100)^(2/9) );
+
+retp(n);
+endp;
+
+/*
+** Procedure Nqs:
+**
+** Purpose:
+** Bandwidth sequence for Quadratic Spectral kernel with automatic
+** lag selection.
+** Sequence based on Newey and West (1994), table IIC, page 641.
+**
+** Format:
+** n = nqs(x,T);
+**
+** Input:
+** x    scalar, parameter chosen by user.
+** T    Sample size.
+**
+** Output:
+** n    scalar, bandwith used as input for LAGSEL procedure.
+*/
+Proc(1) = nqs(x,T);
+
+local n;
+
+n = trunc( x.*(T./100)^(2/25) );
+
+retp(n);
+endp;
+
+/*
+** Procedure Mb:
+**
+** Purpose:
+** Bandwidth sequence for Bartlett kernel without automatic lag selection.
+** Sequence based on Newey and West (1994), table IIC, page 641.
+**
+** Format:
+** m = mb(x,T);
+**
+** Input:
+** x    scalar, parameter chosen by user.
+** T    Sample size.
+**
+** Output:
+** m    scalar, bandwith used as input for WTEST procedure.
+*/
+Proc(1) = mb(x,T);
+
+local m;
+
+m = trunc( x.*(T./100)^(1/4) );
+
+retp(m);
+endp;
+
+/*
+** Procedure Mqs:
+**
+** Purpose:
+** Bandwidth sequence for Quadratic spectral kernel without
+** automatic lag selection.
+** Sequence based on Hobijn, Franses and Ooms (1997).
+**
+** Format:
+** m = mqs(x,T);
+**
+** Input:
+** x    scalar, parameter chosen by user.
+** T    Sample size.
+**
+** Output:
+** m    scalar, bandwith used as input for LAGSEL procedure.
+*/
+Proc(1) = mqs(x,T);
+
+local m;
+
+m = trunc( (2/3).*x.*(T./100)^(1/4) );
+
+retp(m);
+endp;
+
+
+
+
+/*
+** Procedure AUTOCOV
+**
+** Calcula les autocovariancies per dur a terme els contratos anteriors
+**
+** acov=autocov(e)
+**
+** input: vector (Tx1) de residus (no s'elimina la mitjana)
+** output: vector (Tx1) d'autocovariancies
+**
+**
+*/
+proc (1) = autocov(e);
+local acov, t, j, em;
+t=rows(e);
+acov=zeros(t,1);
+em=e-meanc(e);
+j=0; do until j>t-1;
+  acov[j+1]=em[1+j:t]'em[1:t-j]/t;
+j=j+1; endo;
+retp(acov);
+endp;
+
