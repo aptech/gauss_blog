@@ -4,14 +4,14 @@ structural breaks?]( https://www.aptech.com/blog/the-changing-trend-in-home-valu
 
 ## Getting Started
 ### Prerequisites
-The program files require a working copy of GAUSS 18+. Many can be run on earlier versions with some small revisions.
+The program files require a working copy of **GAUSS 18+**. Many can be run on earlier versions with some small revisions.
 
 In addition it requires the [Time Series MT](https://store.aptech.com/gauss-applications-category/time-series-mt.html) application from Aptech and the **msbur** library included in this repository.
 
 The **msbur** library includes:
-1. The original GAUSS GLS-MSBUR code provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) and based on the code provided by Serena Ng and Pierre Perron (Econometrica, 2001).
-2. All data files used in the Aptech blog.
-3. All program files for replicating the examples in the Aptech blog.
+1. The original **GAUSS** GLS-MSBUR code provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) which is based on the code provided by Serena Ng and Pierre Perron (Econometrica, 2001).
+2. All data files used in the [Aptech blog](https://www.aptech.com/blog/).
+3. All program files for replicating the examples in the [Aptech blog](https://www.aptech.com/blog/).
 
 ### Installing
 The **msbur** library can be easily installed using the GAUSS application installation wizard, as shown below:
@@ -19,7 +19,7 @@ The **msbur** library can be easily installed using the GAUSS application instal
 1. Download the zipped folder [msbur.zip](msbur.zip).
 2. Use the [GAUSS Application Installer](https://www.aptech.com/support/installation/using-the-applications-installer-wizard/) by selecting **Tools>Install Application**.
 3. Before using the functions created by **msbur** you will need to load the newly created **msbur** library. This can be done in a number of ways:
-  *   Navigate to the library tool view window and click the small wrench located next to the **msbur** library. Select **Load Library**.
+  *   Navigate to the **Library Tool View Window** and click the small wrench located next to the **msbur** library. Select **Load Library**.
   *  Enter `library msbur` on the command line.
   *  Put the line `library msbur;` at the beginning of your program files.
 
@@ -38,6 +38,5 @@ Three example files are included:
 
 **Note:** All data files and program files for the blog will be installed in with the **msbur** library in the gaussHome/pkgs/msbur/examples folder.
 
-
 ## Authors
-*  Erica Clower - [Aptech Systems, Inc](www.aptech.com)
+*  [Erica Clower](erica@aptech.com) - [Aptech Systems, Inc](www.aptech.com)
