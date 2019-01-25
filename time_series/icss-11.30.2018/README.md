@@ -23,15 +23,15 @@ The **icss** library can be easily installed using the **GAUSS Application Insta
 ## Data
 The data used in the blog is contained in four files
 
-1. [sp.dat](sp.dat)
-2. [nik.dat](nik.dat)
-3. [han.dat](han.dat)
-4. [ftse.dat](ftse.dat)
+1. [sp.dat](examples/sp.dat)
+2. [nik.dat](examples/nik.dat)
+3. [han.dat](examples/han.dat)
+4. [ftse.dat](examples/ftse.dat)
 
 ## Example files
 Three example files are included:
-1. [blog_icss.e](blog_icss.e) - This file contains the **GAUSS** code to perform all estimations in the blog.
-2. [example.e](glsmsbur_plots.e) - This file contains the original example provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) .
+1. [blog_icss.e](examples/blog_icss.e) - This file contains the **GAUSS** code to perform all estimations in the blog.
+2. [example.e](examples/glsmsbur_plots.e) - This file contains the original example provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) .
 
 **Note:** All data files and program files for the blog will be installed in with the **icss** library in the **gaussHome** > **pkgs** > **icss** > **examples** directory.
 

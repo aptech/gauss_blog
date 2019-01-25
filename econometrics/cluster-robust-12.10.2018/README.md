@@ -3,7 +3,7 @@ This code accompanies the Aptech blog [Apples to Apples: The case for cluster-ro
 
 ## Getting Started
 ### Prerequisites
-The program files require a working copy of GAUSS 18+. Many can be run on earlier versions with some small revisions.
+The program files require a working copy of **GAUSS 18+**. Many can be run on earlier versions with some small revisions.
 
 ## Data
 The data used in the blog is contained in on file:
