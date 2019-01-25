@@ -1,0 +1,5 @@
+struct peOut { 
+matrix h;
+matrix h_norm;
+matrix relfreq;
+};
