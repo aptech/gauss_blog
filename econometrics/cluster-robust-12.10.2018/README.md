@@ -14,4 +14,4 @@ Three program files are included:
 1. [clusterse_blog](clusterse_blog.e) - This file contains the cluster-robust standard errors example found in the blog.
 
 ## Authors
-*  Erica Clower - [Aptech Systems, Inc](www.aptech.com)
+*  [Erica Clower](erica@aptech.com) - [Aptech Systems, Inc](www.aptech.com)
