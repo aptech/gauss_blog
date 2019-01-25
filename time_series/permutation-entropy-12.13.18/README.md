@@ -33,7 +33,7 @@ Three program files are included:
 2. [segment_data.e](segment_data.e) - This file contains the GAUSS code to segment the DJIA data prior to running the rolling window permutation entropy estimation.
 3. [tventropy.e](tventropy.e) - This file contains the GAUSS code to compute the rolling window permutation entropy.
 
-**Note:** All data files and program files for the blog will be installed in with the **per** library in the gaussHome/pkgs/pe/examples folder.
+**Note:** All data files and program files for the blog will be installed in with the **per** library in the **gaussHome** > **pkgs** > **pe** > **examples** directory.
 
 ## Authors
-*  Erica Clower - [Aptech Systems, Inc](www.aptech.com)
+*  [Erica Clower](erica@aptech.com) - [Aptech Systems, Inc](www.aptech.com)
