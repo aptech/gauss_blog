@@ -4,9 +4,10 @@
 * variance of financial time series"
 *
 *****************************************/
-#include icss.src
+new;
 cls;
 
+library icsslib;
 /*
 ** Criteria for the kappa_2 test: 
 ** spectral quadratic window and 
@@ -20,7 +21,7 @@ cri = cri|4;
 ** han.dat (521 observations) 
 */
 "HAN";
-x = loadd("han.dat");
+x = loadd(__FILE_DIR $+ "han.dat");
 
 // Demean the data
 e = x-meanc(x);
@@ -67,7 +68,7 @@ print "Break positions" cpr';
 /*
 ** S&P 500 data
 */
-x = loadd("sp.dat");
+x = loadd(__FILE_DIR $+ "sp.dat");
 "SP";
 
 // Demean data
@@ -114,7 +115,7 @@ print "Break positions" cpr';
 /*
 ** ftse data
 */
-x = loadd("ftse.dat");
+x = loadd(__FILE_DIR $+ "ftse.dat");
 "FTSE";
 
 // Demean data
@@ -160,7 +161,7 @@ print "Break positions" cpr';
 /*
 ** Nik 500 data
 */
-x = loadd("nik.dat");
+x = loadd(__FILE_DIR $+ "nik.dat");
 
 "NIK";
 

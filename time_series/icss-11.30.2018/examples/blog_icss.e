@@ -4,14 +4,13 @@
 * variance of financial time series"
 *
 *****************************************/
-#include icss.src
 new;
 cls;
 
-//library icss;
+library icsslib;
 
 // Load S&P data
-x = loadd("sp.dat");
+x = loadd(__FILE_DIR $+ "sp.dat");
 
 // Demean data
 e = x - meanc(x);
