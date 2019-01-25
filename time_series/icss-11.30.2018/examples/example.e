@@ -21,7 +21,7 @@ cri = cri|4;
 ** han.dat (521 observations) 
 */
 "HAN";
-x = loadd(__FILE_DIR $+ "han.dat");
+x = loadd(__FILE_DIR $+ "han2.dat");
 
 // Demean the data
 e = x-meanc(x);
@@ -68,7 +68,7 @@ print "Break positions" cpr';
 /*
 ** S&P 500 data
 */
-x = loadd(__FILE_DIR $+ "sp.dat");
+x = loadd(__FILE_DIR $+ "sp2.dat");
 "SP";
 
 // Demean data
@@ -115,7 +115,7 @@ print "Break positions" cpr';
 /*
 ** ftse data
 */
-x = loadd(__FILE_DIR $+ "ftse.dat");
+x = loadd(__FILE_DIR $+ "ftse2.dat");
 "FTSE";
 
 // Demean data
@@ -161,7 +161,7 @@ print "Break positions" cpr';
 /*
 ** Nik 500 data
 */
-x = loadd(__FILE_DIR $+ "nik.dat");
+x = loadd(__FILE_DIR $+ "nik2.dat");
 
 "NIK";
 

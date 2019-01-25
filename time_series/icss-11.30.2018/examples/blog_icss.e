@@ -10,7 +10,7 @@ cls;
 library icsslib;
 
 // Load S&P data
-x = loadd(__FILE_DIR $+ "sp.dat");
+x = loadd(__FILE_DIR $+ "sp2.dat");
 
 // Demean data
 e = x - meanc(x);
