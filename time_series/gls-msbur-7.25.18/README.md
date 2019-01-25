@@ -36,7 +36,7 @@ Three example files are included:
 2. [glsmsbur_plots.e](glsmsbur_plots.e) - This file contains the GAUSS code to generate all graphs included in the blog.
 3. [sample.e](sample.e) - This file contains the original example provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) .
 
-**Note:** All data files and program files for the blog will be installed in with the **msbur** library in the gaussHome/pkgs/msbur/examples folder.
+**Note:** All data files and program files for the blog will be installed in with the **msbur** library in the **gaussHome** > **pkgs** > **msbur** > **examples** directory.
 
 ## Authors
 *  [Erica Clower](erica@aptech.com) - [Aptech Systems, Inc](www.aptech.com)
