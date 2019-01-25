@@ -31,7 +31,7 @@ The data used in the blog is contained in four files
 ## Example files
 Three example files are included:
 1. [blog_icss.e](examples/blog_icss.e) - This file contains the **GAUSS** code to perform all estimations in the blog.
-2. [example.e](examples/glsmsbur_plots.e) - This file contains the original example provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) .
+2. [example.e](examples/example.e) - This file contains the original example provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) .
 
 **Note:** All data files and program files for the blog will be installed in with the **icss** library in the **gaussHome** > **pkgs** > **icss** > **examples** directory.
 
