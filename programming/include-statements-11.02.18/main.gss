@@ -1,0 +1,7 @@
+a = 3;
+b = 4;
+ 
+c = hypotenuse(a,b);
+ 
+// Make hypotenuse procedure available
+#include hypotenuse.src

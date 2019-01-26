@@ -1,0 +1,8 @@
+a = 3;
+b = 4;
+ 
+c = hypotenuse(a, b);
+ 
+proc (1) = hypotenuse(a,b);
+    retp(sqrt(a.^2 + b.^2));
+endp;
