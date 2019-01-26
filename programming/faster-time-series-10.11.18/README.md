@@ -7,9 +7,9 @@ The program files require a working copy of **GAUSS 18+**. Many can be run on ea
 
 ## Example files
 Three program files are included:
-1. [example1](example1.e) - This file contains an example of using vectorized multiplication versus element-by-element multiplication.
-2. [simulating_ar](simulating_ar.e) - This file contains an example of simulating AR data using element-by-element operations.
-3. [simulating_recserar](simulating_recserar.e) - This file contains an example of using `recserar` to speed up the simulation of AR data.
+1. [example1.e](example1.e) - This file contains an example of using vectorized multiplication versus element-by-element multiplication.
+2. [simulating_ar.e](simulating_ar.e) - This file contains an example of simulating AR data using element-by-element operations.
+3. [simulating_recserar.e](simulating_recserar.e) - This file contains an example of using `recserar` to speed up the simulation of AR data.
 
 ## Authors
 *  [Erica Clower](erica@aptech.com) - [Aptech Systems, Inc](www.aptech.com)
