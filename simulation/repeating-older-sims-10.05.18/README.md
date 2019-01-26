@@ -1,5 +1,5 @@
 # GAUSS blog: Repeating simulations from older versions
-This code accompanies the Aptech blog [Repeating simulations from older versions of GAUSS](https://www.aptech.com/blog/repeating-simulations-from-older-versions-of-gauss/) which was published on 12/10/2018.
+This code accompanies the Aptech blog [Repeating simulations from older versions of GAUSS](https://www.aptech.com/blog/repeating-simulations-from-older-versions-of-gauss/) which was published on 10/05/2018.
 
 ## Getting Started
 ### Prerequisites
