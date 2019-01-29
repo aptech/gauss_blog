@@ -1,5 +1,5 @@
 # GAUSS blog: Quantile Regression
-This code accompanies the Aptech blog [The Basics of Quantile Regression](https://www.aptech.com/blog/the-basics-of-quantile-regression/) which was published on 01/20/2018.
+This code accompanies the Aptech blog [The Basics of Quantile Regression](https://www.aptech.com/blog/the-basics-of-quantile-regression/) which was published on 01/20/2019.
 
 ## Getting Started
 ### Prerequisites

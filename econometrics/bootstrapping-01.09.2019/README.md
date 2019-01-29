@@ -1,5 +1,5 @@
 # GAUSS blog: Basic Bootstrapping
-This code accompanies the Aptech blog [Basic Bootstrapping in GAUSS](https://www.aptech.com/blog/basic-bootstrapping-in-gauss/) which was published on 1/09/2018.
+This code accompanies the Aptech blog [Basic Bootstrapping in GAUSS](https://www.aptech.com/blog/basic-bootstrapping-in-gauss/) which was published on 1/09/2019.
 
 ## Getting Started
 ### Prerequisites

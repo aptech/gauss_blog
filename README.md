@@ -11,8 +11,8 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
-|[Quantile regression](econometrics/quantile-regression-01.20.2018)|["The Basics of Quantile Regression"](https://www.aptech.com/blog/the-basics-of-quantile-regression/)|01/20/2019|
-|[Bootstrapping](econometrics/bootstrapping-01.09.2018)|["Basic Bootstrapping in GAUSS"](https://www.aptech.com/blog/basic-bootstrapping-in-gauss/)|01/09/2019|
+|[Quantile regression](econometrics/quantile-regression-01.20.2019)|["The Basics of Quantile Regression"](https://www.aptech.com/blog/the-basics-of-quantile-regression/)|01/20/2019|
+|[Bootstrapping](econometrics/bootstrapping-01.09.2019)|["Basic Bootstrapping in GAUSS"](https://www.aptech.com/blog/basic-bootstrapping-in-gauss/)|01/09/2019|
 |[Permutation Entropy](time_series/permutation-entropy-12.13.18)|["Permutation Entropy"](https://www.aptech.com/blog/permutation-entropy/)|12/11/2018|
 |[Cluster-robust SE](econometrics/cluster-robust-12.10.2018)|["Apples to Apples: The case for cluster-robust standard errors"](https://www.aptech.com/blog/apples-to-apples-the-case-for-cluster-robust-standard-errors/)|12/08/2018|
 |[ICSS testing for breaks](time_series/icss-11.30.2018)|["A Simple Test for Structural Breaks in Variance"](https://www.aptech.com/blog/a-simple-test-for-structural-breaks-in-variance/)|11/30/2018|
