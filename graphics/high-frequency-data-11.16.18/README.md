@@ -1,0 +1,18 @@
+# GAUSS blog: Graphing high frequency data
+This code accompanies the Aptech blog [Graph high frequency Forex data](https://www.aptech.com/blog/graph-high-frequency-forex-data/) which was published on 11/16/2018.
+
+## Getting Started
+### Prerequisites
+The program files require a working copy of **GAUSS 18+**. Many can be run on earlier versions with some small revisions.
+
+## Example files
+Three program files are included:
+1. [example1.e](example1.e) - This file contains an example of plotting high frequency Forex data using default graph formatting.
+2. [example2.e](example2.e) - This file contains an example of using a `plotControl` structure to format a graph of high frequency Forex data.
+3. [usdcad_tick.csv](usdcad_tick.csv) - This file contains the data used in [example1.e](example1.e) and [example2.e](example2.e).
+
+## Authors
+[Erica Clower]  
+[email us](mailto:eclower@aptech.com)  
+[LinkedIn](https://linkedin.com/in/ericaclower)  
+[Aptech Systems, Inc](https://www.aptech.com/)
