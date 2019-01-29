@@ -14,6 +14,8 @@ Installation instructions for the individual codes are provided in blog-specific
 |[Permutation Entropy](time_series/permutation-entropy-12.13.18)|["Permutation Entropy"](https://www.aptech.com/blog/permutation-entropy/)|12/11/2018|
 |[Cluster-robust SE](econometrics/cluster-robust-12.10.2018)|["Apples to Apples: The case for cluster-robust standard errors"](https://www.aptech.com/blog/apples-to-apples-the-case-for-cluster-robust-standard-errors/)|12/08/2018|
 |[ICSS testing for breaks](time_series/icss-11.30.2018)|["A Simple Test for Structural Breaks in Variance"](https://www.aptech.com/blog/a-simple-test-for-structural-breaks-in-variance/)|11/30/18|
+|[Singular matrices](programming/singular-matrix-11.25.18)|["Diagnosing a singular matrix"](https://www.aptech.com/blog/category/programming/)|11/25/2018|
+|[High frequency graphs](graphics/high-frequency-data-11.16.18)|["Graph high frequency Forex data"](https://www.aptech.com/blog/graph-high-frequency-forex-data/)|11/16/2018|
 |[Loading dates and times](time_series/reading-dates-time-11.08.18)|["Reading dates and times in GAUSS"](https://www.aptech.com/blog/reading-dates-and-times-in-gauss/)|11/08/2018|
 |[Using #include](programming/include-statements-11.02.18)|["What you need to know about #include"](https://www.aptech.com/blog/what-you-need-to-know-about-include/)|11/02/18|
 |[Speeding up time series code](programming/faster-time-series-10.11.18)|["Make your time series computations up to 20 times faster"](https://www.aptech.com/blog/make-your-time-series-computations-up-to-20-times-faster/)|10/11/18|
