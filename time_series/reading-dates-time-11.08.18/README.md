@@ -1,5 +1,5 @@
-# GAUSS blog: Repeating simulations from older versions
-This code accompanies the Aptech blog [Repeating simulations from older versions of GAUSS](https://www.aptech.com/blog/repeating-simulations-from-older-versions-of-gauss/) which was published on 10/05/2018.
+# GAUSS blog: Reading dates and times in GAUSS
+This code accompanies the Aptech blog [Reading dates and times in GAUSS](https://www.aptech.com/blog/reading-dates-and-times-in-gauss/) which was published on 11/08/2018.
 
 ## Getting Started
 ### Prerequisites
