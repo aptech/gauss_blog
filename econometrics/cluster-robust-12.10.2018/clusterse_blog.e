@@ -1,3 +1,11 @@
+/*
+**  This code accompanies the blog
+**  "Apples to Apples: The case for
+**  cluster-robust standard errors"
+**  published on 12/11/2018 
+**  on the Aptech blog.
+*/
+
 // Specify filename
 fname = __FILE_DIR $+ "apples_cluster.dat";
 

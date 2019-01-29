@@ -1,3 +1,11 @@
+/*
+**  This code accompanies the blog
+**  "Repeating simulations from 
+**  older versions of GAUSS"
+**  published on 10/05/2018 
+**  on the Aptech blog.
+*/
+
 /* 
 ** Making code using rndn
 ** portable between GAUSS

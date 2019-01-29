@@ -1,3 +1,10 @@
+/*
+**  This code accompanies the blog
+**  "What your need know about #include"
+**  published on 11/02/2018 
+**  on the Aptech blog.
+*/
+
 a = 3;
 b = 4;
  
