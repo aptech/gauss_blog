@@ -16,4 +16,4 @@ Three program files are included:
 [Erica Clower]  
 [email us](mailto:eclower@aptech.com)  
 [LinkedIn](https://linkedin.com/in/ericaclower)  
-[Aptech Systems, Inc](https://www.aptech.com/
+[Aptech Systems, Inc](https://www.aptech.com/)

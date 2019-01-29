@@ -20,4 +20,7 @@ Installation instructions for the individual codes are provided in blog-specific
 |[Unit root testing with multiple structural breaks](time_series/gls-msbur-7.25.18)|["Why the GLS-unit root test with multiple structural breaks"](https://www.aptech.com/blog/the-changing-trend-in-home-values/)|7/25/2018|
 
 ## Contacts
-For questions please contact [Erica Clower](erica@aptech.com).
+[Erica Clower]  
+[email us](mailto:eclower@aptech.com)  
+[LinkedIn](https://linkedin.com/in/ericaclower)  
+[Aptech Systems, Inc](https://www.aptech.com/)

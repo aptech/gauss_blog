@@ -12,4 +12,7 @@ Three program files are included:
 3. [hypotenuse.src](hypotenuse.src) - This file the definition of the procedure `hypotenuse`.
 
 ## Authors
-*  [Erica Clower](erica@aptech.com) - [Aptech Systems, Inc](www.aptech.com)
+[Erica Clower]  
+[email us](mailto:eclower@aptech.com)  
+[LinkedIn](https://linkedin.com/in/ericaclower)  
+[Aptech Systems, Inc](https://www.aptech.com/)
