@@ -12,7 +12,7 @@ Three program files are included:
 3. [example3.e](example3.e) - This file contains an example making GAUSS codeand is that uses `rndn` and is portable between versions of GAUSS.
 
 ## Authors
-[Erica Clower]  
+Erica Clower  
 [email us](mailto:eclower@aptech.com)  
 [LinkedIn](https://linkedin.com/in/ericaclower)  
 [Aptech Systems, Inc](https://www.aptech.com/)

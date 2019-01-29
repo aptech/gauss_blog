@@ -36,7 +36,7 @@ Three example files are included:
 **Note:** All data files and program files for the blog will be installed in with the **icss** library in the **gaussHome** > **pkgs** > **icss** > **examples** directory.
 
 ## Authors
-[Erica Clower]  
+Erica Clower
 [email us](mailto:eclower@aptech.com)  
 [LinkedIn](https://linkedin.com/in/ericaclower)  
 [Aptech Systems, Inc](https://www.aptech.com/)

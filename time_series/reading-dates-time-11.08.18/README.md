@@ -13,7 +13,7 @@ Three program files are included:
 4. [temperature.csv](temperature.csv )- This file contains the data used in [example2.e](example2.e).
 
 ## Authors
-[Erica Clower]  
+Erica Clower  
 [email us](mailto:eclower@aptech.com)  
 [LinkedIn](https://linkedin.com/in/ericaclower)  
 [Aptech Systems, Inc](https://www.aptech.com/)

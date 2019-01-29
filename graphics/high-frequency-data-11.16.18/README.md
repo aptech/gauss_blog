@@ -12,7 +12,7 @@ Three program files are included:
 3. [usdcad_tick.csv](usdcad_tick.csv) - This file contains the data used in [example1.e](example1.e) and [example2.e](example2.e).
 
 ## Authors
-[Erica Clower]  
+Erica Clower  
 [email us](mailto:eclower@aptech.com)  
 [LinkedIn](https://linkedin.com/in/ericaclower)  
 [Aptech Systems, Inc](https://www.aptech.com/)
