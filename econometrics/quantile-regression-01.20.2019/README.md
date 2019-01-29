@@ -8,7 +8,7 @@ The program files require a working copy of **GAUSS 18+**. Many can be run on ea
 ## Example files
 Three program files are included:
 1. [quantile_regression.e](quantile_regression.e) - This file contains the code for running the quantile regressions performed in the blog.
-2. [islr_hitters.xlsx](islr_hitters.xlsx) - This file contains the data used in the example.
+2. [islr_hitters.xlsx](islr_hitters.xlsx) - This file contains the data used in quantile regression.
 
 ## Authors
 Erica Clower  
