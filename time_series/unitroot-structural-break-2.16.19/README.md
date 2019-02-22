@@ -10,13 +10,13 @@
 
 <!-- icons with padding -->
 
-[1.1]: http://i.imgur.com/P3YfQoD.png (facebook icon with padding)
-[2.1]: http://i.imgur.com/0o48UoR.png (github icon with padding)
+[1.1]: http://i.imgur.com/P3YfQoD.png (Visit Aptech Facebook)
+[2.1]: http://i.imgur.com/0o48UoR.png (Aptech Github)
 
 <!-- icons without padding -->
 
-[1.2]: http://i.imgur.com/fep1WsG.png (facebook icon without padding)
-[2.2]: http://i.imgur.com/9I6NRUm.png (github icon without padding)
+[1.2]: http://i.imgur.com/fep1WsG.png (Visit Aptech Facebook)
+[2.2]: http://i.imgur.com/9I6NRUm.png (Aptech Github)
 
 
 <!-- links to your social media accounts -->
@@ -44,6 +44,6 @@ Three program files are included:
 Erica Clower  
 [email us](mailto:eclower@aptech.com)  
 [LinkedIn](https://linkedin.com/in/ericaclower)  
-[Aptech Systems, Inc](https://www.aptech.com/)
-[![alt text][1.1]][1]
-[![alt text][2.1]][2]
+[Aptech Systems, Inc](https://www.aptech.com/)  
+[![alt text][1.1]][1]  
+[![alt text][2.1]][2]  
