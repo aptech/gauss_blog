@@ -1,0 +1,90 @@
+/*
+** This example file generates the graphs used in 
+** the difference-in-differences estimation blog
+** published on the www.aptech.com/blog
+*/
+
+// Generate data
+
+// Shared intercept
+b0 = 1.25;
+
+// Time period dummies
+bigT = 10;
+d2 = 4;
+
+// Coefficient
+beta_1 = 0.56;
+
+// Non-treatment group line
+t = seqa(1, 1, bigT );
+x1 = t;
+//x1 = rndn(150, 1);
+x2 = t.*(seqa(1, 1, bigT ) .gt d2);
+const_dd = 1.2;
+
+y1 = b0 + beta_1*x1;
+y2 = b0 + beta_1*x1 + const_dd;
+
+// Set up graph
+struct plotControl nonPlot;
+nonPlot = plotGetDefaults("xy");
+
+// Get the first 3 colors from the ColorBrewer 'Dark2' palette
+clrs = getColorPalette("Dark2", 3);
+
+// Set line color
+plotSetLineColor(&nonPlot, clrs[1]);
+
+// Title
+plotSetTitle(&nonPlot, "Difference-In-Differences Estimation");
+
+// Set up y-range
+plotSetYRange(&nonPlot, 0, 10);
+
+// Set up x-range
+plotSetXRange(&nonPlot, 0, 12);
+plotSetXTicCount(&nonPlot, 4); 
+
+// Set Y-axis
+plotSetYAxisLabel(&nonPlot, "Outcome");
+plotSetYAxisShow(&nonPlot, 1);
+
+// Plot the original line
+plotXY(nonPlot, t, y1);
+
+// Treatment group
+struct plotControl treatPlot;
+treatPlot = plotGetDefaults("xy");
+
+// Set to dotted line
+plotSetLineStyle(&treatPlot, 2);
+
+// Set the plot colors
+plotSetLineColor(&treatPlot, clrs[2]);
+plotAddXY(treatPlot, t, y2);
+
+// Declare ‘myAnnotation’ to be an instance
+// of a ‘plotAnnotation’ structure
+struct plotAnnotation myAnnotation;
+ 
+// Fill ‘myAnnotation’ with default values
+myAnnotation = annotationGetDefaults();
+
+// Set line size
+annotationSetLineThickness(&myAnnotation, 2);
+
+// Set line color
+annotationSetLineColor(&myAnnotation, clrs[3]);
+
+// Add line at intervention time
+plotAddShape("line", 4, 0, 4, 10);
+
+// Add intervention effects
+plotAddShape(myAnnotation, "line", 4, y2[4], 10, 10);
+
+// Add arrows
+plotAddArrow(myAnnotation, 9, y2[9]+0.2, 9, y2[9]+1.5, 2);
+
+// Add arrows
+plotAddArrow(myAnnotation, 9, y1[9]+0.2, 9, y2[9]-0.3, 2);

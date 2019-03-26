@@ -1,0 +1,99 @@
+/*
+** This example file replicates the computations from the
+** the difference-in-differences estimation blog
+** published on the www.aptech.com/blog
+*/
+
+// Enter grades
+tu_pre = {77, 82, 65, 68, 90, 84, 67, 73, 84, 61};
+tu_post = {76, 88, 73, 74, 94, 88, 69, 78, 89, 71};
+ua_pre = {74, 63, 82, 70, 92,67, 66, 68, 87, 95};
+ua_post = {72, 70, 84, 67, 92, 70, 65, 65, 82, 96};
+
+
+/**********************************************/
+// Find pre-treatment averages
+tu_ave_pre = meanc(tu_pre);
+ua_ave_pre = meanc(ua_pre);
+
+print "The TU pre-treatment average" tu_ave_pre;
+print "The UA pre-treatment average" ua_ave_pre;
+print ;
+
+// Find pre-treatment SEM
+tu_se_pre = findSEM(tu_ave_pre, tu_pre);
+ua_se_pre = findSEM(ua_ave_pre, ua_pre);
+
+print "The TU pre-treatment sem" tu_se_pre;
+print "The UA pre-treatment sem" ua_se_pre;
+print ;
+
+// Find post-treatment averages
+tu_ave_post = meanc(tu_post);
+ua_ave_post = meanc(ua_post);
+
+print "The TU post-treatment average" tu_ave_post;
+print "The UA post-treatment average" ua_ave_post;
+print ;
+
+// Find post-treatment standard deviations
+ua_se_post = findSEM(ua_ave_post, ua_post);
+tu_se_post = findSEM(tu_ave_post, tu_post);
+
+print "The TU post-treatment SEM" tu_se_post;
+print "The UA post-treatment SEM" ua_se_post;
+print ;
+/************************************************/
+// Find the UA time differences
+ua_diff = ua_post - ua_pre;
+ua_ave_diff = meanc(ua_diff);
+ua_se_df = findSEM(ua_ave_diff, ua_diff);
+
+print "The UA average pre to post-treatment difference:"  ua_ave_diff;
+print "The UA average pre to post-treatment difference SEM:" ua_se_df;
+print ;
+
+// Find the TU time differences
+tu_diff = tu_post - tu_pre;
+tu_ave_diff = meanc(tu_diff);
+tu_se_df = findSEM(tu_ave_diff, tu_diff);
+
+print "The TU average pre to post-treatment difference:"  tu_ave_diff;
+print "The TU average pre to post-treatment difference SEM:" tu_se_df;
+print ;
+
+// Per-period cross-sectional diff
+pre_diff = tu_pre - ua_pre;
+pre_ave_diff = meanc(pre_diff);
+pre_se_diff = findSEM(pre_ave_diff, pre_diff);
+
+print "The average cross-sectional pre-treatment period difference:"  pre_ave_diff;
+print "The average cross-sectional pre-treatment period difference SEM:" pre_se_diff;
+print ;
+
+// Post-period time sectional diff
+post_diff = tu_post - ua_post;
+post_ave_diff = meanc(post_diff);
+post_se_diff = findSEM(post_ave_diff, post_diff);
+
+print "The average cross-sectional post-treatment period difference:"  post_ave_diff;
+print "The average cross-sectional post-treatment period difference SEM:" post_se_diff;
+print ;
+
+// Find difference-in-differences
+dd = tu_diff - ua_diff ;
+dd_ave = meanc(dd);
+dd_se = findSEM(dd_ave, dd);
+
+print "The average DID:"  dd_ave;
+print "The average DD SEM:" dd_se;
+print ;
+
+proc(1) = findSEM(mean, data);
+   local tmp1, tmp2;
+    
+    tmp1 = sumc((data - mean).^2);
+    tmp2 = tmp1/(rows(data)-1);
+    
+    retp(sqrt(tmp2));
+endp;
