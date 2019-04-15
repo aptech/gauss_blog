@@ -6,13 +6,10 @@
 new;
 cls;
 
-#include panel.sdf
-#include panel.src
-#include pdutil.src
+library pdlib;
 
 // Load data
-path = "C:\\Users\\Erica\\Documents\\GitHub\\gauss_blog\\econometrics\\individual-effects-4.15.19\\";
-data = loadd(path $+ "simple_data.dat");
+data = loadd(__FILE_DIR $+ "simple_data.dat");
 
 // Assign groups variable
 grps = data[., 1];
@@ -21,14 +18,18 @@ grps = data[., 1];
 reg_data = data[.,3:4];
 
 // Find group means
-grp_means = withinmeans(grps, reg_data);
+grp_means = withinMeans(grps, reg_data);
 
 print "Group means for Y and X:";
 grp_means;
 print ;
 
-// Find y_tilde
-y_bar = demean_data(grps, reg_data);
+/*
+** Demean the data. This procedure
+** automatically computes the group means
+** add removes them.
+*/
+y_bar = demeanData(grps, reg_data);
 
 print "Demeaned data:";
 y_bar;
