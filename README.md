@@ -15,6 +15,7 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Difference-in-difference estimations](econometrics/did-3.28.2019)|["Introduction to Difference-in-Differences Estimation"](https://www.aptech.com/blog/introduction-to-difference-in-differences-estimation/)|03/30/2019|
 |[Panel data unit root tests with structural breaks](time_series/panel-unitroot-2.22.19)|["Panel Data, Structural Breaks and Unit Root Testing"](https://www.aptech.com/blog/how-to-conduct-unit-root-tests-in-gauss/)|02/23/2019|
 |[Unit root tests with structural breaks](time_series/unitroot-structural-break-2.16.19)|["Unit Root Tests with Structural Breaks"](https://www.aptech.com/blog/unit-root-tests-with-structural-breaks/)|02/16/2019|
 |[Quantile regression](econometrics/quantile-regression-01.20.2019)|["The Basics of Quantile Regression"](https://www.aptech.com/blog/the-basics-of-quantile-regression/)|01/20/2019|
