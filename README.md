@@ -15,6 +15,8 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Panel data unit root tests with structural breaks](econometrics/panel-unitroot-2.22.19)|["Panel Data, Structural Breaks and Unit Root Testing"](https://www.aptech.com/blog/how-to-conduct-unit-root-tests-in-gauss/)|02/23/2019|
+|[Unit root tests with structural breaks](econometrics/unitroot-structural-break-2.16.19)|["Unit Root Tests with Structural Breaks"](https://www.aptech.com/blog/how-to-conduct-unit-root-tests-in-gauss/)|02/16/2019|
 |[Quantile regression](econometrics/quantile-regression-01.20.2019)|["The Basics of Quantile Regression"](https://www.aptech.com/blog/the-basics-of-quantile-regression/)|01/20/2019|
 |[Bootstrapping](econometrics/bootstrapping-01.09.2019)|["Basic Bootstrapping in GAUSS"](https://www.aptech.com/blog/basic-bootstrapping-in-gauss/)|01/09/2019|
 |[Permutation Entropy](time_series/permutation-entropy-12.13.18)|["Permutation Entropy"](https://www.aptech.com/blog/permutation-entropy/)|12/11/2018|
