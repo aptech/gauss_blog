@@ -1,0 +1,18 @@
+/*
+** This file reproduces the spurious regression
+** section from the "How to Conduct Unit Root Tests in GAUSS"
+** blog posted on 9/24/2019
+*/
+
+// Number of observations
+nobs = 150;
+ 
+// Generate two vectors of random disturbances
+e1 = rndn(nobs, 1);
+e2 = rndn(nobs, 1);
+ 
+// Find cumulative sum of disturbances
+y1 = cumsumc(e1);
+x1 = cumsumc(e2);
+
+call ols("", y1, x1);

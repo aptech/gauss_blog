@@ -1,0 +1,64 @@
+new;
+cls;
+library tsmt;
+ 
+/*
+** Step One: Generate Data
+*/
+// Coefficient on AR(1) term
+phi = 0.80;
+ 
+// AR order
+p = 1;
+ 
+// MA order
+q = 0;
+ 
+// Constant
+const1 = 0;
+const2 = 2.5;
+const3 = 2.5;
+ 
+// Trend
+trend1 = 0;
+trend2 = 0;
+trend3 = 0.20;
+ 
+// Number of obsevations
+n = 150;
+ 
+// Number of series
+k = 1;
+ 
+// Standard deviation
+std = 1;
+ 
+// Set seed for reproducing data
+seed = 10191;
+ 
+// Case One: No deterministic components
+y1 = simarmamt(phi, p, q, const1, trend1, n, k, std, seed);
+ 
+// Case Two: With Constant
+y2 = simarmamt(phi, p, q, const2, trend2, n, k, std, seed);
+ 
+// Case Three: With Constant and Trend
+y3 = simarmamt(phi, p, q, const3, trend3, n, k, std, seed);
+
+/*
+** KPSS
+*/
+ 
+/*
+** Note that we use the default maxlags
+** and trend settings for the two cases without a trend.
+*/
+ 
+// No deterministic trends
+{ lm1, crit1 } = kpss(y1);
+ 
+// Constant and no trend
+{ lm2, crit2 } = kpss(y2);
+ 
+// Constant and trend
+{ lm3, crit3 } = kpss(y3, 0, 1);

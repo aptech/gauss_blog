@@ -1,0 +1,66 @@
+new;
+cls;
+library tsmt;
+ 
+/*
+** Step One: Generate Data
+*/
+// Coefficient on AR(1) term
+phi = 0.80;
+ 
+// AR order
+p = 1;
+ 
+// MA order
+q = 0;
+ 
+// Constant
+const1 = 0;
+const2 = 2.5;
+const3 = 2.5;
+ 
+// Trend
+trend1 = 0;
+trend2 = 0;
+trend3 = 0.20;
+ 
+// Number of obsevations
+n = 150;
+ 
+// Number of series
+k = 1;
+ 
+// Standard deviation
+std = 1;
+ 
+// Set seed for reproducing data
+seed = 10191;
+ 
+// Case One: No deterministic components
+y1 = simarmamt(phi, p, q, const1, trend1, n, k, std, seed);
+ 
+// Case Two: With Constant
+y2 = simarmamt(phi, p, q, const2, trend2, n, k, std, seed);
+ 
+// Case Three: With Constant and Trend
+y3 = simarmamt(phi, p, q, const3, trend3, n, k, std, seed);
+
+/*
+** Phillips-Perron
+*/
+ 
+/*  The second input reflects the deterministic 
+**  components to include
+** -1       No deterministic trends
+**  0       Constant
+**  1       Constant and Trend
+*/
+ 
+// No deterministic components
+{ ppb1, ppt1, pptcrit1 } =  vmppmt(y1, -1, 0);
+ 
+// Constant
+{ ppb2, ppt2, pptcrit2 } =  vmppmt(y2, 0, 0);
+ 
+// Constant and trend
+{ ppb3, ppt3, pptcrit3 } =  vmppmt(y3, 1, 0);

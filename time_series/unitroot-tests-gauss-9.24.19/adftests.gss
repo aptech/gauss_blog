@@ -1,0 +1,65 @@
+new;
+cls;
+library tsmt;
+ 
+/*
+** Step One: Generate Data
+*/
+// Coefficient on AR(1) term
+phi = 0.80;
+ 
+// AR order
+p = 1;
+ 
+// MA order
+q = 0;
+ 
+// Constant
+const1 = 0;
+const2 = 2.5;
+const3 = 2.5;
+ 
+// Trend
+trend1 = 0;
+trend2 = 0;
+trend3 = 0.20;
+ 
+// Number of obsevations
+n = 150;
+ 
+// Number of series
+k = 1;
+ 
+// Standard deviation
+std = 1;
+ 
+// Set seed for reproducing data
+seed = 10191;
+ 
+// Case One: No deterministic components
+y1 = simarmamt(phi, p, q, const1, trend1, n, k, std, seed);
+ 
+// Case Two: With Constant
+y2 = simarmamt(phi, p, q, const2, trend2, n, k, std, seed);
+ 
+// Case Three: With Constant and Trend
+y3 = simarmamt(phi, p, q, const3, trend3, n, k, std, seed);
+
+/*
+** ADF Testing
+*/
+ 
+/* Order of deterministic trend to include
+** -1       No deterministic trends
+**  0       Constant
+**  1       Constant and Trend
+*/
+ 
+// No deterministic trends
+{ rho1, tstat1, adf_t_crit1 } = vmadfmt(y1, -1, 1);
+ 
+// Constant
+{ rho2, tstat2, adf_t_crit2 } = vmadfmt(y2, 0, 1);
+ 
+// Constant and trend
+{ rho3, tstat3, adf_t_crit3 } = vmadfmt(y3, 1, 1);
