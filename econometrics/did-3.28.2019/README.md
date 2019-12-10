@@ -15,7 +15,7 @@ Two program files are included:
 2. [did_plots.gss](did_plots.gss) - This file produces the plot included in the blog.
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]

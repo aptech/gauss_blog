@@ -15,7 +15,7 @@ Three program files are included:
 2. [islr_hitters.xlsx](islr_hitters.xlsx) - This file contains the data used in quantile regression.
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]

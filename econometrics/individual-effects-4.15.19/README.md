@@ -17,7 +17,7 @@ Two program files are included:
 3. [simple_data.dat](simple_data.dat) - This file contains the data used in the [fixed-effects.e](fixed-effects.e) and [randome-effects.e](random-effects.e) files.
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]

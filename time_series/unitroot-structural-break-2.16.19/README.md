@@ -16,7 +16,7 @@ Three program files are included:
 3. [tspdlib_blog.dat](tspdlib_blog.dat) - This file contains the data used in [tspdlib_blog.e](tspdlib_blog.e) and [unitroot_plots.e](unitroot_plots.e).
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]

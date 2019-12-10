@@ -16,7 +16,7 @@ Three program files are included:
 3. [simulating_recserar.e](simulating_recserar.e) - This file contains an example of using `recserar` to speed up the simulation of AR data.
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]

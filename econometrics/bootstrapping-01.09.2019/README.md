@@ -17,7 +17,7 @@ Three program files are included:
 4. [asset_returns.csv](asset_returns.csv)- This file contains the data used in [single_iteration.e](single_iteration.e) and [full_bootstrap.e](full_bootstrap.e).
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]

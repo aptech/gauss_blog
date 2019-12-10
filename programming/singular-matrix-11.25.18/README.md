@@ -17,7 +17,7 @@ Three program files are included:
 3. [golf_ballflight.csv](golf_ballflight.csv) - This file contains the data used in [singular_model.e](singular_model.e), [diagnostics.e](diagnostics.e) and [final_model.e](final_model.e).
 
 ## Authors
-[Erica Clower](mailto:eclower@aptech.com)  
+[Erica Clower](mailto:erica@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]
