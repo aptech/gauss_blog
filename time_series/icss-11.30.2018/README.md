@@ -18,7 +18,7 @@ The **icss** library includes:
 The **icss** library can be easily installed using the **GAUSS Application Installer** , as shown below:
 
 1. Download the zipped folder [icss.zip](icss.zip).
-2. Use the [GAUSS Application Installer](https://www.aptech.com/support/installation/using-the-applications-installer-wizard/) by selecting **Tools>Install Application**.
+2. Use the [GAUSS Application Installer](https://www.aptech.com/support/installation/using-the-applications-installer-wizard/) by selecting **Tools > Install Application**.
 3. Before using the functions created by **icss** you will need to load the newly created **icss** library. This can be done in a number of ways:
   *   Navigate to the **Library Tool View Window** and click the small wrench located next to the **icss** library. Select **Load Library**.
   *  Enter `library icss` on the command line.
