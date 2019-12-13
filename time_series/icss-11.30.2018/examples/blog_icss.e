@@ -53,14 +53,14 @@ print "Number of breaks" nbr;
 print "Break positions" cpr';
 
 struct plotControl myplot;
-myplot = setMarketingPlot("xy");
+myplot = projPlotDefaults("xy");
 
 plotSetTitle(&myPlot, "S&P 500 Weekly Returns", "Lato Thin", 18);
 
 date_str = dttostr(date_vec, "YYYY-MO");
 
 //Place one tic label every 4 x-values
-ticInterval = 10;
+ticInterval = 50;
 plotSetXTicInterval(&myPlot, ticInterval);
 
 plotXY(myPlot, seqa(1,1,rows(e)), e);
@@ -81,21 +81,6 @@ plotAddXY(myPlot, cpr[4]|cpr[4], y_min|y_max);
 plotSetLineColor(&myPlot, "#8da0cb");
 plotAddXY(myPlot, cpr[5]|cpr[5], y_min|y_max);
 
-//Declare 'myAnnotation' to be an instance of a plotAnnotation structure
-struct plotAnnotation myAnnotation;
-
-//Fill in 'myAnnotation' with default values
-myAnnotation = annotationGetDefaults();
-
-//Set the color to be light gray
-//and make it 40% opaque
-annotationSetBkd(&myAnnotation, "light gray", 0.2);
-
-//Set font in textbox
-annotationSetFont(&myAnnotation, "Lato Thin", 12, "black");
-
-//Turn off box outline
-annotationSetLineThickness(&myAnnotation, 0);
 
 text = "ICSS test finds 4 breaks in variance:
         <br/>May 21st, 1987
@@ -103,6 +88,54 @@ text = "ICSS test finds 4 breaks in variance:
         <br/>November 11th, 1987
         <br/>May 15th, 1992";
 
-x_start = 450;
+x_start = 445;
 y_start = 0.1;
-plotAddTextbox(myAnnotation, text, x_start, y_start);
+plotAddTextbox(grayTextSettings(), text, x_start, y_start);
+
+/*****************************************************************************/
+
+
+proc (1) = projPlotDefaults(typeGraph);
+    local title_font_size, font_name, axis_label_size;
+    // Set up graph
+    struct plotControl myPlot;
+    myPlot = plotGetDefaults(typeGraph);
+    
+    // Set up font
+    title_font_size = 18;
+    font_name = "helvetica neue";
+    axis_label_size = 14;
+    
+    
+    // Title
+    plotSetTitle(&myPlot, "", font_name, title_font_size);
+    
+    plotSetYLabel(&myPlot, "", font_name, axis_label_size);
+    
+    // Set legend background to be completely transparent
+    plotSetLegendBkd(&myPlot, 0);
+    
+    plotSetTicLabelFont(&myPlot, font_name, 12);
+    plotSetLegendFont(&myPlot, font_name, 12);
+    
+    retp(myPlot);
+endp;
+
+
+proc (1) = grayTextSettings();
+    local font_size, font_name;
+    struct plotAnnotation mytextbox;
+
+    // Set up font
+    font_size = 10;
+    font_name = "helvetica neue";
+    
+    mytextbox = annotationGetDefaults();
+    annotationSetBkd(&mytextbox, "#DDDDDD", 0.1);
+    annotationSetFont(&mytextbox, font_name, font_size, "#55555");
+    
+    annotationSetLineThickness(&mytextbox, 0);
+    //annotationSetLineColor(&mytextbox, "#555555");
+    
+    retp(mytextbox);
+endp;
