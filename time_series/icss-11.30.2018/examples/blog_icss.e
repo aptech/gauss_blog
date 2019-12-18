@@ -88,8 +88,8 @@ text = "ICSS test finds 4 breaks in variance:
         <br/>November 11th, 1987
         <br/>May 15th, 1992";
 
-x_start = 445;
-y_start = 0.1;
+x_start = 400;
+y_start = -0.1;
 plotAddTextbox(grayTextSettings(), text, x_start, y_start);
 
 /*****************************************************************************/
@@ -127,7 +127,7 @@ proc (1) = grayTextSettings();
     struct plotAnnotation mytextbox;
 
     // Set up font
-    font_size = 10;
+    font_size = 8;
     font_name = "helvetica neue";
     
     mytextbox = annotationGetDefaults();
