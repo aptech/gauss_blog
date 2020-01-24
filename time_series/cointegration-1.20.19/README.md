@@ -9,8 +9,12 @@ This code accompanies the Aptech blog [A Guide to Conducting Cointegration Tests
 ### Prerequisites
 The program files require a working copy of **GAUSS 18+**. Many can be run on earlier versions with some small revisions.
 
+Libraries: [Time Series MT (TSMT)](https://store.aptech.com/gauss-applications-category/time-series-mt.html), [coint](https://store.aptech.com/third-party-applications-category/coint-2-1-co-integrated-systems.html), and [TSPDLIB](https://github.com/aptech/tspdlib)
+
+All libraries can be installed using the [GAUSS package manager](https://www.aptech.com/blog/gauss-package-manager-basics/) for [GAUSS 20+](https://www.aptech.com/blog/gauss-20-initial-release/).
+
 ## Example files
-Three program files are included:
+The following examples are provided:
 1. [1_time_series_plot.e](examples/1_time_series_plot.e) - This file contains an example for plotting time series data using the [`plotTS`](https://docs.aptech.com/gauss/CR-plotTS.html) function in GAUSS.
 2. [2_unitroot_tsmt.e](examples/2_unitroot_tsmt.e) - This file replicates the unit root testing performed in the blog using unit root tests from the [TSMT](https://store.aptech.com/gauss-applications-category/time-series-mt.html) package.
 3. [3_unitroot_tspdlib.e](examples/3_unitroot_tspdlib.e) - This file replicates the unit root testing performed in the blog using unit root tests from the [TSPDLIB](https://github.com/aptech/tspdlib) library.
