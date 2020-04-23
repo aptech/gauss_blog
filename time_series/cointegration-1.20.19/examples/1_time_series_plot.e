@@ -10,10 +10,11 @@ cls;
 fname2 = __FILE_DIR $+ "commodity_mon.dat";
 
 
-// Load data
-data = loadd(fname2);
-y_test_real = data[ ., 1 3];
-y_test_nominal = data[ ., 2 4];
+// Load real prices data
+y_test_real = loadd(fname2, "P_gold_real + P_silver_real");
+
+// Load nominal prices
+y_test_nominal = loadd(fname2, "P_gold_nominal + P_silver_nominal");
 
 // Start date
 dtstart = 1915;
@@ -31,26 +32,28 @@ plotSetXTicInterval(&tsPlot, 12*20, 1920);
 // Display only 4 digit year on 'X' tick labels
 plotSetXTicLabel(&tsPlot, "YYYY");
 
-plotCanvasSize("px", 1600|1200);
+plotCanvasSize("px", 800|600);
+
+plotSetYAxisLabel(&tsPlot, "USD/oz.");
 
 // Set Title
-plotSetTitle(&tsPlot, "Monthly Closing Gold Real Prices (USD/ounce)");
+plotSetTitle(&tsPlot, "Monthly Closing Gold Real Prices");
 plotLayout(2, 1, 1);
 plotTS(tsPlot, dtstart, freq, y_test_real[., 1]);
 
 // Set Title
-plotSetTitle(&tsPlot, "Monthly Closing Silver Real Prices (USD/ounce)");
+plotSetTitle(&tsPlot, "Monthly Closing Silver Real Prices");
 plotLayout(2, 1, 2);
 plotTS(tsPlot, dtstart, freq, y_test_real[., 2]);
 
 plotOpenWindow();
 // Set Title
-plotSetTitle(&tsPlot, "Monthly Closing Nominal Gold Prices (USD/ounce)");
+plotSetTitle(&tsPlot, "Monthly Closing Nominal Gold Prices");
 plotLayout(2, 1, 1);
 plotTS(tsPlot, dtstart, freq, y_test_nominal[., 1]);
 
 // Set Title
-plotSetTitle(&tsPlot, "Monthly Closing Nominal Silver Prices (USD/ounce)");
+plotSetTitle(&tsPlot, "Monthly Closing Nominal Silver Prices");
 plotLayout(2, 1, 2);
 plotTS(tsPlot, dtstart, freq, y_test_nominal[., 2]);
 
@@ -63,9 +66,9 @@ proc (1) = projPlotDefaults();
     myPlot = plotGetDefaults("xy");
     
     // Set up font
-    title_font_size = 18;
+    title_font_size = 16;
     font_name = "helvetica neue";
-    axis_label_size = 14;
+    axis_label_size = 12;
     
     // Title
     plotSetTitle(&myPlot, "", font_name, title_font_size);
@@ -75,8 +78,8 @@ proc (1) = projPlotDefaults();
     // Set legend background to be completely transparent
     plotSetLegendBkd(&myPlot, 0);
     
-    plotSetTicLabelFont(&myPlot, font_name, 12);
-    plotSetLegendFont(&myPlot, font_name, 12);
+    plotSetTicLabelFont(&myPlot, font_name, 10);
+    plotSetLegendFont(&myPlot, font_name, 10);
     
     retp(myPlot);
 endp;

@@ -10,22 +10,21 @@ cls;
 library tsmt;
 
 // Set filename (with path) for loading
-fname = __FILE_DIR $+ "tscoint.dat";
+fname2 = __FILE_DIR $+ "commodity_mon.dat";
 
-// Load data
-data = loadd(fname);
-y = data[., 1 4];
+// Load real prices data
+y_test_real = loadd(fname2, "P_gold_real + P_silver_real");
 
 // Test first variable for structural breaks
 // Load all observations from the dataset
-y1 = y[., 1];
-y2 = y[., 2];
+y1 = y_test_real[., 1];
+y2 = y_test_real[., 2];
 
 // Specify regressors
 // Time varying coefficients in z
 // This vector of ones specifies a
-
-z = ones(rows(y), 1);
+// constant
+z = ones(rows(y1), 1);
  
 // No time invariant regressors
 x = 0;
@@ -57,20 +56,20 @@ sbc0.maxIters = 40;
 sbc0.graphOn = 1;
  
 // Start Date
-sbc0.dtstart = dtdate(1961, 01, 01, 0, 00, 00);
+sbc0.dtstart = dtdate(1915, 01, 01, 0, 00, 00);
  
 // Annual frequency of data
-sbc0.frequency = 4;
+sbc0.frequency = 12;
 
-//Declare output structure
+// Declare output structure
 struct sbOut out1;
  
-//Estimate model
+// Estimate model
 out1 = sbreak(y1, z, x, sbc0);
 
 plotOpenWindow();
-//Declare output structure
+// Declare output structure
 struct sbOut out2;
  
-//Estimate model
+// Estimate model
 out2 = sbreak(y2, z, x, sbc0);

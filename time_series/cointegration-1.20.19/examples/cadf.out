@@ -1,0 +1,11 @@
+True model is not cointegrated.
+ADF statistic for cointegration
+Autoregressive parameter =       0.86831410 
+ADF t-statistic; 5% critical value   =       -2.2771889       -2.8198000 
+Accept null of no-cointegration.
+ 
+True model is cointegrated.
+ADF statistic for cointegration
+Autoregressive parameter =      -0.30175498 
+ADF t-statistic; 5% critical value   =       -4.6402719       -2.8198000 
+Reject null of no-cointegration.

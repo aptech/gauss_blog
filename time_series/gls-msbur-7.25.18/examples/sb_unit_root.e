@@ -132,7 +132,7 @@ kmax = 0;
 kmin = 0;
 
 // Set the model
-model = 3|1|3;
+model = 3|1|2;
 
 // Set up estimation
 estimation = 1|20; 
@@ -149,7 +149,7 @@ estimation = 1|20;
 T = rows(housing_wa[., 4]);
 
 // Set up lambda
-lam=(min_tb/T)|zeros(2, 1); 
+lam=(min_tb/T)|zeros(5-rows(min_tb), 1); 
 
 // Call the msbur routine
 {critical_msb, critical_mza, critical_mzt, critical_pt} = msbur_rs(lam, cbar);
@@ -175,7 +175,7 @@ print "MZT test " mzt "cv(5%): " critical_mzt[3];
 T = rows(y_seattle);
 
 // Set up lambda
-lam=(min_tb/T)|zeros(2, 1);
+lam=(min_tb/T)|zeros(5-rows(min_tb), 1); 
 
 // Call the msbur routine
 {critical_msb, critical_mza, critical_mzt, critical_pt} = msbur_rs(lam, cbar);
@@ -204,7 +204,7 @@ print "MZT test " mzt "cv(5%): " critical_mzt[3];
 T = rows(housing_wa[., 4]);
 
 // Set up lambda
-lam = (min_tb/T)|zeros(2, 1);
+lam = (min_tb/T)|zeros(5-rows(min_tb), 1); 
 
 // Call the msbur routine
 {critical_msb, critical_mza, critical_mzt, critical_pt} = msbur_rs(lam, cbar);
@@ -232,7 +232,7 @@ print "MZT test " mzt "cv(5%): " critical_mzt[3];
 
 // Set time dimension
 T = rows(y_phoenix);
-lam=(min_tb/T)|zeros(2, 1); @ Only one break @
+lam=(min_tb/T)|zeros(5-rows(min_tb), 1); 
 
 // Call the msbur routine
 {critical_msb, critical_mza, critical_mzt, critical_pt} = msbur_rs(lam, cbar);

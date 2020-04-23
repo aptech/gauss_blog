@@ -12,10 +12,8 @@ library tspdlib;
 // Set filename (with path) for loading
 fname2 = __FILE_DIR $+ "commodity_mon.dat";
 
-// Load data
-data = loadd(fname2);
-y_test_real = data[ ., 1 3];
-y_test_nominal = data[ ., 2 4];
+// Load real prices data
+y_test_real = loadd(fname2, "P_gold_real + P_silver_real");
 
 //Number of observations
 T = rows(y_test_real);
