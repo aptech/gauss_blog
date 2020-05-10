@@ -1,0 +1,41 @@
+// Clear data from workspace
+new;
+
+/*
+** Data
+*/ 
+
+// Load variables
+X = loadd("cook-county-covid.csv", "date + cases + deaths");
+
+// Convert easy-to-read string date to posix date for graph
+first_transmission_dt = strcToPosix("02/26/2020", "%m/%d/%Y");
+first_transmission_dt = reshape(first_transmission_dt, 2, 1);
+
+// Y-range for line
+first_transmission_line_range = { 0, 35 };
+
+/*
+** Plot settings
+*/
+
+// Declare plotControl structure and fill
+// with newly created covid default settings
+struct plotControl myPlot;
+myPlot = plotGetDefaults("covid");
+
+// Set title text
+plotSetTitle(&myPlot, "COVID-19 in Cook County");
+
+/*
+** Draw plot
+*/
+
+// Set canvas size
+plotCanvasSize("px", 520 | 400);
+
+// Draw graph with our desired settings
+plotTSHF(myPlot, X[.,1], "months", X[.,2 3]);
+
+// Add line at first transmission date
+plotAddTSHF(first_transmission_dt, "months", first_transmission_line_range);
