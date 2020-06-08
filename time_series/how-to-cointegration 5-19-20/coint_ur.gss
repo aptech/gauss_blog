@@ -1,0 +1,98 @@
+/*
+** This example program tests for unit roots in the data
+** using the standard ADF unit root test and the 
+** ADF unit root test with one structural break
+*/
+new;
+cls; 
+library tspdlib;
+
+// Set fname to name of dataset
+fname = "nelsonplosser.dta";
+
+// Load three variables from the dataset
+coint_data = packr(loadd(fname, "year + m + bnd + sp500"));
+
+/*
+** Maximum number of lags for ds; 
+** 0=no lags
+*/
+pmax = 12;                 
+
+/*
+** Information Criterion: 
+** 1=Akaike; 
+** 2=Schwarz; 
+** 3=t-stat sign.
+*/
+ic = 3;          
+
+/*
+** 0 = No deterministic component
+** 1 = With constant
+** 2 = With constant and trend
+*/
+model = 2;
+
+// Trimming rate
+trimm = 0.05;    
+
+/*
+** ADF Testing
+*/
+// Money stock test with 
+// constant and trend
+{ ADFtauMoney, ADFpMoney, cvADFMoney } = ADF(coint_data[., 2], model, pmax, ic);
+
+"Money Stock ADF &  lag with constant                  ";; ADFtauMoney ;; cvADFMoney ;; ADFpMoney ; 
+
+// Bond value test with 
+// constant and trend
+{ ADFtauBond, ADFpBond, cvADFBond } = ADF(coint_data[., 3], model, pmax, ic);
+
+"S&P 500 ADF &  lag with constant                  ";; ADFtauBond ;; cvADFBond ;; ADFpBond ; 
+
+// Stock index price 
+// constant and trend
+{ ADFtauSP, ADFpSP, cvADFSP } = ADF(coint_data[., 4], model, pmax, ic);
+
+"SP Yield ADF &  lag with constant                  ";; ADFtauSP ;; cvADFSP ;; ADFpSP ; 
+
+/*
+** ADF Testing with one structural break
+*/
+// Money stock test with 
+// constant and trend
+// and one structural break
+"Money Stock One break ADF test (Zivot & Andrews, 1992)";
+    { ADF_min_money, tb1_money, p_money, cv_money } = ADF_1break(coint_data[., 2], model, pmax, ic, trimm);
+    "       ADF-stat        ";;ADF_min_money;
+    "       Break date      ";;coint_data[tb1_money, 1];
+    "       Fraction        ";;tb1_money/rows(coint_data);
+    "       Lag             ";;p_money;
+    "       CV (1%, 5%, 10%)";;cv_money';
+"";
+
+// Bond value test with 
+// constant and trend
+// and one structural break
+"Bond Yield One break ADF test (Zivot & Andrews, 1992)";
+    { ADF_min_bond, tb1_bond, p_bond, cv_bond } = ADF_1break(coint_data[., 3], model, pmax, ic, trimm);
+    "       ADF-stat        ";;ADF_min_bond;
+    "       Break date      ";;coint_data[tb1_bond, 1];
+    "       Fraction        ";;tb1_bond/rows(coint_data);
+    "       Lag             ";;p_bond;
+    "       CV (1%, 5%, 10%)";;cv_bond';
+"";
+
+// Stock index price 
+// constant and trend
+// and one structural break
+"SP 500 One break ADF test (Zivot & Andrews, 1992)";
+    { ADF_min_SP, tb1_SP, p_SP, cv_SP } = ADF_1break(coint_data[., 4], model, pmax, ic, trimm);
+    "       ADF-stat        ";;ADF_min_SP;
+    "       Break date      ";;coint_data[tb1_SP, 1];
+    "       Fraction        ";;tb1_SP/rows(coint_data);
+    "       Lag             ";;p_SP;
+    "       CV (1%, 5%, 10%)";;cv_SP';
+"";

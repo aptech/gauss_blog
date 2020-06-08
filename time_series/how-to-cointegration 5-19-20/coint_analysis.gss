@@ -1,0 +1,124 @@
+/*
+** This example program tests for cointegration in the data
+** using residual based tests for cointegration. We test
+** under various assumptions of structural breaks. 
+*/
+new;
+cls; 
+library tspdlib;
+
+// Set fname to name of dataset
+fname = "nelsonplosser.dta";
+
+// Load three variables from the dataset
+coint_data = packr(loadd(fname, "year + sp500 + m + bnd"));
+
+// Define y and x matrix
+y = coint_data[., 2];
+x = coint_data[., 3 4];
+
+/*
+** Information Criterion: 
+** 1=Akaike; 
+** 2=Schwarz; 
+** 3=t-stat sign.
+*/
+ic = 2; 
+
+// Maximum number of lags 
+pmax = 12;  
+
+// Trimming rate
+trimm = 0.05;             
+
+// Long-run consistent variance estimation method
+varm = 3;
+
+// Bandwidth for kernel estimator
+bwl = round(4 * (rows(coint_data)/100)^(2/9));  
+
+format/m1/rd 8,3;
+
+/*
+** Engle-Granger test
+*/
+print ;
+"___________Engle-Granger Test---------------------------";
+"-----------Constant and Trend---------------------------";
+model = 2;
+    { tau_eg, cvADF_eg } = coint_egranger(y, x, model, pmax, ic);
+
+    "    Test         Statistic  CV(1%, 5%, 10%)";
+    "Ho: no co-integration (EG, 1987 & P0, 1990)";  
+    "   EG_ADF        ";;tau_eg   ;; cvADF_eg';
+    "";
+
+/*
+** Gregory-Hansen test
+*/
+print ;
+"___________Gregory-Hansen Test with Single Shift--------";
+"-----------Level Shift ---------------------------------";
+model = 1; 
+
+{ ADF_min_gh_1, TBadf_gh_1, Zt_min_gh_1, TBzt_gh_1, Za_min_gh_1, TBza_gh_1, cvADFZt_gh_1, cvZa_gh_1 } =
+    coint_ghansen(y, x, model, bwl, ic, pmax, varm, trimm);
+    "    Test         Statistic   TB     CV(1%, 5%, 10%)";
+    "Ho: no co-integration   (GH, 1996)";  
+    "   ADF        ";;ADF_min_gh_1;;coint_data[TBadf_gh_1, 1];;cvADFZt_gh_1';
+    "   Zt         ";;Zt_min_gh_1;; coint_data[TBzt_gh_1, 1];;cvADFZt_gh_1';
+    "   Za         ";;Za_min_gh_1;; coint_data[TBza_gh_1, 1];;cvZa_gh_1';
+
+"-----------Level Shift with Trend  ---------------------";
+model = 2; 
+
+{ ADF_min_gh_2, TBadf_gh_2, Zt_min_gh_2, TBzt_gh_2, Za_min_gh_2, TBza_gh_2, cvADFZt_gh_2, cvZa_gh_2 } =
+    coint_ghansen(y, x, model, bwl, ic, pmax, varm, trimm);
+    "    Test         Statistic   TB     CV(1%, 5%, 10%)";
+    "Ho: no co-integration   (GH, 1996)";  
+    "   ADF        ";;ADF_min_gh_2;;coint_data[TBadf_gh_2, 1];;cvADFZt_gh_2';
+    "   Zt         ";;Zt_min_gh_2;; coint_data[TBzt_gh_2, 1];;cvADFZt_gh_2';
+    "   Za         ";;Za_min_gh_2;; coint_data[TBza_gh_2, 1];;cvZa_gh_2';
+
+"-----------Regime Shift --------------------------------------------";
+model = 3; 
+
+{ ADF_min_gh_3, TBadf_gh_3, Zt_min_gh_3, TBzt_gh_3, Za_min_gh_3, TBza_gh_3, cvADFZt_gh_3, cvZa_gh_3 } =
+    coint_ghansen(y, x, model, bwl, ic, pmax, varm, trimm);
+    "    Test         Statistic   TB     CV(1%, 5%, 10%)";
+    "Ho: no co-integration   (GH, 1996)";  
+    "   ADF        ";;ADF_min_gh_3;;coint_data[TBadf_gh_3, 1];;cvADFZt_gh_3';
+    "   Zt         ";;Zt_min_gh_3;; coint_data[TBzt_gh_3, 1];;cvADFZt_gh_3';
+    "   Za         ";;Za_min_gh_3;; coint_data[TBza_gh_3, 1];;cvZa_gh_3';
+
+"-----------Regime Shift with Trend --------------------------------";
+model = 4; 
+
+{ ADF_min_gh_4, TBadf_gh_4, Zt_min_gh_4, TBzt_gh_4, Za_min_gh_4, TBza_gh_4, cvADFZt_gh_4, cvZa_gh_4 } =
+    coint_ghansen(y, x, model, bwl, ic, pmax, varm, trimm);
+    "    Test         Statistic   TB     CV(1%, 5%, 10%)";
+    "Ho: no co-integration   (GH, 1996)";  
+    "   ADF        ";;ADF_min_gh_4;;coint_data[TBadf_gh_4, 1];;cvADFZt_gh_4';
+    "   Zt         ";;Zt_min_gh_4;; coint_data[TBzt_gh_4, 1];;cvADFZt_gh_4';
+    "   Za         ";;Za_min_gh_4;; coint_data[TBza_gh_4, 1];;cvZa_gh_4';
+
+
+/*
+** Hatemi-J test
+*/
+print ;
+"___________Hatemi-J with two structural breaks----------";
+"-----------Regime and trend shift-----------------------";
+model = 3;
+
+// Two breaks
+{ ADF_min_hj, TB1adf_hj, TB2adf_hj, Zt_min_hj, TB1zt_hj, TB2zt_hj, Za_min_hj, TB1za_hj, TB2za_hj, cvADFZt_hj, cvZa_hj } =
+    coint_hatemiJ(y, x, model, bwl, ic, pmax, varm, trimm);
+    "Two breaks   (Hatemi-J, 2008)";
+    "   Test         Statistic   TB1    TB2     CV(1%, 5%, 10%)";
+    "Ho: no co-integration";  
+    "   ADF        ";;ADF_min_hj;;coint_data[TB1adf_hj, 1];;coint_data[TB2adf_hj, 1];;cvADFZt_hj';
+    "   Zt         ";;Zt_min_hj;; coint_data[TB1zt_hj, 1] ;;coint_data[TB2zt_hj, 1] ;;cvADFZt_hj';
+    "   Za         ";;Za_min_hj;; coint_data[TB1za_hj, 1] ;;coint_data[TB2za_hj, 1] ;;cvZa_hj';
+    "";
+

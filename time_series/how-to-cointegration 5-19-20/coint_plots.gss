@@ -1,0 +1,36 @@
+/*
+** This example program tests for cointegration 
+** with alternatives hypothesis up to m structural breaks
+*/
+new;
+cls; 
+library tspdlib;
+
+// Set fname to name of dataset
+fname = "nelsonplosser.dta";
+
+// Load three variables from the dataset
+datap = loadd(fname, "m + bnd + sp500");
+
+// Remove all rows with missing values
+test_data = packr(datap);
+
+// Plot time series using
+// prespecified plot profile
+struct plotcontrol mytsPlot;
+mytsPlot = plotGetDefaults("tsPlot");
+
+// Place first 'X' tick mark at 1925 25 year
+plotSetXTicInterval(&mytsPlot, 20, 1910);
+
+plotLayout(1, 3, 1);
+plotSetTitle(&mytsPlot, "M2");
+plotTS(mytsPlot, 1900, 1, test_data[., 1]);
+
+plotLayout(1, 3, 2);
+plotSetTitle(&mytsPlot, "Bond Yields");
+plotTS(mytsPlot, 1900, 1, test_data[., 2]);
+
+plotLayout(1, 3, 3);
+plotSetTitle(&mytsPlot, "S&P 500");
+plotTS(mytsPlot, 1900, 1, test_data[., 3]);
