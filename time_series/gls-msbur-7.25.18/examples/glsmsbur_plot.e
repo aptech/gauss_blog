@@ -182,8 +182,8 @@ proc (0) = addannotationbox(x_start, y_start, br_sa);
 endp;
 
 proc (1) = setMarketingPlot(plotType);
-    struct plotControl myPlot;
     
+    struct plotControl myPlot;  
     myPlot = plotGetDefaults(plotType);
     
     plotSetTitle(&myPlot, "", "Arial", 16);
@@ -194,7 +194,7 @@ proc (1) = setMarketingPlot(plotType);
     
     plotSetYLabel(&myPlot, "", "Arial", 12);
     
-   plotSetTicLabelFont(&myPlot, "Arial", 12);
+    plotSetTicLabelFont(&myPlot, "Arial", 12);
     
     retp(myPlot);
 endp;
