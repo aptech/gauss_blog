@@ -180,3 +180,21 @@ proc (0) = addannotationbox(x_start, y_start, br_sa);
     
     plotAddTextbox(myAnnotation, text, x_start, y_start);
 endp;
+
+proc (1) = setMarketingPlot(plotType);
+    struct plotControl myPlot;
+    
+    myPlot = plotGetDefaults(plotType);
+    
+    plotSetTitle(&myPlot, "", "Arial", 16);
+    
+    plotSetAxesPen(&myPlot, 2);
+    
+    plotSetXLabel(&myPlot, "", "Arial", 12);
+    
+    plotSetYLabel(&myPlot, "", "Arial", 12);
+    
+   plotSetTicLabelFont(&myPlot, "Arial", 12);
+    
+    retp(myPlot);
+endp;
