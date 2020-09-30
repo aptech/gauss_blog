@@ -8,18 +8,15 @@ Període: 1870-1994 per a 17 països (primera columna amb els anys).
 new;
 cls;
 
-library carrionlib;
-
-// Dimension
-T = 25;
+library carrionlib, pdlib;
 
 // Load data
-data = loadd(__FILE_DIR $+ "govt-deficit-oecd.csv", "Govt_deficit");
-govt_def = reshape(data, rows(data)/T, T)';
+data = loadd(__FILE_DIR $+ "govt-deficit-oecd.csv", "Year + cat(Country) + Govt_deficit");
+wide_data = pdWide(data);
 
-/*
-** Calculation of the test with 1 change to the mean
-*/
+// Delete first column which
+// contains year
+govt_def = delcols(wide_data, 1);
 
 // Set kernel
 kernel = 1;
