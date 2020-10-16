@@ -9,24 +9,21 @@ nobs = 800;
 x = rndn(nObs, 1);
 beta_real = 1.2;
 sigma2 = 4;
-y = x*beta_real + sqrt(4)*rndn(nobs, 1);
+y = x*beta_real + sqrt(sigma2)*rndn(nobs, 1);
 
 // Starting values
 theta_Start = {0.5, 0.5};
 
-//Declare 'out' to be a maxlikmtResults
-//structure to hold the estimation results
+// Perform estimation and print report
+call maxlikmtprt(maxlikmt(&lfn, theta_start, y, x));
+
+// Declare 'out' to be a maxlikmtResults
+// structure to hold the estimation results
 struct maxlikmtResults out;
 
-//Perform estimation and print report
-out = maxlikmtprt(maxlikmt(&lfn, theta_start, y, x));
-
-//Declare 'out' to be a maxlikmtResults
-//structure to hold the estimation results
-struct maxlikmtResults out2;
-
-//Perform estimation and print report
-out2 = maxlikmtprt(maxlikmt(&lfn2, theta_start, y, x));
+// Perform estimation, print report and
+// store results in 'out'
+out = maxlikmtprt(maxlikmt(&lfn2, theta_start, y, x));
 
 // Plot results with original data
 struct plotControl myPlot;
