@@ -5,7 +5,7 @@ library maxlikmt;
 rndseed 9987912;
 
 // Generate data
-nObs = 800;
+nobs = 800;
 x = rndn(nObs, 1);
 beta_real = 1.2;
 sigma2 = 4;
@@ -43,8 +43,7 @@ plotSetGrid(&myPlot, "on");
 
 // Turn on the legend
 plotSetLegend(&myPlot, "Original"$|"Estimated Line", "top left");
-myPlot.Legend.fontSize = 12;
-myPlot.Legend.font = "Arial";
+plotSetLegendFont(&myPlot, "Arial", 12);
 
 plotCanvasSize("px", 1200|600);
 
@@ -74,26 +73,29 @@ proc (1) = lfn(theta, y, x, ind);
 endp;
     
 // Write likelihood function
-// With functions
+// with analytical derivatives
+
 proc (1) = lfn2(theta, y, x, ind);
-    local beta_est, sigma2, tmp, g1, g2;
+    local beta_est, sigma2, g1, g2;
     
     beta_est = theta[1];
     sigma2 = theta[2];
-    tmp = (y - x*theta[1])^2;
     
     struct modelResults mm;
+    // Specify likelihood function
     if ind[1];
-        mm.function = -1/2*(ln(sigma2) + ln(2*pi) + (y - x*beta_est)^2/sigma2);
+        mm.function = -1/2*(ln(sigma2) + ln(2*pi) + (y - x*beta_est)^2 / sigma2);
     endif;
     
+    // Include gradients
     if ind[2];
 
-       g1 = 1/(sigma2) *((y - x*beta_est).*x);
-       g2 = -1/2*((1/sigma2) - (y - x*beta_est)^2/sigma2^2); 
-        
-       mm.gradient = g1~g2;
+       g1 = 1/sigma2 * ((y - x*beta_est) .*x);
+       g2 = -1/2 * ((1/sigma2) - (y - x*beta_est)^2 / sigma2^2); 
+       
+       // Concatenate into a (n observations)x2 matrix. 
+       mm.gradient = g1 ~ g2;
     endif;
     
     retp(mm);
-endp;   
+endp; 
