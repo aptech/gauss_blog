@@ -1,0 +1,5 @@
+Images to update:
+
+* Data management pane for changing labels
+* Changed category Type for suburb data import window
+* Data import window  
