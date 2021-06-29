@@ -24,13 +24,16 @@ for i (2, rows(price_data), 1);
     
 endfor;
 
+// Set model to include constant
+model = 1;
+
 // Check ADF
-call adf(price_data[., "price_gold"], 1);
-call adf(price_data[., "price_oil"], 1);
+call adf(price_data[., "price_gold"], model);
+call adf(price_data[., "price_oil"], model);
 
 // Call KPSS 
-call lmkpss(price_data[., "price_gold"], 1);
-call lmkpss(price_data[., "price_oil"], 1);
+call lmkpss(price_data[., "price_gold"], model);
+call lmkpss(price_data[., "price_oil"], model);
 
 /*
 **Granger-causality test
