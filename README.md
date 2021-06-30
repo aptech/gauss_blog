@@ -15,8 +15,13 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Impulse response functions](econometrics/irf-fevd-4.30.21)|["The Intuition Behind Impulse Response Functions and Forecast Error Variance Decomposition"](https://www.aptech.com/blog/the-intuition-behind-impulse-response-functions-and-forecast-error-variance-decomposition/)|05/18/2021|
+|[Panel data stationarity tests](econometrics/marginal-effects-5.2.19)|["Panel Data Stationarity Tests with Structural Breaks"](https://www.aptech.com/blog/panel-data-stationarity-test-with-structural-breaks/)|10/01/2020|
+|[Creating dummy variables](econometrics/creating-dummy-variables-6.11.20)|["How To Create Dummy Variables in GAUSS"](https://www.aptech.com/blog/how-to-create-dummy-variables-in-gauss/)|06/11/2020|
+|[Marginal effects](econometrics/marginal-effects-5.2.19)|["Marginal Effects of Linear Models with Data Transformations"](https://www.aptech.com/blog/marginal-effects-of-linear-models-with-data-transformations/)|04/10/2020|
+|[Individual effects model](econometrics/individual-effects-4.15.19)|["Panel Data Basics: One-way Individual Effects"](https://www.aptech.com/blog/panel-data-basics-one-way-individual-effects/)|04/14/2019|
 |[Difference-in-difference estimations](econometrics/did-3.28.2019)|["Introduction to Difference-in-Differences Estimation"](https://www.aptech.com/blog/introduction-to-difference-in-differences-estimation/)|03/30/2019|
-|[Panel data unit root tests with structural breaks](time_series/panel-unitroot-2.22.19)|["Panel Data, Structural Breaks and Unit Root Testing"](https://www.aptech.com/blog/how-to-conduct-unit-root-tests-in-gauss/)|02/23/2019|
+|[Panel data unit root tests with structural breaks](time_series/panel-unitroot-2.22.19)|["Panel Data, Structural Breaks and Unit Root Testing"](https://www.aptech.com/blog/panel-data-structural-breaks-and-unit-root-testing/)|02/23/2019|
 |[Unit root tests with structural breaks](time_series/unitroot-structural-break-2.16.19)|["Unit Root Tests with Structural Breaks"](https://www.aptech.com/blog/unit-root-tests-with-structural-breaks/)|02/16/2019|
 |[Quantile regression](econometrics/quantile-regression-01.20.2019)|["The Basics of Quantile Regression"](https://www.aptech.com/blog/the-basics-of-quantile-regression/)|01/20/2019|
 |[Bootstrapping](econometrics/bootstrapping-01.09.2019)|["Basic Bootstrapping in GAUSS"](https://www.aptech.com/blog/basic-bootstrapping-in-gauss/)|01/09/2019|
