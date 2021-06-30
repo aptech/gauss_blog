@@ -15,11 +15,27 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Granger causality](time_series/granger-causality-6.29.21)|["Introduction to Granger Causality"](https://www.aptech.com/blog/introduction-to-granger-causality/)|06/29/2021|
 |[Impulse response functions](econometrics/irf-fevd-4.30.21)|["The Intuition Behind Impulse Response Functions and Forecast Error Variance Decomposition"](https://www.aptech.com/blog/the-intuition-behind-impulse-response-functions-and-forecast-error-variance-decomposition/)|05/18/2021|
+|[Categorical variables](programming/categorical-variables-3.20.21)|["Easy Management of Categorical Variables"](https://www.aptech.com/blog/easy-management-of-categorical-variables/)|3/19/2021|
+|[Data Cleaning](programming/data-cleaning-gauss-12-19-2020)|["Preparing and Cleaning FRED data in GAUSS"](https://www.aptech.com/blog/preparing-and-cleaning-data-fred-data-in-gauss/)|12/23/2020|
+|[Maximum Likelihood](econometrics/maximum-likelihood-estimation-9.20.20)|["Maximum Likelihood Estimation in GAUSS"](https://www.aptech.com/blog/maximum-likelihood-estimation-in-gauss/)|10/15/2020|
 |[Panel data stationarity tests](econometrics/marginal-effects-5.2.19)|["Panel Data Stationarity Tests with Structural Breaks"](https://www.aptech.com/blog/panel-data-stationarity-test-with-structural-breaks/)|10/01/2020|
+|[Choice Modeling](https://github.com/aptech/chopitlib)|["Anchoring Vignettes and the Compound Hierarchical Ordered Probit (CHOPIT) Model"](https://www.aptech.com/blog/anchoring-vignettes-and-the-compound-hierarchical-ordered-probit-chopit-model/)|08/31/2020|
+|[Graphing](graphics/tiled-graphs-08.04.20)|["How to Create Tiled Graphs in GAUSS"](https://www.aptech.com/blog/how-to-create-tiled-graphs-in-gauss/)|08/04/2020|
+|[Basic Procedures](programming/basics-of-procedures-7.17.20)|["Basics of GAUSS Procedures"](https://www.aptech.com/blog/basics-of-gauss-procedures/)|07/17/2020|
 |[Creating dummy variables](econometrics/creating-dummy-variables-6.11.20)|["How To Create Dummy Variables in GAUSS"](https://www.aptech.com/blog/how-to-create-dummy-variables-in-gauss/)|06/11/2020|
-|[Bayesian Samplers](https://github.com/aptech/gauss-sampler-library)|["Fundamental Bayesian Samplers"](https://www.aptech.com/blog/fundamental-bayesian-samplers/)|06/11/2019|
+|[Cointegration](time_series/how-to-cointegration%205-19-20)|["How to Interpret Cointegration Test Results"](https://www.aptech.com/blog/how-to-interpret-cointegration-test-results/)|05/26/2020|
 |[Marginal effects](econometrics/marginal-effects-5.2.19)|["Marginal Effects of Linear Models with Data Transformations"](https://www.aptech.com/blog/marginal-effects-of-linear-models-with-data-transformations/)|04/10/2020|
+|[Graphing](graphics/interactive-graphics-profiles-05.07.20)|["How to Interactively Create Reusable Graphics Profiles"](https://www.aptech.com/blog/how-to-interactively-create-reusable-graphics-profiles/)|05/07/2020|
+|[Programming](programming/creating-tables-sprintf-4.12.20)|["How to Create a Simple Table with sprintf in GAUSS"](https://www.aptech.com/blog/how-to-create-a-simple-table-with-sprintf-in-gauss/)|04/10/2020|
+|[Programming](programming/optional-arguments-2.12.20)|["The Basics of Optional Arguments in GAUSS Procedures"](https://www.aptech.com/blog/the-basics-of-optional-arguments-in-gauss-procedures/)|02/12/2020|
+|[Cointegration](time_series/cointegration-1.20.19)|["A Guide to Conducting Cointegration Tests"](https://www.aptech.com/blog/a-guide-to-conducting-cointegration-tests/)|01/28/2020|
+|[Panel Data](econometrics/aggregate-panel-data-2.25.20)|["How to Aggregate Panel Data in GAUSS"](https://www.aptech.com/blog/how-to-aggregate-panel-data-in-gauss/)|11/22/2019|
+|[Unit root testing](time_series/unitroot-tests-gauss-9.24.19)|["How to Conduct Unit Root Tests in GAUSS"](https://www.aptech.com/blog/how-to-conduct-unit-root-tests-in-gauss/)|09/24/2019|
+|[Time series analysis](time_series/intro-time-series-9.13.19)|["Introduction to the Fundamentals of Time Series Data and Analysis"](https://www.aptech.com/blog/introduction-to-the-fundamentals-of-time-series-data-and-analysis/)|09/13/2019|
+|[Advanced graphing tools](graphics/mix-and-match-graphs-08.20.19)|["How to mix, match, and style different graph types"](https://www.aptech.com/blog/how-to-mix-match-and-style-different-graph-types/)|08/20/2019|
+|[Bayesian Samplers](https://github.com/aptech/gauss-sampler-library)|["Fundamental Bayesian Samplers"](https://www.aptech.com/blog/fundamental-bayesian-samplers/)|06/11/2019|
 |[Individual effects model](econometrics/individual-effects-4.15.19)|["Panel Data Basics: One-way Individual Effects"](https://www.aptech.com/blog/panel-data-basics-one-way-individual-effects/)|04/14/2019|
 |[Difference-in-difference estimations](econometrics/did-3.28.2019)|["Introduction to Difference-in-Differences Estimation"](https://www.aptech.com/blog/introduction-to-difference-in-differences-estimation/)|03/30/2019|
 |[Panel data unit root tests with structural breaks](time_series/panel-unitroot-2.22.19)|["Panel Data, Structural Breaks and Unit Root Testing"](https://www.aptech.com/blog/panel-data-structural-breaks-and-unit-root-testing/)|02/23/2019|
