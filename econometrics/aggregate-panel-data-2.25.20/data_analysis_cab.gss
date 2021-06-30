@@ -1,0 +1,287 @@
+/*
+** This first section creates data from 
+** the raw data and stores it
+** in GAUSS dataset
+*/
+
+// Loading data
+fname = "imf_cab.xlsx";
+fname2 = "cnlist_complete.xls";
+fname3 = "country_identifiers.xlsx";
+
+// Load percent current account balance
+pct_cab = loadd(fname, "Value");
+
+// Loadd dates and country codes
+dates = loaddsa(fname, "TIME");
+cty_code = loaddsa(fname, "LOCATION");
+
+// Load conversions from country name to cn
+cntry_converts = loaddsa(fname2, "country_name + ccode");
+cn_code = loadd(fname2, "cn");
+
+// Load country region identifiers data
+country_ids = loaddsa(fname3, "name + ccode + region + sub_region");
+region_code = loadd(fname3, "region_code");
+
+/*
+** Conversions using keys for ccodes 
+** and region codes
+*/
+// Convert data cty_code to numbers
+data_cn = reclassify(cty_code, cntry_converts[., 2], cn_code);
+
+// Get data region codes and names based on cty_code
+data_regnum = reclassify(cty_code, country_ids[., 2], region_code);
+
+/*
+** Conversions using keys for country names 
+** and region names
+*/
+data_names = reclassify(cty_code, cntry_converts[., 2], cntry_converts[., 1]);
+region_names = reclassify(cty_code, country_ids[., 2], country_ids[., 3]);
+
+/*
+// Numeric data
+cab_mat = data_cn~data_regnum~pct_cab;
+vnames_mat = "CN"$|"Region Code"$|"CAB";
+saved(cab_mat, "cab_mat", vnames_mat);
+
+// String data
+cab_sa = data_names$~cty_code$~region_names;
+vnames_sa = "Country"$|"Country Code"$|"Region";
+saved(cab_sa, "cab_sa", vnames_sa);
+*/
+
+// Create string labels for graphs
+label_cty = uniquesa(cty_code);
+label_cty = delif(label_cty, label_cty .$== "EA19");
+label_time = uniquesa(dates);
+// Get data region codes and names based on cty_code
+label_reg = reclassify(label_cty, country_ids[., 2], region_code);
+label_reg_dta = reclassify(label_cty, country_ids[., 2], region_code);
+
+/*
+** Aggregate current account by country code
+*/
+y1 = packr(data_cn~pct_cab);
+mean_cab_cn1 = aggregate(y1, "mean");
+median_cab_cn1 = aggregate(y1, "median");
+
+// Sort the data
+{ mean_cab_cn1, median_cab_cn1, label_cty }  = sortCABResults(mean_cab_cn1, median_cab_cn1, label_cty);
+
+/*
+** Aggregate current account by region code
+*/
+y2 = packr(data_regnum~pct_cab);
+mean_cab_reg = aggregate(y2, "mean");
+median_cab_reg = aggregate(y2, "median");
+
+// Sort the data
+{ mean_cab_reg, median_cab_reg, label_reg }  = sortCABResults(mean_cab_reg, median_cab_reg, mean_cab_reg[., 1]);
+label_reg_sa = "Oceania"$|"Americas"$|"Africa"$|"Europe"$|"Asia";
+
+/*
+** Aggregate current account by quarter
+*/
+y3 = packr(strtodt(dates, "YYYY-QQ")~pct_cab);
+mean_cab_time = aggregate(y3, "mean");
+median_cab_time = aggregate(y3, "median");
+
+// Sort the data
+{ mean_cab_time, median_cab_time, label_time }  = sortCABResults(mean_cab_time, median_cab_time, label_time);
+
+
+
+/*
+** Separate into positive and negative
+** means 
+*/
+// Positive current account balance
+e_pos = (mean_cab_cn1[., 2] .> 0);
+label_pos = selif(label_cty, e_pos);
+mean_cab_pos = selif(mean_cab_cn1[., 2], e_pos);
+median_cab_pos = selif(median_cab_cn1[., 2], e_pos);
+
+// Negative current account balance
+e_neg = (mean_cab_cn1[., 2] .<= 0);
+label_neg = selif(label_cty, e_neg );
+mean_cab_neg = selif(mean_cab_cn1[., 2], e_neg );
+median_cab_neg = selif(median_cab_cn1[., 2], e_neg);
+
+/*
+** Separate into regions 
+*/
+regions = packr(unique(label_reg));
+dummy_reg = dummy(label_reg_dta, regions);
+
+mean_cab_reg1 = selif(mean_cab_cn1[., 2], dummy_reg[., 1]);
+median_cab_reg1 = selif(median_cab_cn1[., 2], dummy_reg[., 1]);
+mean_cab_reg2 = selif(mean_cab_cn1[., 2], dummy_reg[., 2]);
+median_cab_reg2 = selif(median_cab_cn1[., 2], dummy_reg[., 2]);
+mean_cab_reg3 = selif(mean_cab_cn1[., 2], dummy_reg[., 3]);
+median_cab_reg3 = selif(median_cab_cn1[., 2], dummy_reg[., 3]);
+mean_cab_reg4 = selif(mean_cab_cn1[., 2], dummy_reg[., 4]);
+median_cab_reg4 = selif(median_cab_cn1[., 2], dummy_reg[., 4]);
+mean_cab_reg5 = selif(mean_cab_cn1[., 2], dummy_reg[., 5]);
+median_cab_reg5 = selif(median_cab_cn1[., 2], dummy_reg[., 5]);
+
+
+/*
+** Plot by positive versus negative
+*/
+// Plot control structure
+struct plotControl myPlot;
+myPlot = projBarPlotDefaults();
+
+// Set title
+plotSetTitle(&myPlot, "Current Account Balance By Country");
+
+// Set up axis labels
+plotSetXLabel(&myPlot, "% of GDP");
+
+// Set up legend
+plotSetLegend(&myPlot, "Mean"$|"Median", "top left");
+
+// Stack data 
+plotSetBar(&myPlot, 1, 0);
+
+// Positive balances
+plotBarH(myPlot, label_pos, mean_cab_pos~median_cab_pos);
+
+// Negative balances
+plotOpenWindow();
+plotBarH(myPlot, label_neg, mean_cab_neg~median_cab_neg);
+
+// Combined balances
+plotClearLayout();
+plotOpenWindow();
+
+// Set plot canvas to be 640 by 480 pixels
+plotCanvasSize("in", 12|12);
+plotBarH(myPlot, label_cty, mean_cab_cn1[., 2]~median_cab_cn1[., 2]);
+
+/*
+* Plot Mean and Median by Region
+*/
+// Plot control structure
+struct plotControl myPlot;
+myPlot = projBarPlotDefaults();
+
+// Set title
+plotSetTitle(&myPlot, "Current Account Balance By Region");
+
+// Set up axis labels
+plotSetXLabel(&myPlot, "% of GDP");
+
+// Set up legend
+plotSetLegend(&myPlot, "Mean"$|"Median", "top left");
+
+// Stack data 
+plotSetBar(&myPlot, 1, 0);
+
+plotOpenWindow();
+// Positive balances
+plotBarH(myPlot, label_reg_sa, mean_cab_reg[., 2]~median_cab_reg[., 2]);
+
+/*
+** Time series plot
+*/
+plotCanvasSize("fill");
+plotOpenWindow();
+// Plot control structure
+struct plotControl myPlot;
+myPlot = projTSPlotDefaults();
+
+// Set title
+plotSetTitle(&myPlot, "Current Account Balance");
+
+// Set up axis labels
+plotSetXLabel(&myPlot, "% of GDP");
+
+// Set up legend
+plotSetLegend(&myPlot, "Mean"$|"Median", "top left");
+
+plotTS(myPlot, minc(strtodt(dates, "YYYY-QQ")), 4, mean_cab_time[., 2]~median_cab_time[., 2]);
+
+struct plotControl myPlot2;
+myPlot2 = plotGetDefaults("xy");
+
+plotSetLineStyle(&myPlot2, 2);
+plotSetLineSymbol(&myPlot2, -1);
+plotSetLineColor(&myPlot2, "black");
+plotADDTS(myPlot2, minc(strtodt(dates, "YYYY-QQ")), 4, zeros(rows(mean_cab_time), 1));
+
+
+proc (3) = sortCABResults(mean, med, label);
+    local ind;
+    
+    // Sort data
+    ind = sortind(mean[., 2]);
+    mean = sortc(mean, 2);
+    
+    retp(mean, med[ind, .], label[ind]);
+endp;
+
+proc (1) = projBarPlotDefaults();
+    local title_font_size, font_name, axis_label_size, clrs;
+    // Set up graph
+    struct plotControl myPlot;
+    myPlot = plotGetDefaults("bar");
+    
+    // Set up font
+    title_font_size = 16;
+    font_name = "helvetica neue";
+    axis_label_size = 12;
+    
+    
+    // Title
+    plotSetTitle(&myPlot, "", font_name, title_font_size);
+    
+    plotSetYLabel(&myPlot, "", font_name, axis_label_size);
+    
+    // Set legend background to be completely transparent
+    plotSetLegendBkd(&myPlot, 0);
+    
+    plotSetTicLabelFont(&myPlot, font_name, 8);
+
+    plotSetLegendFont(&myPlot, font_name, 10);
+    
+    // Set fill style
+//    clrs = getColorPalette("Paired", 8);
+    plotSetFill(&myPlot, 2, 0.75);
+    
+    retp(myPlot);
+endp;
+
+proc (1) = projTSPlotDefaults();
+    local title_font_size, font_name, axis_label_size, clrs;
+    // Set up graph
+    struct plotControl myPlot;
+    myPlot = plotGetDefaults("xy");
+    
+    // Set up font
+    title_font_size = 16;
+    font_name = "helvetica neue";
+    axis_label_size = 12;
+    
+    
+    // Title
+    plotSetTitle(&myPlot, "", font_name, title_font_size);
+    
+    plotSetYLabel(&myPlot, "", font_name, axis_label_size);
+    
+    // Set legend background to be completely transparent
+    plotSetLegendBkd(&myPlot, 0);
+    
+    plotSetTicLabelFont(&myPlot, font_name, 8);
+
+    plotSetLegendFont(&myPlot, font_name, 10);
+    
+    plotSetXTicInterval(&myPlot, 40, 1955);
+
+    plotSetLineSymbol(&myPlot, -1);
+    
+    retp(myPlot);
+endp;

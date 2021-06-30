@@ -1,0 +1,35 @@
+weights = {1  1 135,
+           1  2 134,
+           1  3 138,
+           1  4 142,
+           1  5 144,
+           1  6 145,
+           2  1 196,
+           2  2 192,
+           2  3 182,
+           2  4 183,
+           2  5 184,
+           2  6 181,
+           3  1 143,
+           3  2 144,
+           3  3 146,
+           3  4 147,
+           3  5 145,
+           3  6 143};
+ 
+/*
+**  Find mean by person
+**  We will use the first column 
+**  as the group indicator and will find
+**  the mean of the weights
+*/ 
+ aggregate(weights[., 1 3], "mean");
+ 
+/*
+**  Find standard deviation by month
+**  We will use the second column of weights
+**  as the group indicator and will find
+**  the standard deviation of the weights
+*/ 
+aggregate(weights[., 2 3], "sd");
+ 
