@@ -1,0 +1,52 @@
+/*
+** This accompanies the blog 
+** "How to Interpret Cointegration Test Results"
+**  published on May 26th, 2021
+*/
+
+// Set fname to name of dataset
+fname = "nelsonplosser.dta";
+
+// Load three variables from the dataset
+// and remove rows with missing values
+coint_data = packr(loadd(fname, "sp500 + m + bnd"));
+
+// Define y and x matrix
+y = coint_data[., 1];
+x = coint_data[., 2 3];
+
+// Regime and trend shift
+model = 4; 
+
+/*
+** Information Criterion: 
+** 1=Akaike; 
+** 2=Schwarz; 
+** 3=t-stat sign.
+*/
+ic = 2; 
+
+// Maximum number of lags 
+pmax = 12;  
+
+/*
+** Long run variance computation
+** 1 = iid
+** 2 = Bartlett
+** 3 = Quadratic Spectral (QS);
+** 4 = SPC with Bartlett /see (Sul, Phillips & Choi, 2005)
+** 5 = SPC with QS;
+** 6 = Kurozumi with Bartlett
+** 7 = Kurozumi with QS
+*/ 
+varm = 1;
+
+// Bandwidth for variance 
+bwl=1;
+
+// Data trimming
+trimm=0.1;
+
+// Perform cointegration test
+{ ADF_min_gh, TBadf_gh, Zt_min_gh, TBzt_gh, Za_min_gh, TBza_gh, cvADFZt_gh, cvZa_gh } =
+    coint_ghansen(y, x, model, bwl, ic, pmax, varm, trimm);
