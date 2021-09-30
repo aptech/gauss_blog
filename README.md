@@ -20,7 +20,7 @@ Installation instructions for the individual codes are provided in blog-specific
 |[Categorical variables](programming/categorical-variables-3.20.21)|["Easy Management of Categorical Variables"](https://www.aptech.com/blog/easy-management-of-categorical-variables/)|3/19/2021|
 |[Data Cleaning](programming/data-cleaning-gauss-12-19-2020)|["Preparing and Cleaning FRED data in GAUSS"](https://www.aptech.com/blog/preparing-and-cleaning-data-fred-data-in-gauss/)|12/23/2020|
 |[Maximum Likelihood](econometrics/maximum-likelihood-estimation-9.20.20)|["Maximum Likelihood Estimation in GAUSS"](https://www.aptech.com/blog/maximum-likelihood-estimation-in-gauss/)|10/15/2020|
-|[Panel data stationarity tests](econometrics/marginal-effects-5.2.19)|["Panel Data Stationarity Tests with Structural Breaks"](https://www.aptech.com/blog/panel-data-stationarity-test-with-structural-breaks/)|10/01/2020|
+|[Panel data stationarity tests](econometrics/panel-data-stationarity-sb-4.17.20)|["Panel Data Stationarity Tests with Structural Breaks"](https://www.aptech.com/blog/panel-data-stationarity-test-with-structural-breaks/)|10/01/2020|
 |[Choice Modeling](https://github.com/aptech/chopitlib)|["Anchoring Vignettes and the Compound Hierarchical Ordered Probit (CHOPIT) Model"](https://www.aptech.com/blog/anchoring-vignettes-and-the-compound-hierarchical-ordered-probit-chopit-model/)|08/31/2020|
 |[Graphing](graphics/tiled-graphs-08.04.20)|["How to Create Tiled Graphs in GAUSS"](https://www.aptech.com/blog/how-to-create-tiled-graphs-in-gauss/)|08/04/2020|
 |[Basic Procedures](programming/basics-of-procedures-7.17.20)|["Basics of GAUSS Procedures"](https://www.aptech.com/blog/basics-of-gauss-procedures/)|07/17/2020|
