@@ -1,0 +1,69 @@
+new;
+cls;
+
+/*
+** Part 1
+** Basic Graph
+*/
+// Load original data
+fname = "C:/research/data/us_state_covid_cases.csv";
+covid_cases = loadd(fname, "date($date) + cat(state) + cases + cases_avg_per_100k + deaths_avg_per_100k");
+
+// Filter desired states
+covid_cases = selif(covid_cases, 
+                    rowcontains(covid_cases[., "state"], 
+                    "Florida"$|"California"$|"Arizona"$|"Washington"$|"Texas"));
+
+// Plot covid cases per 100K by state
+plotXY(covid_cases, "cases_avg_per_100k ~ date + by(state)");
+
+/*
+** Part 11
+** Making general modifications
+*/
+
+struct plotControl myPlot;
+myPlot = plotGetDefaults("xy");
+
+/*
+** Add y-axis grid lines
+*/
+plotSetYGrid(&myPlot, "on");
+//plotSetYGridPen(&myPlot, "major", 1, "Grey", 2);
+
+/*
+** Changing tick start and number
+*/
+// Display only 4 digit year on 'X' tick labels
+plotSetXTicLabel(&myPlot, "YYYY-MO");
+
+
+// Place first 'X' tick mark on March 1st, 2020
+// with ticks occurring every 3 months
+plotSetXTicInterval(&myPlot, 3, "months", asDate("2020-03-01"));
+
+// Change tic label font size
+plotSetTicLabelFont(&myPlot, "Arial", 12); 
+
+/*
+** Changing labels
+*/
+plotSetYLabel(&myPlot, "Cases per 100k", "Arial", 14);
+plotSetXLabel(&myPlot, "Date", "Arial", 14);
+
+
+// Plot covid cases per 100K by state
+plotOpenWindow();
+plotXY(myPlot, covid_cases, "cases_avg_per_100k ~ date + by(state)");
+
+/*
+** Part 111
+** Adding holiday event markers
+*/
+plotSetLegend(&myPlot, "");
+plotSetLinePen(&myPlot, 2, "Dark Grey", 2);
+
+// Fourth of July 2020
+plotAddVline(myPlot, asDate("2020-07-04"));
+
+

@@ -1,0 +1,36 @@
+new;
+
+// Set row range 
+data = loadd(__FILE_DIR $+ "SW2001_Data.xlsx", "date($Date, '%Yq%q') + Unemployment + Inflation + FFR");
+
+/*
+** Plotting data
+*/
+struct plotControl myPlot;
+myPlot = plotGetDefaults("XY");
+
+// Legend
+plotSetLegend(&myPlot, "Unemployment"$|"Inflation"$|"Federal Funds");
+
+// Set Xticks
+// Start the time series in April of 2008
+dtstart = 1965;
+
+// Set the optional 'firstLabeled' parameter
+plotSetXTicInterval(&myPlot, 40, dtstart );
+plotSetXTicLabel(&myPlot, "YYYY");
+
+// Y-label
+plotSetYLabel(&myPlot, "Percentage");   
+
+// Plot data
+plotTSHF(myPlot, data[., "Date"], "quarters", data[., 2:4]);
+
+/*
+** Granger causality
+*/
+// Standard testing
+test = 0;
+
+// Run test
+GC_out = granger(data, test);

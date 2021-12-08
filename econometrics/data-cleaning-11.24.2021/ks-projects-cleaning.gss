@@ -1,0 +1,53 @@
+new;
+cls;
+
+// Load original data
+ks_projects = loadd("D:/development/GitHub/gauss-data-management/data/ks-projects-201801.csv", "ID + str(name) + cat(category) + cat(main_category) + date($deadline) + date($launched) + pledged + cat(state) + backers + cat(country) + usd pledged + usd_pledged_real + usd_goal_real");
+ks_projects = selif(ks_projects, ks_projects[., "launched"] .>= "2015-01-01");
+
+// Check for unique observations
+isunique(ks_projects, "ID"); 
+
+// Check frequency of the country category
+frequency(ks_projects, "country"); 
+
+// Rename N,0" category label
+ks_projects[., "country"] = strreplace(ks_projects[., "country"], "N,0\"", "N_0"); 
+
+// Recheck the frequency
+frequency(ks_projects, "country")
+
+// Summary statistics
+dstatmt(ks_projects); 
+
+// Mean pledges across categories
+aggregate(ks_projects[., "usd_pledged_real" "main_category"], "mean", "main_category")
+
+// Sort aggregations
+sortc(aggregate(ks_projects[., "usd_pledged_real" "main_category"], "mean", "main_category"), 2);
+
+// Generate total time variable
+total_time = timeDiffPosix(ks_projects[., "deadline"], ks_projects[., "launched"], "days");
+ks_projects = ks_projects~asDF(total_time, "Total Time");
+
+/*
+** Data Visualizations
+*/
+plotScatter(ks_projects, "usd_pledged_real ~ Total Time");
+
+// Filter observations with no pledges
+ks_projects = selif(ks_projects, (ks_projects[., "usd_pledged_real"] .!= 0));
+
+// Create sequence of percentiles
+e = seqa(0.1, .1, 10);
+
+// Compute quantiles
+quantile(ks_projects[., "usd_pledged_real"], e);
+
+// Filter our data to look at
+// data between 10% and 50% 
+ks_projects = selif(ks_projects, 
+                   (ks_projects[., "usd_pledged_real"] .> 12 .and ks_projects[., "usd_pledged_real"] .< 1000));
+                    
+// Histogram of remaining data
+plotHist(ks_projects[., "usd_pledged_real"], 100); 
