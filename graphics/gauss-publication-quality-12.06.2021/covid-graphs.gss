@@ -1,6 +1,8 @@
 new;
 cls;
 
+plotCanvasSize("px", 753|566);
+
 /*
 ** Part 1
 ** Basic Graph
@@ -28,8 +30,8 @@ myPlot = plotGetDefaults("xy");
 /*
 ** Add y-axis grid lines
 */
-plotSetYGrid(&myPlot, "on");
-//plotSetYGridPen(&myPlot, "major", 1, "Grey", 2);
+// Turn on y-axis grid
+plotSetYGridPen(&myPlot, "major", 1, "Light Grey", 1);
 
 /*
 ** Changing tick start and number
@@ -43,13 +45,13 @@ plotSetXTicLabel(&myPlot, "YYYY-MO");
 plotSetXTicInterval(&myPlot, 3, "months", asDate("2020-03-01"));
 
 // Change tic label font size
-plotSetTicLabelFont(&myPlot, "Arial", 12); 
+plotSetTicLabelFont(&myPlot, "Arial", 11); 
 
 /*
 ** Changing labels
 */
-plotSetYLabel(&myPlot, "Cases per 100k", "Arial", 14);
-plotSetXLabel(&myPlot, "Date", "Arial", 14);
+plotSetYLabel(&myPlot, "COVID cases per 100k", "Arial", 12);
+plotSetXLabel(&myPlot, "Date");
 
 
 // Plot covid cases per 100K by state
@@ -60,10 +62,80 @@ plotXY(myPlot, covid_cases, "cases_avg_per_100k ~ date + by(state)");
 ** Part 111
 ** Adding holiday event markers
 */
+// Do not add vertical lines to legend
 plotSetLegend(&myPlot, "");
-plotSetLinePen(&myPlot, 2, "Dark Grey", 2);
 
-// Fourth of July 2020
-plotAddVline(myPlot, asDate("2020-07-04"));
+// Set the line width to be 2 pxs
+// the line color to be "Dark Grey"
+// and the line to be dashed
+plotSetLinePen(&myPlot, 3, "#555555", 2);
+
+// Create string array to 
+// add independence day
+ind_day = asDate("2020-07-04"$|"2021-07-04");
+           
+// Add holidays to graph
+plotAddVline(myPlot, ind_day);
 
 
+/*
+** Part 1V
+** Add bar for holiday period
+** from Thanksgiving 2020
+** to New Years 2021
+*/
+
+// Create plotControl structure with bar settings
+struct plotControl plt;
+plt = plotGetDefaults("bar");
+
+plotSetFill(&plt, 1, 0.20, "gray");
+
+plotSetLegend(&plt, "Winter<br>Holidays");
+
+// Add a vertical bar
+plotAddVBar(plt, asDate("2020-11-26"), asDate("2021-01"));
+
+
+
+// Formatting the text
+/*
+** Declare 'myAnnotation' to be an instance of a plotAnnotation
+** structure and fill it in with default values
+*/
+struct plotAnnotation myAnnotation;
+myAnnotation = annotationGetDefaults();
+
+// Set up the font style
+annotationSetFont(&myAnnotation, "arial", 14, "black");
+
+// Turn off the border
+annotationSetLineThickness(&myAnnotation, 0);
+
+// Add the text
+plotAddTextBox("&larr; Independence Day", asDate("2020-07-04"), 90);
+
+
+
+///*
+//** Part 1V
+//** Adding notes to our graph
+//*/
+
+//// Formatting the text
+///*
+//** Declare 'myAnnotation' to be an instance of a plotAnnotation
+//** structure and fill it in with default values
+//*/
+//struct plotAnnotation myAnnotation;
+//myAnnotation = annotationGetDefaults();
+
+//// Set up the font style
+//annotationSetFont(&myAnnotation, "arial", 14, "black");
+
+//// Turn off the border
+//annotationSetLineThickness(&myAnnotation, 0);
+
+//// Add the text
+//plotAddTextBox("&larr; Independence Day", asDate("2020-07-04"), 90);
+//end;
