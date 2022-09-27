@@ -1,0 +1,170 @@
+// Load data
+dpri = loadd("D:/development/GitHub/gauss_blog/time_series/svar-conditional-heteroscedasticity-9-22/dpri.xlsx", "date($X1) + pri_s + gop + wip + rspri");
+dpri = dfname(move(dpri), "Date", "X1");
+
+// Filter data
+dpri = selif(dpri, dpri[., "Date"] .>= "1970");
+
+/**********************************************************************
+** Plot PRI data
+***********************************************************************/
+
+// Set up plot
+struct plotControl plt;
+plt = plotGetDefaults("xy");
+
+plotCanvasSize("px", 800|600);
+
+// Set fonts
+plotSetFonts(&plt, "title", "Arial", 18);
+plotSetFonts(&plt, "xticks yticks", "Arial", 12);
+plotSetFonts(&plt, "xaxis yaxis", "Arial", 14);
+
+// Plot set x-axis
+plotSetXLabel(&plt, "Year");
+plotSetYLabel(&plt, "PRI");
+plotSetTitle(&plt, "US-China Political Relationship Index");
+
+// Plot original data
+plotXY(plt, dpri, "pri_s~Date");
+
+// Reset plotControl to default bar settings
+plt = plotGetDefaults("bar");
+
+// Bar fill: solid, 15% opaque and gray
+plotSetFill(&plt, 1, 0.15, "gray");
+plotSetLinePen(&plt, 0);
+
+// Adding in event bars
+plotAddVBar(plt, asDate("1971-03"), asDate("1972-03"));
+plotAddVBar(plt, asDate("1978-11"), asDate("1980-01"));
+plotAddVBar(plt, asDate("1989-02"), asDate("1990-01"));
+plotAddVBar(plt, asDate("1996-08"), asDate("1998-07"));
+plotAddVBar(plt, asDate("1999-01"), asDate("1999-07"));
+plotAddVBar(plt, asDate("2016"), asDate("2020"));
+
+
+// Annotations settings
+struct plotAnnotation pltAnn;
+pltAnn = annotationGetDefaults();
+
+// Set annotation font
+annotationSetFont(&pltAnn, "Arial", 10, "black");
+
+// Set line thickness to 1 pixel
+annotationSetLineThickness(&pltAnn, 0);
+
+// Set textbox transparancy
+annotationSetBkd(&pltAnn, "white", 0);
+
+// First annotation
+// Create text for textbox
+box_text = "Kissinger<br> trip.<br>Nixon's visit.";
+
+x_start = asDate("1972-03");
+y_start = 1.75;
+
+// Add textbox to the (4,3) location on the last draw graph
+plotAddTextbox(pltAnn, box_text, x_start, y_start);
+
+// First annotation
+// Create text for textbox
+box_text = "Agreement on<br> normalization.<br>Deng's US visit.";
+
+x_start = asDate("1980-01");
+y_start = -1;
+
+// Add textbox to the (4,3) location on the last draw graph
+plotAddTextbox(pltAnn, box_text, x_start, y_start);
+
+// Third annotation
+// Create text for textbox
+box_text = "Tiananmen<br> Square.";
+
+x_start = asDate("1990-02");
+y_start = 1.5;
+
+// Add textbox to the (4,3) location on the last draw graph
+plotAddTextbox(pltAnn, box_text, x_start, y_start);
+
+// Fourth annotation
+// Create text for textbox
+box_text = "Zemin's<br>US visit.<br>Clinton's <br>China visit.";
+
+x_start = asDate("1990-02");
+y_start = -1.5;
+
+// Add textbox to the (4,3) location on the last draw graph
+plotAddTextbox(pltAnn, box_text, x_start, y_start);
+
+// Fourth annotation
+// Create text for textbox
+box_text = "Bombing of Chinese<br> embassy in Belgrade.";
+
+x_start = asDate("1999-07");
+y_start = -1.5;
+
+// Add textbox to the (4,3) location on the last draw graph
+plotAddTextbox(pltAnn, box_text, x_start, y_start);
+
+// Fifth annotation
+// Create text for textbox
+box_text = "Trump<br> trade war.";
+
+x_start = asDate("2011-01");
+y_start = 0.5;
+
+// Add textbox to the (4,3) location on the last draw graph
+plotAddTextbox(pltAnn, box_text, x_start, y_start);
+
+/**********************************************************************
+** Plot oil market data
+***********************************************************************/
+
+
+
+// Set up plot
+struct plotControl plt2;
+plt2 = plotGetDefaults("xy");
+
+//plotCanvasSize("px", 1200|800);
+
+// Set fonts
+plotSetFonts(&plt2, "title", "Arial", 18);
+plotSetFonts(&plt2, "xticks yticks", "Arial", 12);
+plotSetFonts(&plt2, "xaxis yaxis", "Arial", 14);
+
+// Plot set x-axis
+plotSetXLabel(&plt, "Year");
+
+plotOpenWindow();
+
+plotLayout(2, 1, 1);
+plotSetTitle(&plt2, "Global Oil Market");
+plotSetLegend(&plt2, "Supply"$|"Demand", "Left");
+
+plotSetYTicInterval(&plt2, 30, 30);
+plotXY(plt2, dpri[., "Date"], dpri[., "gop"]~dpri[., "wip"]);
+
+//plotLayout(3, 1, 2);
+//plotSetTitle(&plt2, "Global Oil Demand");
+//plotXY(plt2, dpri[., "Date"], dpri[., "wip"]);
+
+// Set up plot
+struct plotControl plt3;
+plt3 = plotGetDefaults("xy");
+
+// Set fonts
+plotSetFonts(&plt3, "title", "Arial", 18);
+plotSetFonts(&plt3, "xticks yticks", "Arial", 12);
+plotSetFonts(&plt3, "xaxis yaxis", "Arial", 14);
+plotSetFonts(&plt3, "legend", "Arial", 12, "black");
+
+plotLayout(2, 1, 2);
+plotSetTitle(&plt3, "Real Oil Price");
+
+plotSetYTicInterval(&plt3, 20, 20);
+plotXY(plt3, dpri[., "Date"], dpri[., "rspri"]);
+
+// Adding in event bars
+plotClearLayout();

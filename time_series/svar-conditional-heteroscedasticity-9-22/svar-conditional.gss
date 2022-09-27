@@ -1,0 +1,61 @@
+new;
+
+/*
+** Perform import
+*/
+wilshire5000 = loadd("D:/development/GitHub/gauss_blog/time_series/svar-conditional-heteroscedasticity-9-22/WILL5000INDFC.csv", "date($DATE) + WILL5000INDFC");
+wilshire5000 = packr(wilshire5000);
+wilshire5000 = selif(wilshire5000, wilshire5000[., "DATE"] .>= "1990-01-02");
+
+/*
+** Rename column headers
+*/
+wilshire5000 = dfname(move(wilshire5000), "date"$|"wilshire", "DATE"$|"WILL5000INDFC");
+
+l_wilshire = ln(wilshire5000[2:rows(wilshire5000), "wilshire"]);
+pct_change = l_wilshire[2:rows(l_wilshire)] - l_wilshire[1:rows(l_wilshire)-1];
+
+// Set up plot
+struct plotControl plt;
+plt = plotGetDefaults("xy");
+
+plotCanvasSize("px", 800|600);
+
+// Set fonts
+plotSetFonts(&plt, "title", "Arial", 16);
+plotSetFonts(&plt, "xticks yticks", "Arial", 12);
+plotSetFonts(&plt, "xaxis yaxis", "Arial", 14);
+
+// Plot set x-axis
+plotSetXLabel(&plt, "Year");
+plotSetYLabel(&plt, "Percent per day");
+plotSetTitle(&plt, "Percentage Change in Daily Values<br> of Wilshire 5000 Stock Price Index");
+
+// Create an X-tick label every 15 seconds
+// Set the first tick label at:
+// October 31st, 2008 at 45 seconds after midnight
+first_label = wilshire5000[22, "date"];
+plotSetXTicInterval(&plt, 365*5, first_label);
+plotSetXTicLabel(&plt, "YYYY");
+
+// Plot data 
+plotTSHF(plt, wilshire5000[2:rows(l_wilshire), "date"], "days", pct_change);
+plotOpenWindow();
+
+// Set up plot
+struct plotControl plt;
+plt = plotGetDefaults("scatter");
+
+plotCanvasSize("px", 800|600);
+
+// Set fonts
+plotSetFonts(&plt, "title", "Arial", 16);
+plotSetFonts(&plt, "xticks yticks", "Arial", 12);
+plotSetFonts(&plt, "xaxis yaxis", "Arial", 14);
+
+// Plot set x-axis
+plotSetXLabel(&plt, "Year");
+plotSetYLabel(&plt, "Percent per day");
+plotSetTitle(&plt, "Percentage Change in Daily Values<br> of Wilshire 5000 Stock Price Index");
+
+plotScatter(plt, wilshire5000[2:rows(l_wilshire), "date"], pct_change);

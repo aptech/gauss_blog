@@ -1,0 +1,101 @@
+
+/*
+** Perform import
+*/
+irf_results = loadd("D:/development/GitHub/gauss_blog/time_series/svar-conditional-heteroscedasticity-9-22/irf_results.csv");
+
+plotCanvasSize("px", 800|600);
+
+irf_point = irf_results[., 2 7 12 17];
+ci68l = irf_results[., 3 8 13 18];
+ci68u = irf_results[., 4 9 14 19];
+ci90l = irf_results[., 5 10 15 20];
+ci90u = irf_results[., 6 11 16 21];
+
+plotirf2(irf_point, ci68l, ci68u, ci90l, ci90u, 79, 4, "US-China PRI"$|"Oil Supply"$|"Oil Demand"$|"Real Price of Oil", 0);
+
+proc(0)= plotirf2(iaf, iaf2 , iaf3 , ci_l, ci_u, h, k, varnames, bw);
+    local clrs, t, i;
+    
+    // Plot control structure
+    struct plotControl plt;
+    plt = plotGetDefaults("xy");
+    
+    // Set fonts
+    plotSetFonts(&plt, "title", "Arial", 18);
+    plotSetFonts(&plt, "xticks yticks", "Arial", 12);
+    plotSetFonts(&plt, "xaxis yaxis", "Arial", 14);
+    
+    // Graph color is default palette
+    // unless BW is specified
+    if bw;
+        clrs = "#8e8e8e"$|"#4f4f4f"$|"black"$|"black";
+    else;
+        clrs = "#ffcccc"$|"#ffa3a3"$|"black"$|"black";
+    endif;
+
+    // X axis
+    t = seqa(0, 1, h+1);
+    
+    // Loop through columns
+    local indx;
+
+        for i(1, k, 1);
+
+            indx = i;
+            indx;
+            
+            // Layout
+            plotLayout(ceil(k/2), 2, i);
+           
+            // Fill
+            if bw;
+                plotSetFill(&plt, 1, 0.75, clrs[1:2]);
+            else;
+                plotSetFill(&plt, 1, 0.75);
+            endif;
+            
+            // Graph title
+            plotSetTitle(&plt, varnames[i], "Arial", 18);
+            
+            // Setup legend
+            if i == 1;
+                
+                plotSetLegend(&plt, "90% MBB"$|"68% MBB"$|"point IRF"$|"", "top left");
+        
+            else;
+                
+                plotSetLegend(&plt, "off");
+                
+            endif;
+            
+            // Reset style
+            plotSetLinePen(&plt, 2,  clrs, 1|1|1|1);
+
+            if i == 1;
+                plotSetYRange(&plt, -2, 2);
+            elseif i == 3;
+                plotSetYRange(&plt, -5, 5);
+            elseif i == 4;
+                plotSetYRange(&plt, -8, 8);
+            endif;
+            
+            // Add first confidence interval area
+            plotXYFill(plt, t, ci_l[., indx], ci_u[., indx]);
+     
+            // Add the second confidence interval area
+            plotADDXYFill(t, iaf2[., indx], iaf3[., indx]);
+            
+            // Reset style
+            // Set legend
+            plotAddXY(t, iaf[., indx]);
+        
+            /*
+            ** Add horizontal line at zero
+            */
+//            plotAddHLine(0);
+
+        endfor;
+//    endfor;
+
+endp;
