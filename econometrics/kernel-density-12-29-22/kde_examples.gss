@@ -1,0 +1,107 @@
+/*
+** Kernel estimation example
+*/
+
+// Observed data
+obs = { 30, 32, 33 };
+
+// Linear support
+X_j = seqa(20, 1, 40-20+1);
+
+// Set bandwidth
+bandwidth = 10;
+
+// Calculate weighted distance
+tmp = (X_j - obs[1])./bandwidth;
+
+// Calculate kernel function
+K_1 = K(tmp);
+
+plotCanvasSize("px", 800|600);
+plotXY(X_j, K_1);
+
+/*
+** Kernel function around
+** multiple points
+*/
+// Calculate weighted distance
+tmp = (X_j - obs[2])./bandwidth;
+
+// Calculate kernel function
+K_2 = K(tmp);
+
+// Calculate weighted distance
+tmp = (X_j - obs[3])./bandwidth;
+
+// Caluculate kernel function
+K_3 = K(tmp);
+
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
+plotXY(X_j, K_1~K_2~K_3);
+
+
+
+/*
+** Kernel estimation around
+** multiple points
+*/
+k_density = K_1 + K_2 + K_3;
+
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
+plotXY(X_j, K_1~K_2~K_3~k_density);
+
+struct plotControl ctl;
+plotSetLinePen(&ctl, 2, "dark blue", 2);
+
+plotAddVLine(ctl, 30);
+
+/*
+** Kernel estimation example
+** changing the bandwidth
+*/
+
+// Set bandwidth
+bandwidth = seqa(5, 5, 3);
+
+// Set up graph
+struct plotControl ctl1;
+ctl1 = plotGetDefaults("xy");
+
+plotSetLegend(&ctl1, "h = 5"$|"h = 10"$|"h = 15");
+plotSetLegendFont(&ctl1, "Arial", 12);
+
+for j(1, rows(bandwidth), 1);
+    // Calculate kernel function
+    K_mat = zeros(rows(X_j), rows(obs));
+    h = bandwidth[j];
+    
+    for i(1, rows(obs), 1);
+        // Calculate weighted distance
+        tmp = (X_j - obs[i])./h;
+        
+        K_mat[., i] = K(tmp);
+    endfor;
+    
+    if j==1;
+        plotOpenWindow();
+        plotCanvasSize("px", 800|600);
+        tmp2 = sumc(K_mat');
+        plotXY(ctl1, X_j, sumc(K_mat'));
+    else;
+        plotAddXY(X_j, sumc(K_mat'));
+    endif;
+    
+endfor;
+
+proc (1) = K(x);
+    local K_fn;
+    
+    K_fn = 0.75*(1-x.^2);
+    K_fn = substute(K_fn, K_fn .< 2.25e-16, 0);
+    
+    retp(K_fn);
+endp;
+
+

@@ -1,0 +1,20 @@
+/*
+** Perform import
+*/
+fpath = __FILE_DIR;
+faithful = loadd(__FILE_DIR $+ "faithful.csv");
+
+// Declare plt to be a plotControl structure
+// and fill with default settings for scatter
+struct plotControl plt;
+plt = plotGetDefaults("scatter");
+
+plotSetTitle(&plt, "Old Faithful Eruptions", "arial", 18);
+
+// Axis labels
+plotSetYLabel(&plt, "Observations", "arial", 14);
+plotSetXLabel(&plt, "Wait Time");
+
+plotScatter(plt, faithful[., "observations"], faithful[., "waittime"]);
+
+
