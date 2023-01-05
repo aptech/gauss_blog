@@ -1,20 +1,67 @@
 /*
 ** Perform import
 */
-fpath = __FILE_DIR;
-faithful = loadd(__FILE_DIR $+ "faithful.csv");
+url = "https://raw.githubusercontent.com/aptech/gauss_blog/master/econometrics/kernel-density-12-29-22/faithful.csv";
+faithful = loadd(url);
 
-// Declare plt to be a plotControl structure
-// and fill with default settings for scatter
+// Declare plt to be a 
+// plotControl structure
+// and fill with default 
+// settings for scatter
 struct plotControl plt;
 plt = plotGetDefaults("scatter");
 
 plotSetTitle(&plt, "Old Faithful Eruptions", "arial", 18);
 
 // Axis labels
-plotSetYLabel(&plt, "Observations", "arial", 14);
-plotSetXLabel(&plt, "Wait Time");
+plotSetYLabel(&plt, "Wait Time", "arial", 14);
+plotSetXLabel(&plt, "Observation");
 
+// Plot original data
 plotScatter(plt, faithful[., "observations"], faithful[., "waittime"]);
 
+/*
+** Perform basic KDE
+*/
+call kernelDensity(faithful[., "waittime"]);
+
+/*
+** Compare Kernels
+*/
+// Specify three kernel
+// for comparison on 
+// same plot
+//   1             Normal
+//   3             Biweight
+//   5             Rectangular
+kernel = { 1, 3, 5};
+
+// Estimate and plot the kernel density
+call kernelDensity(faithful[., "waittime"], kernel);
+
+/*
+** Change bandwidth
+*/
+// Use the Normal kernel
+kernel = 1;
+
+// Set bandwidth to 5
+bw = 2;
+
+// Estimate and plot the kernel density
+call kernelDensity(faithful[., "waittime"], kernel, bw);
+
+
+/*
+** Change bandwidth
+*/
+// Use the Normal kernel
+kernel = 1;
+
+// Set bandwidth to 5
+bw = 25;
+
+// Estimate and plot the kernel density
+call kernelDensity(faithful[., "waittime"], kernel, bw);
+end;
 

@@ -36,26 +36,48 @@ tmp = (X_j - obs[3])./bandwidth;
 // Caluculate kernel function
 K_3 = K(tmp);
 
+// Set up graph
+struct plotControl ctl;
+ctl = plotGetDefaults("xy");
+
+plotSetTextInterpreter(&ctl, "LaTex", "legend");
+
+plotSetLegend(&ctl, "x_1 = 30"$|"x_2 = 32"$|"x_3 = 33");
+plotSetLegendFont(&ctl, "Arial", 12);
+
+
 plotOpenWindow();
 plotCanvasSize("px", 800|600);
-plotXY(X_j, K_1~K_2~K_3);
-
+plotXY(ctl, X_j, K_1~K_2~K_3);
 
 
 /*
 ** Kernel estimation around
 ** multiple points
 */
+
+// Find KDE
 k_density = K_1 + K_2 + K_3;
 
+// Open new window
 plotOpenWindow();
-plotCanvasSize("px", 800|600);
-plotXY(X_j, K_1~K_2~K_3~k_density);
 
-struct plotControl ctl;
-plotSetLinePen(&ctl, 2, "dark blue", 2);
+// Set up legend
+plotSetLegend(&ctl, "K(x_1 = 30)"$|"K(x_2 = 32)"$|"K(x_3 = 33)"$|"KDE"$|"x_3 = 33");
+plotSetLegendFont(&ctl, "Arial", 12);
 
-plotAddVLine(ctl, 30);
+// Plot K(x)s and KDE
+plotXY(ctl, X_j, K_1~K_2~K_3~k_density);
+
+// Add vertical line
+struct plotControl ctl1;
+ctl = plotGetDefaults("xy");
+
+plotSetLegend(&ctl1, "x_3 = 33");
+
+plotSetLinePen(&ctl1, 2, "grey", 2);
+plotAddVLine(ctl1, 33);
+end;
 
 /*
 ** Kernel estimation example
