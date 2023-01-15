@@ -77,7 +77,7 @@ plotSetLegend(&ctl1, "x_3 = 33");
 
 plotSetLinePen(&ctl1, 2, "grey", 2);
 plotAddVLine(ctl1, 33);
-end;
+
 
 /*
 ** Kernel estimation example
@@ -91,9 +91,37 @@ bandwidth = seqa(5, 5, 3);
 struct plotControl ctl1;
 ctl1 = plotGetDefaults("xy");
 
+// Set up legend
+plotSetTextInterpreter(&ctl, "LaTex", "legend");
 plotSetLegend(&ctl1, "h = 5"$|"h = 10"$|"h = 15");
 plotSetLegendFont(&ctl1, "Arial", 12);
 
+tmp = (X_j - obs[1])./bandwidth';
+
+// Calculate kernel function
+K_mat = zeros(rows(X_j), rows(bandwidth));
+    
+    // Calculate kernel function
+for j(1, rows(bandwidth), 1);
+    // Calculate weighted distance
+    K_mat[., j] = K(tmp[., j]);
+endfor;
+
+plotXY(ctl1, X_j, K_mat);
+
+plotAddVLine(30);
+
+proc (1) = K(x);
+    local K_fn;
+    
+    K_fn = 0.75*(1-x.^2);
+    K_fn = substute(K_fn, K_fn .< 2.25e-16, 0);
+    
+    retp(K_fn);
+endp;
+
+end;
+    
 for j(1, rows(bandwidth), 1);
     // Calculate kernel function
     K_mat = zeros(rows(X_j), rows(obs));
@@ -117,13 +145,6 @@ for j(1, rows(bandwidth), 1);
     
 endfor;
 
-proc (1) = K(x);
-    local K_fn;
-    
-    K_fn = 0.75*(1-x.^2);
-    K_fn = substute(K_fn, K_fn .< 2.25e-16, 0);
-    
-    retp(K_fn);
-endp;
+
 
 

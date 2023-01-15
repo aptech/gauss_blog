@@ -46,7 +46,7 @@ call kernelDensity(faithful[., "waittime"], kernel);
 kernel = 1;
 
 // Set bandwidth to 5
-bw = 2;
+bw = 2~5~10;
 
 // Estimate and plot the kernel density
 call kernelDensity(faithful[., "waittime"], kernel, bw);
@@ -56,12 +56,12 @@ call kernelDensity(faithful[., "waittime"], kernel, bw);
 ** Change bandwidth
 */
 // Use the Normal kernel
-kernel = 1;
+kernel = 2|4;
 
 // Set bandwidth to 5
-bw = 25;
+bw = 10~25;
 
 // Estimate and plot the kernel density
-call kernelDensity(faithful[., "waittime"], kernel, bw);
+call kernelDensity(faithful[., "waittime" "eruptions"], kernel, bw);
 end;
 
