@@ -1,0 +1,65 @@
+new;
+library cmlmt, dc;
+
+/*
+** Load data from fred
+*/
+// Ahmed-Chinn data
+ac_data = packr(loadd("data/ahmed_chinn_data.xlsx", ". + date($date, '%YM%m')"));
+
+// Load recession data
+USREC = fred_load("USREC");
+
+// 10 year - 2 year spread
+T10Y2Y = fred_load("T10Y2Y");
+
+// 10 year - 3 month spread
+T10Y3M = fred_load("T10Y3M");
+
+// Set parameter list
+// Include previously specified
+// parameter list to append new specifications
+params_nfci = fred_set("frequency", "m", "aggregation_method", "avg");
+ 
+ // The FCI 
+NFCI = fred_load("NFCI", params_nfci);
+
+// Manufacturing capacity utilization
+MCUMFN = fred_load("MCUMFN");
+
+// Fed funds rate
+FFR = fred_load("FEDFUNDS");
+
+/*
+** Model specifications
+*/
+lags = seqa(1, 1, 8);
+
+/*
+** Join data
+*/
+reg_data = innerJoin(USREC, "date", ac_data, "date");
+reg_data = delcols(reg_data, "REC");
+reg_data = innerJoin(T10Y2Y, "date", reg_data, "date");
+reg_data = innerJoin(T10Y3M, "date", reg_data, "date");
+reg_data = innerJoin(NFCI, "date", reg_data, "date");
+reg_data = innerJoin(MCUMFN, "date", reg_data, "date");
+reg_data = innerJoin(FFR, "date", reg_data, "date");
+reg_data = packr(reg_data);
+
+dstatmt(reg_data);
+
+// Plot original data
+struct plotControl ctl2;
+ctl2 = plotGetDefaults("xy");
+
+// Set up fonts
+plotSetFonts(&ctl2, "axes ticks", "Arial", 14);
+plotSetFonts(&ctl2, "legend", "Arial", 12);
+
+// Set up legend
+plotSetLegend(&ctl2, "T10Y2Y"$|"T10Y3M"$|"NFCI"$|"SPREAD10_3FOR");
+plotXY(ctl2, reg_data[., "date"], reg_data[., "T10Y2Y" "T10Y3M" "NFCI" "SPREAD10_3FOR"]);
+
+saved(reg_data, "data/reg_data.gdat");
+

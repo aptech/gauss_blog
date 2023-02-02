@@ -1,0 +1,242 @@
+new;
+library cmlmt, dc;
+
+/*
+** Load data from fred
+*/
+reg_data = loadd("data/reg_data.gdat");
+/*
+** Model specifications
+*/
+lags = seqa(1, 1, 8);
+
+/*
+** Model One: "T10Y3M"
+** Probit Estimation
+*/
+y = reg_data[maxc(lags)+1:rows(reg_data), "USREC"];
+
+// Declare 'p' to be a PV structure
+// and initialize it
+struct PV p;
+p = pvCreate();
+ 
+// Declare 'ctl' to be a cmlmtControl structure
+// and fill with default values
+struct cmlmtControl ctl;
+ctl = cmlmtControlCreate();
+
+// Pack the starting vectors for 'beta'
+// into 'p' so that we can reference it by name
+beta_strt = 0.5*ones(maxc(lags), 1);
+p = pvPack(p, beta_strt, "beta");
+
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Get x and lags
+reg_x = getX(reg_data, "T10Y3M", lags);
+
+// Perform estimation and print results
+cout = cmlmt(&probit, p, y, packr(reg_x), ctl);
+call cmlmtPrt(cout);
+
+// Predicted probabilities
+beta_hat_1 = pvUnpack(cout.par, "beta");
+y_prob_1 = cdfn(packr(reg_x) * beta_hat_1);
+
+/*
+** Model Two: "T10Y2Y"
+** Probit Estimation
+*/
+// Get x and lags
+reg_x = getX(reg_data, "T10Y2Y", lags);
+
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Perform estimation and print results
+cout = cmlmt(&probit, p, y, packr(reg_x), ctl);
+call cmlmtPrt(cout);
+
+// Predicted probabilities
+beta_hat_2 = pvUnpack(cout.par, "beta");
+y_prob_2 = cdfn(packr(reg_x) * beta_hat_2);
+
+
+/*
+** Model Three: "SPREAD10_3FOR"
+** Probit Estimation
+*/
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Get x and lags
+reg_x = getX(reg_data, "SPREAD10_3FOR", lags);
+
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Perform estimation and print results
+cout = cmlmt(&probit, p, y, packr(reg_x), ctl);
+call cmlmtPrt(cout);
+
+// Predicted probabilities
+beta_hat_3 = pvUnpack(cout.par, "beta");
+y_prob_3 = cdfn(packr(reg_x) * beta_hat_3);
+
+/*
+** Model Four: "SPREAD10_3FOR" + NFCI
+** Probit Estimation
+*/
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+
+// Declare 'p' to be a PV structure
+// and initialize it
+struct PV p2;
+p2 = pvCreate();
+
+// Pack the starting vectors for 'beta'
+// into 'p' so that we can reference it by name
+beta_strt = 0.5*ones(2*maxc(lags), 1);
+p2 = pvPack(p2, beta_strt, "beta");
+
+// Get x and lags
+reg_x = getX(reg_data, "SPREAD10_3FOR"$|"NFCI", lags);
+
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Perform estimation and print results
+cout = cmlmt(&probit, p2, y, packr(reg_x), ctl);
+call cmlmtPrt(cout);
+
+// Predicted probabilities
+beta_hat_4 = pvUnpack(cout.par, "beta");
+y_prob_4 = cdfn(packr(reg_x) * beta_hat_4);
+
+/*
+** Model Five: "T10Y2Y" + NFCI
+** Probit Estimation
+*/
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+
+// Get x and lags
+reg_x = getX(reg_data, "T10Y2Y"$|"NFCI", lags);
+
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Perform estimation and print results
+cout = cmlmt(&probit, p2, y, packr(reg_x), ctl);
+call cmlmtPrt(cout);
+
+// Predicted probabilities
+beta_hat_5 = pvUnpack(cout.par, "beta");
+y_prob_5 = cdfn(packr(reg_x) * beta_hat_4);
+
+/*
+** Set up graph
+*/
+struct plotControl pctl;
+pctl = plotgetDefaults("xy");
+
+// Set up title
+plotSetTitle(&pctl, "Probability of recession based on probit model.", "Arial", 18);
+
+// Set up legend
+plotSetLegend(&pctl, "10yr-3mo. spread"$|"10yr-2yr spread"$|"Augmented 10yr-3mo."$|"Augmented 10yr-3mo., NFCI"$|"10yr-2yr spread, NFCI");
+
+// Plot original data
+plotOpenWindow();
+plotXY(pctl, reg_data[maxc(lags)+1:rows(reg_data), "date"], y_prob_1~y_prob_2~y_prob_3~y_prob_4~y_prob_5);
+
+// Add markers
+struct plotControl pctl2;
+pctl2 = plotGetDefaults("xy");
+
+// Set line color
+plotSetLinePen(&pctl2, 2, "gray", 3);
+
+// Plot 50% line
+plotAddHLine(pctl2, 0.5);
+plotAddHLine(pctl2, 0.75);
+
+/*
+** Add recession bars
+*/
+
+// Reset plotControl to default bar settings
+struct plotControl plt;
+plt = plotGetDefaults("bar");
+
+// Bar fill: solid, 15% opaque and gray
+plotSetFill(&plt, 1, 0.15, "gray");
+
+// Add legend item
+plotSetLegend(&plt, "Recession", "top left inside");
+
+// Add vertical bars to any location where
+// the second column of 'usrec' contains a 1
+plotAddVBar(plt, reg_data[., "date" "USREC"]);
+
+/*
+** Model Two: "Augmented"
+** Probit Estimation
+*/
+
+/*
+** Likelihood Function
+*/
+// The log-likelihood procedure
+proc (1) = probit(p, y, X, ind);
+    local mu, beta_;
+ 
+    // Declare 'mm' to be a modelResults
+    // structure to hold the function value
+    struct modelResults mm;
+ 
+    // Extract 'beta' vectors
+    beta_ = pvUnpack(p, "beta");
+ 
+    mu = X * beta_;
+ 
+    // Assign the log-likelihood value to the
+    // 'function' member of the modelResults structure
+    mm.function = y.*lncdfn(mu) + (1-y).*lncdfnc(mu);
+ 
+    // Return the model results structure
+    retp(mm);
+endp;
+
+proc (1) = getX(x, varlist, lags);
+    local num_x, maxL, reg_x;
+    
+    num_x = rows(varlist);
+    maxL = maxc(lags);
+    
+    if num_x == 1;// Get x and lags
+        if lags>0;
+            reg_x = lagn(x[., varlist], lags);
+        else;
+            reg_x = x[., varlist];
+        endif;
+    else;
+        reg_x = zeros(rows(x), maxL*num_x);
+        for i(1, num_x, 1);
+            reg_x[., (i-1)*maxL+1:i*maxL] = lagn(x[., varlist[i]], lags);
+        endfor;
+    endif;
+    
+    retp(reg_x);
+endp;

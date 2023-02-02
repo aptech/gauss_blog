@@ -1,0 +1,70 @@
+new;
+library gml;
+
+/*
+** Load data from fred
+*/
+reg_data = loadd("data/reg_data.gdat");
+
+/*
+** Model specifications
+*/
+lags = seqa(1, 1, 8);
+
+/*
+** Get outcome
+*/
+y = reg_data[maxc(lags)+1:rows(reg_data), "USREC"];
+
+/*
+** Get predictors
+*/
+// Get x and lags
+reg_x = packr(getX(reg_data, "T10Y3M"$|"T10Y2Y"$|"NFCI", lags));
+
+// Split data into (70%) training and (30%) test sets
+{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.7);
+
+// The dfModel structure holds the trained model
+struct dfModel dfm;
+
+// Declare 'dfc' to be a dfControl
+// structure and fill with default settings 
+struct dfControl dfc;
+dfc = dfControlCreate();
+
+// Compute variable importance and out-of-bag error
+dfc.variableImportanceMethod = 1;
+dfc.oobError = 1;
+
+// Fit training data using decision forest classification
+dfm = decForestCFit(y_train, x_train, dfc);
+
+// Make predictions using test data
+predictions = decForestPredict(dfm, x_test);
+
+// Print results
+// Print out model quality evaluation statistics
+call binaryClassMetrics(y_test, predictions);
+
+proc (1) = getX(x, varlist, lags);
+    local num_x, maxL, reg_x;
+    
+    num_x = rows(varlist);
+    maxL = maxc(lags);
+    
+    if num_x == 1;// Get x and lags
+        if lags>0;
+            reg_x = lagn(x[., varlist], lags);
+        else;
+            reg_x = x[., varlist];
+        endif;
+    else;
+        reg_x = zeros(rows(x), maxL*num_x);
+        for i(1, num_x, 1);
+            reg_x[., (i-1)*maxL+1:i*maxL] = lagn(x[., varlist[i]], lags);
+        endfor;
+    endif;
+    
+    retp(reg_x);
+endp;
