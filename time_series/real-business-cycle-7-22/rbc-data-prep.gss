@@ -1,0 +1,83 @@
+library tsmt;
+
+/*
+** Perform import of
+** consumption, labor, investment
+*/
+lpath = "D:/development/GitHub/gauss_blog/time_series/real-business-cycle-7-22/data/";
+library tsmt;
+
+/*
+** Perform import labor
+*/
+labor = loadd(lpath $+ "HOANBS.csv", "date($DATE) + HOANBS");
+
+/*
+** Rename column headers
+*/
+labor = dfname(move(labor), "Labor", "HOANBS");
+
+/*
+** Perform import consumption
+*/
+consumption = loadd(lpath $+ "PCECC96.csv", "date($DATE) + PCECC96");
+
+/*
+** Rename column headers
+*/
+consumption = dfname(move(consumption), "Consumption", "PCECC96");
+
+/*
+** Perform import investment
+*/
+investment = loadd(lpath $+ "GPDIC1.csv", "date($DATE) + GPDIC1");
+
+/*
+** Rename column headers
+*/
+investment = dfname(move(investment), "Investment", "GPDIC1");
+
+// Concatenate data
+data = outerJoin(outerJoin(consumption, "DATE", labor, "DATE"), "DATE", investment, "DATE");
+data = selif(data, data[., "DATE"] .>= "1984");
+
+/*
+** Perform import population
+*/
+population = loadd(lpath $+ "CNP16OV.csv", "date($DATE) + CNP16OV");
+
+/*
+** Rename column headers
+*/
+population = dfname(move(population), "Population", "CNP16OV");
+
+// Filter dates
+population = selif(population, population[., "DATE"] .>= "1984");
+population = selif(population, population[., "DATE"] .< "2022-04");
+
+// Aggregate population to quarterly
+population_Q = aggData(population[., "Population"], "M", "Q", "AVE");
+
+// Perform recession loading
+recessions = loadd(lpath $+ "USRECQ.csv", "date($DATE) + USRECQ");
+
+// Convert data to per capita
+N = data[., "Labor"]*6e4 ./population_Q; 
+C = data[., "Consumption"]*1e6 ./population_Q/4;
+I = data[., "Investment"]*1e6 ./population_Q/4;
+Y = I + C;
+Y = dfname(move(Y), "Output", "Investment");
+
+// Log and detrend data
+y = tsdiff(ln(Y), 1);
+c = tsdiff(ln(C), 1);
+n = tsdiff(ln(N), 1);
+i = tsdiff(ln(I), 1);
+
+// Merge RBC data
+rbc_data = data[2:rows(data), "DATE"]~y~n~c;
+
+// Plot the data
+plotXY(rbc_data[., "DATE"], rbc_data[., 2:4]);
+
+saved(rbc_data, lpath $+ "rbc_data.csv");
