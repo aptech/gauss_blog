@@ -23,7 +23,8 @@ y = reg_data[maxc(lags)+1:rows(reg_data), "USREC"];
 reg_x = packr(getX(reg_data, "T10Y3M"$|"T10Y2Y"$|"NFCI", lags));
 
 // Split data into (70%) training and (30%) test sets
-{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.7);
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.5, shuffle);
 
 // The dfModel structure holds the trained model
 struct dfModel dfm;

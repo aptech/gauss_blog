@@ -1,0 +1,66 @@
+new;
+library gml;
+
+/*
+** Load data
+*/
+reg_data = loadd("data/final_data.gdat");
+
+/*
+** Model One: All predictors
+** Probit Estimation
+*/
+y = reg_data[., "USREC"];
+y = recode(y, y .== 0, -1);
+
+reg_x = reg_data[., 3:cols(reg_data)];
+
+// Split data into (60%) training and (40%) test sets
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.6, shuffle);
+
+// Declare 'mdl' to be an instance of a
+// ridgeModel structure to hold the estimation results
+struct ridgeModel mdl;
+
+// L2 regularization penalty
+lambda = 0.5;
+
+// Estimate the model with default settings
+mdl = ridgeCFit(y_train, X_train, lambda);
+
+// Compute test mse
+predictions = ridgeCPredict(mdl, x_test);
+
+
+// Print results
+// Print out model quality evaluation statistics
+print "Ridge Classification";
+call binaryClassMetrics(y_test, predictions);
+
+proc (1) = ridgeCFit(y, X, lambda);
+    
+    //Recode the y data
+    y = recode(y, y .== 0, -1);
+    
+    // Declare 'mdl' to be an instance of a
+    // ridgeModel structure to hold the estimation results
+    struct ridgeModel mdl;
+    
+    // Estimate model using ridgeFit
+    mdl = ridgeFit(y, X, lambda);
+    
+    retp(mdl);
+endp;
+
+proc (1) = ridgeCPredict(struct ridgeModel mdl, x_test);
+    local y_hat;
+    
+    // Compute test mse
+    y_hat = X_test * mdl.beta_hat + mdl.alpha_hat;
+    y_hat = where(y_hat.<=0, 0, 1);
+    
+    retp(y_hat);
+endp;
+
+    

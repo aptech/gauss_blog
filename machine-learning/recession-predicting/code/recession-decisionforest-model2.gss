@@ -1,0 +1,42 @@
+new;
+library gml;
+
+/*
+** Load data
+*/
+reg_data = loadd("data/final_data.gdat");
+
+/*
+** Model One: All predictors
+** Probit Estimation
+*/
+y = reg_data[., "USREC"];
+reg_x = reg_data[., 3:cols(reg_data)];
+
+// Split data into (60%) training and (40%) test sets
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.6, shuffle);
+
+// The dfModel structure holds the trained model
+struct dfModel dfm;
+
+// Declare 'dfc' to be a dfControl
+// structure and fill with default settings 
+struct dfControl dfc;
+dfc = dfControlCreate();
+
+// Compute variable importance and out-of-bag error
+dfc.variableImportanceMethod = 1;
+dfc.oobError = 1;
+
+// Fit training data using decision forest classification
+dfm = decForestCFit(y_train, x_train, dfc);
+
+// Make predictions using test data
+predictions = decForestPredict(dfm, x_test);
+
+
+// Print results
+// Print out model quality evaluation statistics
+print "Decision Forest";
+call binaryClassMetrics(y_test, predictions);

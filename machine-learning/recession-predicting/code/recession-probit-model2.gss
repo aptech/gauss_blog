@@ -1,0 +1,127 @@
+new;
+library cmlmt, dc, gml;
+
+/*
+** Load data
+*/
+reg_data = loadd("data/final_data.gdat");
+
+/*
+** Probit Estimation
+*/
+y = reg_data[., "USREC"];
+reg_x = reg_data[., 3:cols(reg_data)];
+
+// Split data into (60%) training and (40%) test sets
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.6, shuffle);
+{ date_train, date_test, tmp, tmp2 } = trainTestSplit(reg_data[., "date"], reg_x, 0.6, shuffle);
+
+// Declare 'p' to be a PV structure
+// and initialize it
+struct PV p;
+p = pvCreate();
+ 
+// Declare 'ctl' to be a cmlmtControl structure
+// and fill with default values
+struct cmlmtControl ctl;
+ctl = cmlmtControlCreate();
+
+// Pack the starting vectors for 'beta'
+// into 'p' so that we can reference it by name
+beta_strt = 0.5*ones(cols(reg_x), 1);
+p = pvPack(p, beta_strt, "beta");
+
+// Declare 'out' to be a cmlmtResults structure
+// to hold the results of the estimation
+struct cmlmtResults cout;
+ 
+// Perform estimation and print results
+cout = cmlmt(&probit, p, y_train, packr(x_train), ctl);
+call cmlmtPrt(cout);
+
+// Predicted probabilities
+beta_hat_1 = pvUnpack(cout.par, "beta");
+y_prob_1 = cdfn(packr(x_test) * beta_hat_1);
+
+y_hat = where(y_prob_1 .>= 0.5, 1, 0);
+y_hat2 = where(y_prob_1 .>= 0.75, 1, 0);
+
+/*
+** Binary model metrics
+*/
+// Print results
+// Print out model quality evaluation statistics
+print "Probit with 50% cutoff";
+call binaryClassMetrics(y_test, y_hat);
+
+// Print results
+// Print out model quality evaluation statistics
+print "Probit with 75% cutoff";
+call binaryClassMetrics(y_test, y_hat2);
+
+/*
+** Set up graph
+*/
+struct plotControl pctl;
+pctl = plotgetDefaults("xy");
+
+// Set up title
+plotSetTitle(&pctl, "Probability of recession based on probit model.", "Arial", 18);
+
+// Plot original data
+plotOpenWindow();
+plotXY(pctl, date_test, y_prob_1/*~y_prob_2~y_prob_3~y_prob_4~y_prob_5*/);
+//plotXY(pctl, reg_data[., "date"], y_prob_1/*~y_prob_2~y_prob_3~y_prob_4~y_prob_5*/);
+
+// Add markers
+struct plotControl pctl2;
+pctl2 = plotGetDefaults("xy");
+
+// Set line color
+plotSetLinePen(&pctl2, 2, "gray", 3);
+
+// Plot 50% line
+plotAddHLine(pctl2, 0.5);
+plotAddHLine(pctl2, 0.75);
+
+/*
+** Add recession bars
+*/
+
+// Reset plotControl to default bar settings
+struct plotControl plt;
+plt = plotGetDefaults("bar");
+
+// Bar fill: solid, 15% opaque and gray
+plotSetFill(&plt, 1, 0.15, "gray");
+
+// Add legend item
+plotSetLegend(&plt, "Recession", "top left inside");
+
+// Add vertical bars to any location where
+// the second column of 'usrec' contains a 1
+plotAddVBar(plt, reg_data[., "date" "USREC"]);
+
+/*
+** Likelihood Function
+*/
+proc (1) = probit(p, y, X, ind);
+    local mu, beta_;
+ 
+    // Declare 'mm' to be a modelResults
+    // structure to hold the function value
+    struct modelResults mm;
+ 
+    // Extract 'beta' vectors
+    beta_ = pvUnpack(p, "beta");
+ 
+    mu = X * beta_;
+ 
+    // Assign the log-likelihood value to the
+    // 'function' member of the modelResults structure
+    mm.function = y.*lncdfn(mu) + (1-y).*lncdfnc(mu);
+ 
+    // Return the model results structure
+    retp(mm);
+endp;

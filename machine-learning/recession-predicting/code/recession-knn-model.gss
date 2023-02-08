@@ -1,0 +1,38 @@
+new;
+library gml;
+
+/*
+** Load data
+*/
+reg_data = loadd("data/final_data.gdat");
+
+/*
+** Model One: All predictors
+** Probit Estimation
+*/
+y = reg_data[., "USREC"];
+reg_x = reg_data[., 3:cols(reg_data)];
+
+// Split data into (60%) training and (40%) test sets
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.6, shuffle);
+
+/*
+** Train the model
+*/
+k = 5;
+
+struct knnModel mdl;
+mdl = knnFit(y_train, X_train, k);
+
+/*
+** Predictions on the test set
+*/
+
+y_hat = knnClassify(mdl, X_test);
+
+
+// Print results
+// Print out model quality evaluation statistics
+print "KNN Model";
+call binaryClassMetrics(y_test, y_hat);
