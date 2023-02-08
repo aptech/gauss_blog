@@ -44,6 +44,7 @@ call cmlmtPrt(cout);
 beta_hat_1 = pvUnpack(cout.par, "beta");
 y_prob_1 = cdfn(packr(x_test) * beta_hat_1);
 
+// Predict outcomes
 y_hat = where(y_prob_1 .>= 0.5, 1, 0);
 y_hat2 = where(y_prob_1 .>= 0.75, 1, 0);
 
