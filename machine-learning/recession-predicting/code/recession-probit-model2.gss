@@ -17,31 +17,19 @@ shuffle = "False";
 { y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.6, shuffle);
 { date_train, date_test, tmp, tmp2 } = trainTestSplit(reg_data[., "date"], reg_x, 0.6, shuffle);
 
-// Declare 'p' to be a PV structure
-// and initialize it
-struct PV p;
-p = pvCreate();
- 
-// Declare 'ctl' to be a cmlmtControl structure
-// and fill with default values
-struct cmlmtControl ctl;
-ctl = cmlmtControlCreate();
-
-// Pack the starting vectors for 'beta'
-// into 'p' so that we can reference it by name
+// Assign starting values for estimation
 beta_strt = 0.5*ones(cols(reg_x), 1);
-p = pvPack(p, beta_strt, "beta");
 
 // Declare 'out' to be a cmlmtResults structure
 // to hold the results of the estimation
 struct cmlmtResults cout;
  
 // Perform estimation and print results
-cout = cmlmt(&probit, p, y_train, packr(x_train), ctl);
+cout = cmlmt(&probit, beta_strt, y_train, packr(x_train));
 call cmlmtPrt(cout);
 
 // Predicted probabilities
-beta_hat_1 = pvUnpack(cout.par, "beta");
+beta_hat_1 = pvUnpack(cout.par, "x");
 y_prob_1 = cdfn(packr(x_test) * beta_hat_1);
 
 // Predict outcomes
@@ -107,16 +95,14 @@ plotAddVBar(plt, reg_data[., "date" "USREC"]);
 /*
 ** Likelihood Function
 */
-proc (1) = probit(p, y, X, ind);
-    local mu, beta_;
+proc (1) = probit(beta_, y, X, ind);
+    local mu;
  
     // Declare 'mm' to be a modelResults
     // structure to hold the function value
     struct modelResults mm;
- 
-    // Extract 'beta' vectors
-    beta_ = pvUnpack(p, "beta");
- 
+
+    // Compute mu
     mu = X * beta_;
  
     // Assign the log-likelihood value to the
