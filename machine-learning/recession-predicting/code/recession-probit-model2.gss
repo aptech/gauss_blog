@@ -7,7 +7,7 @@ library cmlmt, dc, gml;
 reg_data = loadd("data/final_data.gdat");
 
 /*
-** Probit Estimation
+** Split data
 */
 y = reg_data[., "USREC"];
 reg_x = reg_data[., 3:cols(reg_data)];
@@ -17,6 +17,9 @@ shuffle = "False";
 { y_train, y_test, x_train, x_test } = trainTestSplit(y, reg_x, 0.6, shuffle);
 { date_train, date_test, tmp, tmp2 } = trainTestSplit(reg_data[., "date"], reg_x, 0.6, shuffle);
 
+/*
+** Estimate model
+*/
 // Assign starting values for estimation
 beta_strt = 0.5*ones(cols(reg_x), 1);
 
@@ -28,26 +31,12 @@ struct cmlmtResults cout;
 cout = cmlmt(&probit, beta_strt, y_train, packr(x_train));
 call cmlmtPrt(cout);
 
-// Predicted probabilities
-beta_hat_1 = pvUnpack(cout.par, "x");
-y_prob_1 = cdfn(packr(x_test) * beta_hat_1);
-
-// Predict outcomes
-y_hat = where(y_prob_1 .>= 0.5, 1, 0);
-y_hat2 = where(y_prob_1 .>= 0.75, 1, 0);
-
 /*
-** Binary model metrics
+** Predictions
 */
-// Print results
-// Print out model quality evaluation statistics
-print "Probit with 50% cutoff";
-call binaryClassMetrics(y_test, y_hat);
-
-// Print results
-// Print out model quality evaluation statistics
-print "Probit with 75% cutoff";
-call binaryClassMetrics(y_test, y_hat2);
+beta_hat = pvUnpack(cout.par, "x");
+{ y_prob, y_hat } = probitFit(beta_hat, x_test, y_test);
+{ y_prob2, y_hat2 } = probitFit(beta_hat, x_test, y_test, 0.75);
 
 /*
 ** Set up graph
@@ -60,8 +49,7 @@ plotSetTitle(&pctl, "Probability of recession based on probit model.", "Arial", 
 
 // Plot original data
 plotOpenWindow();
-plotXY(pctl, date_test, y_prob_1/*~y_prob_2~y_prob_3~y_prob_4~y_prob_5*/);
-//plotXY(pctl, reg_data[., "date"], y_prob_1/*~y_prob_2~y_prob_3~y_prob_4~y_prob_5*/);
+plotXY(pctl, date_test, y_prob);
 
 // Add markers
 struct plotControl pctl2;
@@ -111,4 +99,24 @@ proc (1) = probit(beta_, y, X, ind);
  
     // Return the model results structure
     retp(mm);
+endp;
+
+proc (2) = probitFit(beta_hat, x_test, y_test, ...);
+    local prob, y_prob, y_hat, fmt;
+    
+    prob = dynargsGet(1, 0.5);
+    
+    // Predicted probability of recession 
+    // outcome
+    y_prob = cdfn(packr(x_test) * beta_hat);
+
+    // Classify data as recession or non-recession
+    y_hat = where(y_prob .>= prob, 1, 0);
+    
+    // Print out model quality evaluation statistics
+    fmt = "Probit model with %d%% cutoff.";
+    sprintf(fmt, 100*prob);
+    call binaryClassMetrics(y_test, y_hat);
+
+    retp(y_prob, y_hat);
 endp;
