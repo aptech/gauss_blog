@@ -26,7 +26,8 @@ params_mg = fred_set("units", "pch");
 data_mon_gr = fred_load("PAYEMS + INDPRO + RPI", params_mg);
 
 // Annual growth rate data
-params_ag =  fred_set("units", "pc1");
+//params_ag =  fred_set("units", "pc1");
+params_ag =  fred_set("units", "ch1");
 data_a_gr = fred_load("UNRATE", params_ag);
 
 // Other monthly data
