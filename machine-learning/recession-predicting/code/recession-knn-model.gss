@@ -28,11 +28,8 @@ mdl = knnFit(y_train, X_train, k);
 /*
 ** Predictions on the test set
 */
-
 y_hat = knnClassify(mdl, X_test);
 
-
-// Print results
 // Print out model quality evaluation statistics
 print "KNN Model";
 call binaryClassMetrics(y_test, y_hat);

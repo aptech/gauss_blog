@@ -18,7 +18,7 @@ shuffle = "False";
 { date_train, date_test, tmp, tmp2 } = trainTestSplit(reg_data[., "date"], reg_x, 0.6, shuffle);
 
 /*
-** Estimate model
+** Train  model
 */
 // Assign starting values for estimation
 beta_strt = 0.5*ones(cols(reg_x), 1);
