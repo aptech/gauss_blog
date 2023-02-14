@@ -1,40 +1,40 @@
 new;
-library cmlmt, dc;
 
 /*
-** Load data from fred
+** Load data from fred 
+** that needs aggregating
 */
-// Ahmed-Chinn data
-ac_data = packr(loadd("data/ahmed_chinn_data.xlsx", ". + date($date, '%YM%m')"));
 
-/*
-** Load daily data that must be 
-** aggregated to monthly 
-*/
+// Set parameters to
+// change frequency to monthly
+// using average across period 
 params = fred_set("frequency", "m", "aggregation_method", "avg");
 
-// Load daily occurring data
-// but aggregate to monthly
+// Load daily data that must
+// be aggregated to monthly
 data_agg = fred_load("T10Y2Y + T10Y3M + NFCI + DGS2 + DGS10", params);
 
 /*
-** Recession data, FFR, manufacturing,
-** NBER and  Moody AAA bonds
+** Load data from fred 
+** that needs transforming
 */
 // Monthly growth rate data
 params_mg = fred_set("units", "pch");
 data_mon_gr = fred_load("PAYEMS + INDPRO + RPI", params_mg);
 
 // Annual growth rate data
-//params_ag =  fred_set("units", "pc1");
 params_ag =  fred_set("units", "ch1");
 data_a_gr = fred_load("UNRATE", params_ag);
 
+/*
+** Load monthly data from fred 
+** that doesn't need any changes
+*/
 // Other monthly data
 data_mon = fred_load("USREC + AAA + BAA + MCUMFN + FEDFUNDS + TB3MS");
 
 /*
-** Join data
+** Join data on date
 */
 reg_data = outerJoin(data_agg, "date", data_mon_gr, "date");
 reg_data = outerJoin(reg_data, "date", data_a_gr, "date");
@@ -47,7 +47,7 @@ reg_data = delif(reg_data, reg_data[., "date"] .< "1960");
 dstatmt(reg_data);
 
 /*
-** Data transformations for model
+** Additionaly data transformations for model
 */
 
 // Corporate credit spread
@@ -61,6 +61,8 @@ ir_lags = asDF(getX(yld~corp_spread, "yld"$|"corp", 6|12), "yld_l6", "yld_l12", 
 nber_lags = asDF(getX(reg_data, "INDPRO"$|"PAYEMS"$|"RPI"$|"UNRATE", 1), "ip_l", "nfp_l", "rpi_l", "un_l");
 
 final_data = packr(reg_data[., "date" "USREC" "INDPRO" "PAYEMS" "RPI" "UNRATE"]~corp_spread~yld~ir_lags~nber_lags);
+
+// Save data as a gdat data file
 saved(final_data, "data/final_data.gdat");
 
 proc (1) = getX(x, varlist, lags);
@@ -84,19 +86,3 @@ proc (1) = getX(x, varlist, lags);
     
     retp(reg_x);
 endp;
-
-
-//// Plot original data
-//struct plotControl ctl2;
-//ctl2 = plotGetDefaults("xy");
-
-//// Set up fonts
-//plotSetFonts(&ctl2, "axes ticks", "Arial", 14);
-//plotSetFonts(&ctl2, "legend", "Arial", 12);
-
-//// Set up legend
-//plotSetLegend(&ctl2, "T10Y2Y"$|"T10Y3M"$|"NFCI"$|"SPREAD10_3FOR");
-//plotXY(ctl2, reg_data[., "date"], reg_data[., "T10Y2Y" "T10Y3M" "NFCI" "SPREAD10_3FOR"]);
-
-//saved(reg_data, "data/reg_data.gdat");
-
