@@ -2,9 +2,10 @@ new;
 library cmlmt, dc, gml;
 
 /*
-** Load data
+** Load data from url
 */
-reg_data = loadd("data/final_data.gdat");
+url = "https://github.com/aptech/gauss_blog/blob/master/machine-learning/recession-predicting/data/final_data.gdat?raw=true";
+reg_data = loadd(url);
 
 /*
 ** Split data
