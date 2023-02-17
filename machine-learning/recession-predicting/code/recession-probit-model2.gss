@@ -28,14 +28,16 @@ beta_strt = 0.5*ones(cols(reg_x), 1);
 struct cmlmtResults cout;
  
 // Perform estimation and print results
-cout = cmlmt(&probit, beta_strt, y_train, packr(x_train));
+cout = cmlmt(&probit, beta_strt, y_train, x_train);
 call cmlmtPrt(cout);
 
 /*
 ** Predictions
 */
 beta_hat = pvUnpack(cout.par, "x");
+
 { y_prob, y_hat } = probitFit(beta_hat, x_test, y_test);
+
 { y_prob2, y_hat2 } = probitFit(beta_hat, x_test, y_test, 0.75);
 
 /*
@@ -108,8 +110,8 @@ proc (2) = probitFit(beta_hat, x_test, y_test, ...);
     
     // Predicted probability of recession 
     // outcome
-    y_prob = cdfn(packr(x_test) * beta_hat);
-
+    y_prob = cdfn(x_test * beta_hat);
+    
     // Classify data as recession or non-recession
     y_hat = where(y_prob .>= prob, 1, 0);
     
