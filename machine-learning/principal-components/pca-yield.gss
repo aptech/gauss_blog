@@ -1,0 +1,93 @@
+new;
+library gmldev;
+
+/*
+** Step One: Loading data from FRED
+*/
+// Set observation_start parameter
+// to use all data on or after 1985-01-01
+params_cpi = fred_set("observation_start", "1990-01-01");
+
+// Load data from FRED
+data = fred_load("GS3M + GS6M + GS1 + GS3 + GS5 + GS10", params_cpi);
+data = order(data, "date"$|"GS3M"$|"GS6M"$|"GS1"$|"GS3"$|"GS5"$|"GS10");
+
+// Preview first 5 rows
+head(data);
+
+/*
+** Step Two: Normalizing the variables
+*/
+// Create a datframe that contains
+// the yields, but not the 'Date' variable
+yields = delcols(data, "date");
+
+// Compute the means and standard
+// deviations for each variable
+mu = meanc(yields);
+sd = stdc(yields);
+
+// Standardize yields using rescale
+{ yields_norm2, location, scale_factor } = rescale(yields, "standardize");
+varnames = "GS3M"$|"GS6M"$|"GS1"$|"GS3"$|"GS5"$|"GS10";
+
+yields_norm = asDF(yields_norm2, "GS3M","GS6M","GS1","GS3","GS5","GS10");
+
+head(yields_norm);
+
+/*
+** Step Three: Fit the PCA Model
+*/
+// Specificy number of components
+n_components = 6;
+    
+// `pcaModel` structure for holding
+//  output from model
+struct pcaModel mdl;
+mdl = pcaFit(yields_norm, n_components);
+
+/*
+** Step Four: Transform Original Data
+*/
+x_trans = pcaTransform(yields_norm, mdl);
+
+// Initialize the structure 
+struct plotControl myplot2;
+myplot2 = plotGetDefaults("xy");
+
+// Set up fonts
+plotSetFonts(&myPlot2, "legend yaxis", "Arial", 14);
+plotSetFonts(&myPlot2, "ticks", "Arial", 12);
+plotSetFonts(&myPlot2, "title", "Arial", 20);
+
+// Set up title
+plotSetTitle(&myPlot2, "U.S. Treasury Bills and Bonds <br/> Principal Components");
+
+// Set up axis labels
+plotSetYAxisLabel(&myPlot2, "Normalized Yield (%)");
+
+// Set up legend
+varnames = "PC1"$|"PC2"$|"PC3";
+plotSetLegend(&myPlot2, varnames, "top left");
+
+// Set canvas size
+plotCanvasSize("px", 800|600);
+plotXY(myPlot2, data[., "date"], x_trans[., 1:3]);
+
+/*
+** Change sign for demonstration
+*/
+struct pcaModel mdl2;
+mdl2 = mdl;
+
+mdl2.components[., 2:cols(mdl.components)] = -1*mdl2.components[., 2:cols(mdl.components)];
+
+/*
+** Step Four: Transform Original Data
+*/
+x_trans2 = pcaTransform(yields_norm, mdl2);
+
+// Set canvas size
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
+plotXY(myPlot2, data[., "date"], x_trans2[., 1:3]);

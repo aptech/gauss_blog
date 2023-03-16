@@ -1,0 +1,43 @@
+new;
+
+/*
+** Step One: Loading data from FRED
+*/
+// Set observation_start parameter
+// to use all data on or after 1985-01-01
+params_cpi = fred_set("observation_start", "1990-01-01");
+
+// Load data from FRED
+data = fred_load("GS3M + GS6M + GS1 + GS3 + GS5 + GS10", params_cpi);
+data = order(data, "date"$|"GS3M"$|"GS6M"$|"GS1"$|"GS3"$|"GS5"$|"GS10");
+
+/*
+** Create plots
+*/
+struct plotControl myplot;
+
+// Initialize the structure 
+myplot = plotGetDefaults("xy");
+
+// Set up fonts
+plotSetFonts(&myPlot, "legend yaxis", "Arial", 14);
+plotSetFonts(&myPlot, "ticks", "Arial", 12);
+plotSetFonts(&myPlot, "title", "Arial", 20);
+
+// Set up title
+plotSetTitle(&myPlot, "U.S. Treasury Bills and Bonds");
+
+// Set up axis labels
+plotSetYAxisLabel(&myPlot, "Yield (%)");
+
+// Set up legend
+varnames = "3-Month"$|"6-Month"$|"1-year"$|"3-year"$|"5-year"$|"10-year";
+plotSetLegend(&myPlot, varnames);
+
+// Set canvas size
+plotCanvasSize("px", 800|600);
+
+plotXY(myPlot, data[., "date"], delcols(data, "date"));
+
+
+

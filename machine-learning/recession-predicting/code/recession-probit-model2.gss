@@ -44,11 +44,26 @@ beta_hat = pvUnpack(cout.par, "x");
 /*
 ** Set up graph
 */
+plotCanvasSize("px", 800|600);
+
+
+
 struct plotControl pctl;
 pctl = plotgetDefaults("xy");
 
+plotSetFonts(&pctl, "legend", "Arial", 12);
+plotSetFonts(&pctl, "ticks", "Arial", 10);
+plotSetFonts(&pctl, "axes", "Arial", 14);
+
 // Set up title
-plotSetTitle(&pctl, "Probability of recession based on probit model.", "Arial", 18);
+plotSetYAxisLabel(&pctl, "Probability");
+
+// Set up axis ticks
+plotSetXTicLabel(&pctl, "YYYY");
+plotSetXTicInterval(&pctl, 60, asDate("2000-01-01"));
+
+// Turn on y-axis grid
+plotSetYGrid(&pctl, "on");
 
 // Plot original data
 plotOpenWindow();
@@ -61,19 +76,18 @@ pctl2 = plotGetDefaults("xy");
 // Set line color
 plotSetLinePen(&pctl2, 2, "gray", 3);
 
-// Plot 50% line
-plotAddHLine(pctl2, 0.5);
-plotAddHLine(pctl2, 0.75);
+
 
 /*
 ** Add recession bars
 */
 
+ 
 // Reset plotControl to default bar settings
 struct plotControl plt;
 plt = plotGetDefaults("bar");
 
-// Bar fill: solid, 15% opaque and gray
+ // Bar fill: solid, 15% opaque and gray
 plotSetFill(&plt, 1, 0.15, "gray");
 
 // Add legend item
