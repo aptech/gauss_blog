@@ -1,0 +1,48 @@
+/*
+** In this example we look at how to create an email list to import 
+** from a sales territory information list. 
+** Note that the email list should have:
+**                  "First Name" column
+**                  "Email" column
+**
+** The email addresses are formatted like: storenumber + s @ petco.com
+** 
+*/
+
+/*
+** Load and filter data
+*/
+fname = __FILE_DIR $+ "store-territory-info.xlsx";
+store_territory_info = loadd(fname);
+
+/*
+** Filtering data
+*/
+// Specify KAR to create email list for
+name = "Jenn Geese";
+
+// Filter data for specified employee
+employee_data = selif(store_territory_info, store_territory_info[., "KAR"] .$== name);
+
+/*
+** Clean data
+*/
+// Replace comma in Nielsen Market
+employee_data[., "Nielsen Market"] = strreplace(employee_data[., "Nielsen Market"], ",", " ");
+
+/*
+** Filtering data
+*/
+// Create email address
+domain = "petco.com";
+email = asDF(itos(employee_data[., "Store"]) $+ "s" $+ "@" $+ domain, "email");
+
+// Add store name and Nielson Territory
+email_list = employee_data[., "Store Name"]~email~employee_data[., "Nielsen Market"];
+
+// Save email list
+fsave_name = name $+ "_store_emails.csv";
+
+// Save file
+saved(email_list, fsave_name);
+
