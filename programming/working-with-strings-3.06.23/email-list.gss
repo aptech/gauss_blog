@@ -1,0 +1,96 @@
+/*
+** In this example we look at how to create an email list to import 
+** from a sales territory information list. 
+** Note that the email list should have:
+**                  "First Name" column
+**                  "Email" column
+**
+** The email addresses are formatted like: storenumber + s @ petco.com
+** 
+*/
+
+/*
+** Load and filter data
+*/
+fname = __FILE_DIR $+ "territory-info.xlsx";
+territory_info = loadd(fname);
+
+/*
+** Cleaning  data
+*/
+
+// Check for duplicates
+getduplicates(territory_info);
+
+// Check Frequencies
+frequency(territory_info, "Nielsen Market");
+
+// Strip white spaces
+territory_info[., "Nielsen Market"] = strtrim(territory_info[., "Nielsen Market"]);
+
+// Update the Spokane listing
+territory_info[., "Nielsen Market"] = strreplace(territory_info[., "Nielsen Market"], "spokane", "Spokane");
+
+// Replace Spokane-WA with Spokane, WA
+territory_info[., "Nielsen Market"] = strreplace(territory_info[., "Nielsen Market"], "Spokane- wa", "Spokane, WA");
+
+// Split Nielsen Market into state and city
+nielsen = asDF(strsplit(territory_info[., "Nielsen Market"], ","), "Nielsen City", "Nielsen State");
+
+/*
+** Create email addresses
+*/
+// Convert store number to string
+str_store = itos(territory_info[., "Store"]);
+
+// Add prefix
+email_address = str_store $+ "d@petpeople.com";
+
+// Convert to dataframe
+email_df = asDF(email_address, "Email");
+
+/*
+** Build email database
+*/
+email_database = territory_info[., "KAR"]~territory_info[., "Store Name"]~email_df~nielsen;
+head(email_database);
+
+/*
+** Filtering and saving our email list
+*/
+// Specify KAR to create email list for
+name = "Jeff Canary";
+
+// Filter data for specified employee
+email_list = selif(email_database, email_database[., "KAR"] .$== name);
+
+// Save email list
+fsave_name = name $+ "_store_emails.csv";
+
+// Save file
+saved(email_list, fsave_name);
+
+/*
+** Loop over all KARs
+*/
+// Get list of unique 
+// representative names
+kar_names  = unique(email_database[., "KAR"]);
+
+// Loop over all names
+for i(1, rows(kar_names), 1);
+  /*
+  ** Filtering and saving our email list
+  */
+  // Specify KAR to create email list for
+  name = kar_names[i];
+
+  // Filter data for specified employee
+  email_list = selif(email_database, email_database[., "KAR"] .$== name);
+
+  // Save email list
+  fsave_name = name $+ "_store_emails.csv";
+
+  // Save file
+  saved(email_list, fsave_name);
+endfor;
