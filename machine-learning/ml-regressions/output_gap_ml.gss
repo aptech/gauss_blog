@@ -134,7 +134,17 @@ st_indx0 = indnv(asDate(st_date), date0_full, 1);
 
 plotXY(plt, date0_full[st_indx0:rows(Y0_full)], osa_pred_ridge[st_indx0:rows(Y0_full)]~osa_pred_lasso[st_indx0:rows(Y0_full)]~osa_pred_df[st_indx0:rows(Y0_full)]~Y0_full[st_indx0:rows(Y0_full)]);
 
-// Compute the MSE
+// Compute the MSE for full sample
 mse_df = meanc((osa_pred_df[st_indx0:rows(Y0_full)] - Y0_full[st_indx0:rows(Y0_full)]).^2);
 mse_lasso = meanc((osa_pred_lasso[st_indx0:rows(Y0_full)] - Y0_full[st_indx0:rows(Y0_full)]).^2);
 mse_ridge = meanc((osa_pred_ridge[st_indx0:rows(Y0_full)] - Y0_full[st_indx0:rows(Y0_full)]).^2);
+
+// Compute the MSE post 2010 - 2020
+st_date2 = "2012-01-01";
+st_indx2 = indnv(asDate(st_date2), date0_full, 1); 
+st_date3 = "2019-01-01";
+st_indx3 = indnv(asDate(st_date3), date0_full, 1); 
+
+msesub_df = meanc((osa_pred_df[st_indx2:st_indx3] - Y0_full[st_indx2:st_indx3]).^2);
+msesub_lasso = meanc((osa_pred_lasso[st_indx2:st_indx3] - Y0_full[st_indx2:st_indx3]).^2);
+msesub_ridge = meanc((osa_pred_ridge[st_indx2:st_indx3] - Y0_full[st_indx2:st_indx3]).^2);
