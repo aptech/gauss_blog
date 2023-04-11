@@ -9,14 +9,20 @@ rndseed 23423;
 dataset = __FILE_DIR $+ "reg_data.gdat";
 data = loadd(dataset);
 
+// Trim data for lagged
+// and differenced data
+max_l = 4;
+data = trimr(data, max_l+1, 0);
+
+/*
+** Extract outcome and features
+*/
 // Extract outcome variable
 y = data[., "CBO_GAP"];
 
-/*
-** Extract features and 
-** construct lags
-*/
+// Extract features
 X = delcols(data, "date"$|"CBO_GAP");
+
 
 /*
 ** Set up tuning parameters
@@ -39,75 +45,44 @@ dfc.variableImportanceMethod = 1;
 dfc.oobError = 1;
 
 /*
-** Create expanding estimation window to perform one-step ahead
-** forecasts will start with smallest window at 60%
-*/
-max_l = 4;
-Y0_full = trimr(Y, max_l+1, 0);
-X0_full = trimr(X, max_l+1, 0);
-date0_full = trimr(data[., "date"], max_l+1, 0);
-
-/*
-** Prepare training and testing data
+** Initialize starting point and
+** storage matrix for expanding 
+** window loop
 */
 st_date = "1995-01-01";
-st_indx = indnv(asDate(st_date), date0_full, 1) - 1; 
+st_indx = indnv(asDate(st_date), data[., "date"], 1) - 1; 
 
-osa_pred_df = zeros(rows(X0_full), 1);
-osa_pred_lasso = zeros(rows(X0_full), 1);
-osa_pred_ridge = zeros(rows(X0_full), 1);
+// Set up storage matrix for predictions
+// one column for each model
+osa_pred = asDF(zeros(rows(X), 3), "Lasso", "Ridge", "Decision Forest");
 
-do while st_indx < rows(X0_full)-2;
+do while st_indx < rows(X)-1;
     
-    // Get y_train and x_train
-    y_train = Y0_full[1:st_indx];
-    x_train = X0_full[1:st_indx, .]; 
+    // Get y and x subsets for
+    // fitting and prediction
+    y_train = Y[1:st_indx];
+    x_train = X[1:st_indx, .]; 
+    x_test = X[st_indx+1, .];
     
-    /*
-    ** Lasso Model
-    */
-    // Declare 'mdl' to be an instance of a
-    // ridgeModel structure to hold the estimation results
-    struct lassoModel mdl;
-
-    // Estimate the model with default settings
-    mdl = lassoFit(y_train, X_train, lambda);
+    // Lasso Model
+    osa_pred[st_indx+1, 1] = osaLasso(y_train, x_train, x_test, lambda);
     
-    // Make predictions using test data
-    osa_pred_lasso[st_indx+1] = lrPredict(mdl, X0_full[st_indx+1, .]);
-
-    /*
-    ** Ridge Model
-    */
-    // Declare 'mdl' to be an instance of a
-    // ridgeModel structure to hold the estimation results
-    struct ridgeModel mdl_ridge;
-
-    // Estimate the model with default settings
-    mdl_ridge = ridgeFit(y_train, X_train, lambda);
+    // Ridge Model
+    osa_pred[st_indx+1, 2] = osaRidge(y_train, x_train, x_test, lambda);
     
-    // Make predictions using test data
-    osa_pred_ridge[st_indx+1] = lrPredict(mdl_ridge, X0_full[st_indx+1, .]);
-    
-    /*
-    ** Decision Forest Model
-    */
-    // Structure to hold trained model
-    struct dfModel mdl_df;
-
-    // Fit training data using decision forest
-    mdl_df = decForestRFit(y_train, X_train, dfc);
-    
-    // Make predictions using test data
-    osa_pred_df[st_indx+1] = decForestPredict(mdl_df, X0_full[st_indx+1, .]);
+    // Decision Forest Model
+    osa_pred[st_indx+1, 3] = osaDF(y_train, x_train, x_test, dfc);
     
     // Update st_indx
     st_indx = st_indx + 1;
 endo;
 
-// Plot data
-plotOpenWindow();
+/*
+** Plot results
+*/
 
+// Open new plot window
+plotOpenWindow();
 
 /*
 ** Set up plot format
@@ -116,9 +91,8 @@ struct plotControl plt;
 plt = plotGetDefaults("XY");
 
 // Fonts
-plotSetFonts(&plt, "ticks", "Arial", 14);
+plotSetFonts(&plt, "ticks legend", "Arial", 14);
 plotSetFonts(&plt, "Title", "Arial", 18);
-plotSetFonts(&plt, "legend", "Arial", 14);
 
 // Set up legends
 labels = "Ridge"$|"Lasso"$|"Decision Forest"$|"Observed";
@@ -127,24 +101,76 @@ plotSetLegend(&plt, labels, "bottom left");
 // Set Canvas size
 plotCanvasSize("px", 800|600);
 
-// Set up X 
+// Set up x-axis ticks
 plotSetXTicLabel(&plt, "YYYY");
 plotSetXTicInterval(&plt, 20, "quarters", "2000");
-st_indx0 = indnv(asDate(st_date), date0_full, 1);
 
-plotXY(plt, date0_full[st_indx0:rows(Y0_full)], osa_pred_ridge[st_indx0:rows(Y0_full)]~osa_pred_lasso[st_indx0:rows(Y0_full)]~osa_pred_df[st_indx0:rows(Y0_full)]~Y0_full[st_indx0:rows(Y0_full)]);
+// Filter data for plotting
+dates = selif(data[., "date"], data[., "date"] .>= st_date);
+predictions = selif(osa_pred~y, data[., "date"] .>= st_date);
 
-// Compute the MSE for full sample
-mse_df = meanc((osa_pred_df[st_indx0:rows(Y0_full)] - Y0_full[st_indx0:rows(Y0_full)]).^2);
-mse_lasso = meanc((osa_pred_lasso[st_indx0:rows(Y0_full)] - Y0_full[st_indx0:rows(Y0_full)]).^2);
-mse_ridge = meanc((osa_pred_ridge[st_indx0:rows(Y0_full)] - Y0_full[st_indx0:rows(Y0_full)]).^2);
+// Plot results
+plotXY(plt, dates, predictions);
 
-// Compute the MSE post 2010 - 2020
-st_date2 = "2012-01-01";
-st_indx2 = indnv(asDate(st_date2), date0_full, 1); 
-st_date3 = "2019-01-01";
-st_indx3 = indnv(asDate(st_date3), date0_full, 1); 
+// Compute residuals
+residuals = delcols(predictions, "CBO_GAP") - predictions[., "CBO_GAP"];
 
-msesub_df = meanc((osa_pred_df[st_indx2:st_indx3] - Y0_full[st_indx2:st_indx3]).^2);
-msesub_lasso = meanc((osa_pred_lasso[st_indx2:st_indx3] - Y0_full[st_indx2:st_indx3]).^2);
-msesub_ridge = meanc((osa_pred_ridge[st_indx2:st_indx3] - Y0_full[st_indx2:st_indx3]).^2);
+// Compute the MSE for prediction window
+mse  = meanc((residuals).^2);
+
+proc (1) = osaLasso(y_train, x_train, x_test, lambda);
+    local lasso_prediction;
+    
+    /*
+    ** Lasso Model
+    */
+    // Declare 'mdl' to be an instance of a
+    // lassoModel structure to hold the estimation results
+    struct lassoModel mdl;
+
+    // Estimate the model with default settings
+    mdl = lassoFit(y_train, x_train, lambda);
+    
+    // Make predictions using test data
+    lasso_prediction = lrPredict(mdl, x_test);
+    
+    retp(lasso_prediction);
+endp;
+
+proc (1) = osaRidge(y_train, x_train, x_test, lambda);
+    local ridge_prediction;
+    
+    /*
+    ** Ridge Model
+    */
+    // Declare 'mdl' to be an instance of a
+    // ridgeModel structure to hold the estimation results
+    struct ridgeModel mdl;
+
+    // Estimate the model with default settings
+    mdl = ridgeFit(y_train, x_train, lambda);
+    
+    // Make predictions using test data
+    ridge_prediction = lrPredict(mdl, x_test);
+    
+    retp(ridge_prediction);
+endp;
+
+proc (1) = osaDF(y_train, x_train, x_test, struct dfControl dfc);
+    local df_prediction;
+    
+    /*
+    ** Decision Forest Model
+    */
+    // Declare 'mdl' to be an instance of a
+    // dfModel structure to hold the estimation results
+    struct dfModel mdl;
+
+    // Estimate the model with default settings
+    mdl = decForestRFit(y_train, x_train, dfc);
+    
+    // Make predictions using test data
+    df_prediction = decForestPredict(mdl, x_test);
+    
+    retp(df_prediction);
+endp;
