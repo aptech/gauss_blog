@@ -1,0 +1,132 @@
+new;
+library gml;
+rndseed 23423;
+
+/*
+** Load data and prepare data
+*/
+// Load dataset
+dataset = __FILE_DIR $+ "reg_data.gdat";
+data = loadd(dataset);
+
+/*
+** Extract outcome and features
+*/
+// Extract outcome variable
+y = data[., "CBO_GAP"];
+
+// Extract features
+X = delcols(data, "date"$|"CBO_GAP");
+
+/*
+** Split data into 70% training
+** and 30% testing sets
+*/
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = traintestSplit(Y, X, 0.7, shuffle);
+
+/*
+** Settings for decision forest
+*/
+// Declare an instance of the 
+// dfControl structure
+struct dfControl dfc;
+
+// Set default values for
+// structure members
+dfc = dfControlCreate();
+
+// Turn on out-of-bag error calculation
+dfc.oobError = 1;
+
+/*
+** Loop over hyperparameter values
+*/
+featuresPerNode = seqa(1, 1, cols(X));
+oob_error = zeros(rows(featuresPerNode), 1);
+mse = asDF(zeros(rows(featuresPerNode), 2), "Training MSE", "Testing MSE");
+
+
+for i(1, rows(featuresPerNode), 1);
+    
+    // Set featuresPerNode parameter
+    dfc.featuresPerNode = featuresPerNode[i];
+    
+    /*
+    ** Decision Forest Model
+    */
+    // Declare 'mdl' to be an instance of a
+    // dfModel structure to hold the estimation results
+    struct dfModel mdl;
+
+    // Estimate the model with default settings
+    mdl = decForestRFit(y_train, x_train, dfc);
+    
+    // Make predictions using training data
+    df_prediction_train = decForestPredict(mdl, x_train);
+    
+    // Make predictions using testing data
+    df_prediction_test = decForestPredict(mdl, x_test);
+    
+    /*
+    ** Compute and store mse
+    */
+    // Training set MSE
+    mse[i, 1] = getMSE(df_prediction_train, y_train);
+    
+    // Testing set MSE
+    mse[i, 2] = getMSE(df_prediction_test, y_test);
+    
+    // Store oob
+    oob_error[i] = mdl.oobError;
+endfor;
+
+// Find lowest MSE
+ind = minindc(mse[., "Testing MSE"]);
+print "Optimal features per node setting: "; featuresPerNode[ind];
+print "Minimum testing MSE:"; mse[ind, 2];
+
+
+/*
+** Plot results
+*/
+// Set up plot format
+struct plotControl plt;
+plt = plotGetDefaults("xy");
+
+// Canvas size
+plotCanvasSize("px", 800|600);
+
+// Fonts
+plotSetFonts(&plt, "ticks legend", "Arial", 12);
+plotSetFonts(&plt, "xaxis", "Arial", 16);
+plotSetFonts(&plt, "title", "Arial", 18);
+
+// Set up xlabel
+plotSetXLabel(&plt, "Features Per Node");
+
+// Set up title
+plotSetTitle(&plt, "Out-Of-Bag Error");
+plotLayout(1, 2, 1);
+plotXY(plt, featuresPerNode, oob_error);
+
+// Set up legend
+plotSetLegend(&plt, "Training"$|"Testing", "top left");
+
+// Title
+plotSetTitle(&plt, "Prediction MSE");
+plotLayout(1, 2, 2);
+plotXY(plt, featuresPerNode, mse);
+
+proc (1) = getMSE(predictions, observed);
+    local residuals, mse;
+    
+    // Get residuals
+    residuals = predictions - observed;
+    
+    // Square errors
+    mse  = meanc((residuals).^2);
+    
+    retp(mse);
+endp;
+

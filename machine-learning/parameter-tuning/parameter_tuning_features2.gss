@@ -1,0 +1,109 @@
+new;
+library gml;
+rndseed 23423;
+
+/*
+** Load data and prepare data
+*/
+// Load dataset
+dataset = __FILE_DIR $+ "reg_data.gdat";
+data = loadd(dataset);
+
+/*
+** Extract outcome and features
+*/
+// Extract outcome variable
+y = data[., "CBO_GAP"];
+
+// Extract features
+X = delcols(data, "date"$|"CBO_GAP");
+
+/*
+** Split data into 70% training
+** and 30% testing sets
+*/
+shuffle = "False";
+{ y_train, y_test, x_train, x_test } = traintestSplit(Y, X, 0.7, shuffle);
+
+/*
+** Settings for decision forest
+*/
+// Declare an instance of the
+// dfControl structure
+struct dfControl dfc;
+
+// Set default values for
+// structure members
+dfc = dfControlCreate();
+
+// Turn on out-of-bag error calculation
+dfc.oobError = 1;
+
+// Set features per node
+dfc.featuresPerNode = 6;
+
+/*
+** Initialize grid and
+** storage matrices
+*/
+// Set potential values for
+// minimum samples per leaf
+minimumSamplesLeaf = seqa(1, 1, 20);
+
+// Set potential values for
+// minimum percentage of sample
+// at the split
+pctSampleSplit = seqa(0.1, 0.1, 10);
+
+// Storage matrices
+test_mse = zeros(rows(minimumSamplesLeaf), rows(pctSampleSplit));
+train_mse = zeros(rows(minimumSamplesLeaf), rows(pctSampleSplit));
+
+for j(1, rows(minimumSamplesLeaf), 1);
+    // Set the minimum samples per leaf
+    dfc.minObsNode = minimumSamplesLeaf[j];
+    
+    for i(1, rows(pctSampleSplit), 1);
+        
+        // Set percentage of sample at split
+        dfc.obsPerTree = pctSampleSplit[i];
+        
+        /*
+        ** Decision Forest Model
+        */
+        // Declare 'mdl' to be an instance of a
+        // dfModel structure to hold the estimation results
+        struct dfModel mdl;
+        
+        // Estimate the model with default settings
+        mdl = decForestRFit(y_train, x_train, dfc);
+        
+        // Make predictions using training data
+        df_prediction_train = decForestPredict(mdl, x_train);
+        
+        // Make predictions using testing data
+        df_prediction_test = decForestPredict(mdl, x_test);
+        
+        /*
+        ** Compute and store mse
+        */
+        // Training set MSE
+        train_mse[j, i] = getMSE(df_prediction_train, y_train);
+        
+        // Testing set MSE
+        test_mse[j, i] = getMSE(df_prediction_test, y_test);
+  
+    endfor;
+endfor;
+
+proc (1) = getMSE(predictions, observed);
+    local residuals, mse;
+    
+    // Get residuals
+    residuals = predictions - observed;
+    
+    // Square errors
+    mse  = meanc((residuals).^2);
+    
+    retp(mse);
+endp;
