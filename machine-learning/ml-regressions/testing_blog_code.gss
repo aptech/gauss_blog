@@ -1,29 +1,34 @@
-new;
-library gml;
+library gmldev;
 rndseed 23423;
-
+ 
 /*
 ** Load data and prepare data
 */
 // Load dataset
 dataset = __FILE_DIR $+ "reg_data.gdat";
 data = loadd(dataset);
-
-// Trim data for lagged
-// and differenced data
+ 
+// Trim rows from the top of data to account
+// for lagged and differenced data
 max_l = 4;
 data = trimr(data, max_l+1, 0);
-
+ 
 /*
 ** Extract outcome and features
 */
 // Extract outcome variable
 y = data[., "CBO_GAP"];
-
+ 
 // Extract features
 X = delcols(data, "date"$|"CBO_GAP");
 
-
+// Specify starting date 
+st_date = "1995-01-01";
+ 
+// Find the row location 
+// of the starting date
+st_indx = indnv(asDate(st_date), data[., "date"], 1) - 1; 
+ 
 /*
 ** Set up tuning parameters
 */
@@ -49,14 +54,11 @@ dfc.oobError = 1;
 ** storage matrix for expanding 
 ** window loop
 */
-// Specify starting date 
-st_date = asDate("1994-Q4", "%Y-Q%q");
- 
-// Find the index of 'st_date'
-st_indx = indnv(st_date, data[., "date"]); 
+st_date = "1995-01-01";
+st_indx = indnv(asDate(st_date), data[., "date"], 1) - 1; 
 
-// Set up storage matrix for predictions
-// one column for each model
+// Set up storage dataframe for predictions
+// using one column for each model
 osa_pred = asDF(zeros(rows(X), 3), "Lasso", "Ridge", "Decision Forest");
 
 do while st_indx < rows(X)-1;
@@ -81,45 +83,13 @@ do while st_indx < rows(X)-1;
 endo;
 
 /*
-** Plot results
+** Computing MSE
 */
-
-// Open new plot window
-plotOpenWindow();
-
-/*
-** Set up plot format
-*/
-struct plotControl plt;
-plt = plotGetDefaults("XY");
-
-// Fonts
-plotSetFonts(&plt, "ticks legend", "Arial", 14);
-plotSetFonts(&plt, "Title", "Arial", 18);
-
-// Set up legends
-labels = "Ridge"$|"Lasso"$|"Decision Forest"$|"Observed";
-plotSetLegend(&plt, labels, "bottom left");
-
-// Set Canvas size
-plotCanvasSize("px", 800|600);
-
-// Set up x-axis ticks
-plotSetXTicLabel(&plt, "YYYY");
-plotSetXTicInterval(&plt, 20, "quarters", "2000");
-
-// Filter data for plotting
-dates = selif(data[., "date"], data[., "date"] .>= st_date);
-predictions = selif(osa_pred~y, data[., "date"] .>= st_date);
-
-// Plot results
-plotXY(plt, dates, predictions);
-
-// Filter data for prediction window
-predictions = selif(osa_pred~y, data[., "date"] .>= st_date);
-
 // Compute residuals
-residuals = delcols(predictions, "CBO_GAP") - predictions[., "CBO_GAP"];
+residuals = osa_pred - y;
+
+// Filter for prediction window
+residuals = selif(residuals, data[., "date"] .>= st_date);
 
 // Compute the MSE for prediction window
 mse  = meanc((residuals).^2);
