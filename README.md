@@ -3,11 +3,11 @@
 [![alt text][3.1]][3]
 
 # GAUSS blog
-This repository houses the code and data to accompany the [Aptech **GAUSS** blogs](https://www.aptech.com/blog/).  The blogs cover a variety of GAUSS topics including programming, best practices, time series, econometrics, graphics, and more.
+This repository houses the code and data to accompany the [Aptech **GAUSS** blogs](https://www.aptech.com/blog/).  The blogs cover a variety of GAUSS topics including programming, best practices, machine learning, time series, econometrics, graphics, and more.
 
 ## Getting Started
 ### Prerequisites
-These program files require a working copy of **GAUSS 18+**. Many can be run on earlier versions with some small revisions.
+These program files require a working copy of **GAUSS 22+**. Many can be run on earlier versions with some small revisions.
 
 ### Installing
 Installation instructions for the individual codes are provided in blog-specific README files.
@@ -15,6 +15,7 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Missing Values](econometrics/missing-values-8-13-21)|["Introduction to Handling Missing Values"](https://www.aptech.com/blog/introduction-to-handling-missing-values/)|08/20/2021|
 |[Granger causality](time_series/granger-causality-6.29.21)|["Introduction to Granger Causality"](https://www.aptech.com/blog/introduction-to-granger-causality/)|06/29/2021|
 |[Impulse response functions](econometrics/irf-fevd-4.30.21)|["The Intuition Behind Impulse Response Functions and Forecast Error Variance Decomposition"](https://www.aptech.com/blog/the-intuition-behind-impulse-response-functions-and-forecast-error-variance-decomposition/)|05/18/2021|
 |[Categorical variables](programming/categorical-variables-3.20.21)|["Easy Management of Categorical Variables"](https://www.aptech.com/blog/easy-management-of-categorical-variables/)|3/19/2021|
