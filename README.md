@@ -15,10 +15,10 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
-|Machine learning regression](machine-learning/ml-regressions)|["Predicting the Output Gap With Machine Learning Regression Models"](https://www.aptech.com/blog/predicting-the-output-gap-with-machine-learning-regression-models/)|04/12/2023|
-|String data](programming/working-with-strings-3.06.23)|["Managing String Data with GAUSS Dataframes"](https://www.aptech.com/blog/managing-string-data-with-gauss-dataframes/)|03/28/2023|
-|Principal components](machine-learning/principal-components)|["Applications of Principal Components Analysis in Finance"](https://www.aptech.com/blog/applications-of-principal-components-analysis-in-finance/)|03/15/2023|
-|Machine learning classification](machine-learning/principal-components)|["Predicting Recessions with Machine Learning Techniques"](https://www.aptech.com/blog/predicting-recessions-with-machine-learning-techniques/)|03/15/2023|
+|[Machine learning regression](machine-learning/ml-regressions)|["Predicting the Output Gap With Machine Learning Regression Models"](https://www.aptech.com/blog/predicting-the-output-gap-with-machine-learning-regression-models/)|04/12/2023|
+|[String data](programming/working-with-strings-3.06.23)|["Managing String Data with GAUSS Dataframes"](https://www.aptech.com/blog/managing-string-data-with-gauss-dataframes/)|03/28/2023|
+|[Principal components](machine-learning/principal-components)|["Applications of Principal Components Analysis in Finance"](https://www.aptech.com/blog/applications-of-principal-components-analysis-in-finance/)|03/15/2023|
+|[Machine learning classification](machine-learning/principal-components)|["Predicting Recessions with Machine Learning Techniques"](https://www.aptech.com/blog/predicting-recessions-with-machine-learning-techniques/)|03/15/2023|
 |[Missing Values](econometrics/missing-values-8-13-21)|["Introduction to Handling Missing Values"](https://www.aptech.com/blog/introduction-to-handling-missing-values/)|08/20/2021|
 |[Granger causality](time_series/granger-causality-6.29.21)|["Introduction to Granger Causality"](https://www.aptech.com/blog/introduction-to-granger-causality/)|06/29/2021|
 |[Impulse response functions](econometrics/irf-fevd-4.30.21)|["The Intuition Behind Impulse Response Functions and Forecast Error Variance Decomposition"](https://www.aptech.com/blog/the-intuition-behind-impulse-response-functions-and-forecast-error-variance-decomposition/)|05/18/2021|
