@@ -1,13 +1,13 @@
 new;
 library gml;
-rndseed 23423;
+//rndseed 23423;
 
 /*
 ** Load data and prepare data
 */
 // Load dataset
 dataset = __FILE_DIR $+ "reg_data.gdat";
-data = loadd(dataset);
+data = loadd(dataset, ". -date");
 
 /*
 ** Extract outcome and features
@@ -16,7 +16,7 @@ data = loadd(dataset);
 y = data[., "CBO_GAP"];
 
 // Extract features
-X = delcols(data, "date"$|"CBO_GAP");
+X = delcols(data, "CBO_GAP");
 
 /*
 ** Split data into 70% training
@@ -40,12 +40,20 @@ dfc = dfControlCreate();
 dfc.oobError = 1;
 
 /*
-** Loop over hyperparameter values
+** Initialize grid and
+** storage matrices
 */
+// Create vector of possible
+// features per node values
 featuresPerNode = seqa(1, 1, cols(X));
+ 
+// Create storage matrix for oob
 oob_error = zeros(rows(featuresPerNode), 1);
-mse = asDF(zeros(rows(featuresPerNode), 2), "Training MSE", "Testing MSE");
-
+ 
+// Create storage dataframe for MSE
+// with one column for training mse
+// and one column for testing mse
+mse = asDF(zeros(rows(featuresPerNode), 2), "Train", "Test");
 
 for i(1, rows(featuresPerNode), 1);
     
@@ -72,19 +80,20 @@ for i(1, rows(featuresPerNode), 1);
     ** Compute and store mse
     */
     // Training set MSE
-    mse[i, 1] = getMSE(df_prediction_train, y_train);
+    mse[i, 1] = meanSquaredError(y_train, df_prediction_train);
     
     // Testing set MSE
-    mse[i, 2] = getMSE(df_prediction_test, y_test);
+    mse[i, 2] = meanSquaredError(y_test, df_prediction_test);
     
     // Store oob
     oob_error[i] = mdl.oobError;
 endfor;
 
 // Find lowest MSE
-ind = minindc(mse[., "Testing MSE"]);
+ind = minindc(mse[., "Test"]);
+
 print "Optimal features per node setting: "; featuresPerNode[ind];
-print "Minimum testing MSE:"; mse[ind, 2];
+print "Minimum testing MSE:"; mse[ind, "Test"];
 
 
 /*
@@ -95,7 +104,7 @@ struct plotControl plt;
 plt = plotGetDefaults("xy");
 
 // Canvas size
-plotCanvasSize("px", 800|600);
+plotCanvasSize("px", 600|400);
 
 // Fonts
 plotSetFonts(&plt, "ticks legend", "Arial", 12);
@@ -105,28 +114,16 @@ plotSetFonts(&plt, "title", "Arial", 18);
 // Set up xlabel
 plotSetXLabel(&plt, "Features Per Node");
 
-// Set up title
-plotSetTitle(&plt, "Out-Of-Bag Error");
-plotLayout(1, 2, 1);
-plotXY(plt, featuresPerNode, oob_error);
+// Place the first Y-tick label at 0.5
+// and place additional ticks every 0.25 after
+plotSetYTicInterval(&plt, 1, 0);
 
 // Set up legend
 plotSetLegend(&plt, "Training"$|"Testing", "top left");
 
 // Title
 plotSetTitle(&plt, "Prediction MSE");
-plotLayout(1, 2, 2);
+//plotLayout(1, 2, 2);
 plotXY(plt, featuresPerNode, mse);
 
-proc (1) = getMSE(predictions, observed);
-    local residuals, mse;
-    
-    // Get residuals
-    residuals = predictions - observed;
-    
-    // Square errors
-    mse  = meanc((residuals).^2);
-    
-    retp(mse);
-endp;
 

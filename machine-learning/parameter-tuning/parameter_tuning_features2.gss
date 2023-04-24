@@ -51,22 +51,23 @@ dfc.featuresPerNode = 6;
 minimumSamplesLeaf = seqa(1, 1, 20);
 
 // Set potential values for
-// minimum percentage of sample
-// at the split
-pctSampleSplit = seqa(0.1, 0.1, 10);
+// percentage of sample
+// per tree
+pctSample = seqa(0.1, 0.1, 10);
 
 // Storage matrices
-test_mse = zeros(rows(minimumSamplesLeaf), rows(pctSampleSplit));
-train_mse = zeros(rows(minimumSamplesLeaf), rows(pctSampleSplit));
+test_mse = zeros(rows(minimumSamplesLeaf), rows(pctSample));
+train_mse = zeros(rows(minimumSamplesLeaf), rows(pctSample));
 
 for j(1, rows(minimumSamplesLeaf), 1);
+    
     // Set the minimum samples per leaf
     dfc.minObsNode = minimumSamplesLeaf[j];
     
-    for i(1, rows(pctSampleSplit), 1);
+    for i(1, rows(pctSample), 1);
         
-        // Set percentage of sample at split
-        dfc.obsPerTree = pctSampleSplit[i];
+        // Set percentage of sample per tree
+        dfc.obsPerTree = pctSample[i];
         
         /*
         ** Decision Forest Model
@@ -88,22 +89,34 @@ for j(1, rows(minimumSamplesLeaf), 1);
         ** Compute and store mse
         */
         // Training set MSE
-        train_mse[j, i] = getMSE(df_prediction_train, y_train);
+        train_mse[j, i] = meanSquaredError(y_train, df_prediction_train);
         
         // Testing set MSE
-        test_mse[j, i] = getMSE(df_prediction_test, y_test);
+        test_mse[j, i] = meanSquaredError(y_test, df_prediction_test);
   
     endfor;
 endfor;
 
-proc (1) = getMSE(predictions, observed);
-    local residuals, mse;
-    
-    // Get residuals
-    residuals = predictions - observed;
-    
-    // Square errors
-    mse  = meanc((residuals).^2);
-    
-    retp(mse);
-endp;
+/*
+** Locate minimum for each 
+** for each value of dfc.obsPerTree
+** and associated dfc.minObsNode
+*/
+// Find row indices of minimum MSE
+// for each potential value of dfc.obsPerTree
+indx1 = minindc(test_mse);
+
+// Find values of minimum MSE for
+// each potential value of dfc.obsPerTree
+tmp = minc(test_mse);
+
+/*
+** Locate optimal MSE
+*/
+indx2 = minindc(tmp);
+MSE_optimal = minc(tmp);
+
+sprintf("Minimum MSE occurs at a minimum samples per leaf of %d  
+combined with a percentage of samples per tree of %1.0f%%.", 
+        minimumSamplesLeaf[indx1[indx2]], 100*pctSample[indx2]);
+sprintf( "Minimum testing MSE %4f.", MSE_optimal);
