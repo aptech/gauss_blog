@@ -15,7 +15,7 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
-|[Hyperparameter tuning]|(machine-learning/parameter-tuning)|["Fundamentals of Tuning Machine Learning Hyperparameters"](https://www.aptech.com/blog/fundamentals-of-tuning-machine-learning-hyperparameters/)|04/24/2023|
+|[Hyperparameter tuning](machine-learning/parameter-tuning)|["Fundamentals of Tuning Machine Learning Hyperparameters"](https://www.aptech.com/blog/fundamentals-of-tuning-machine-learning-hyperparameters/)|04/24/2023|
 |[Machine learning regression](machine-learning/ml-regressions)|["Predicting the Output Gap With Machine Learning Regression Models"](https://www.aptech.com/blog/predicting-the-output-gap-with-machine-learning-regression-models/)|04/12/2023|
 |[String data](programming/working-with-strings-3.06.23)|["Managing String Data with GAUSS Dataframes"](https://www.aptech.com/blog/managing-string-data-with-gauss-dataframes/)|03/28/2023|
 |[Principal components](machine-learning/principal-components)|["Applications of Principal Components Analysis in Finance"](https://www.aptech.com/blog/applications-of-principal-components-analysis-in-finance/)|03/15/2023|
