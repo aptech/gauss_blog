@@ -15,10 +15,20 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Hyperparameter tuning]](machine-learning/parameter-tuning)|["Fundamentals of Tuning Machine Learning Hyperparameters"](https://www.aptech.com/blog/fundamentals-of-tuning-machine-learning-hyperparameters/)|04/24/2023|
 |[Machine learning regression](machine-learning/ml-regressions)|["Predicting the Output Gap With Machine Learning Regression Models"](https://www.aptech.com/blog/predicting-the-output-gap-with-machine-learning-regression-models/)|04/12/2023|
 |[String data](programming/working-with-strings-3.06.23)|["Managing String Data with GAUSS Dataframes"](https://www.aptech.com/blog/managing-string-data-with-gauss-dataframes/)|03/28/2023|
 |[Principal components](machine-learning/principal-components)|["Applications of Principal Components Analysis in Finance"](https://www.aptech.com/blog/applications-of-principal-components-analysis-in-finance/)|03/15/2023|
-|[Machine learning classification](machine-learning/principal-components)|["Predicting Recessions with Machine Learning Techniques"](https://www.aptech.com/blog/predicting-recessions-with-machine-learning-techniques/)|03/15/2023|
+|[Machine learning classification](machine-learning/principal-components)|["Predicting Recessions with Machine Learning Techniques"](https://www.aptech.com/blog/predicting-recessions-with-machine-learning-techniques/)|02/21/2023|
+|[Kernel density estimation](econometrics/kernel-density-12-29-22)|["The Fundamentals of Kernel Density Estimation"](https://www.aptech.com/blog/the-fundamentals-of-kernel-density-estimation/)|01/17/2023|
+|[Importing FRED data](programming/fred-data-import-12.22)|["Importing FRED Data to GAUSS"](https://www.aptech.com/blog/importing-fred-data-to-gauss/)|12/15/2022|
+|[Efficient programming](programming/introduction-efficient-creation-plots-9.27.22)|["Introduction to Efficient Creation of Detailed Plots"](https://www.aptech.com/blog/introduction-to-efficient-creation-of-detailed-plots/)|09/27/2022|
+|[SVAR and conditional heterscedasticity](time_series/svar-conditional-heteroscedasticity-9-22)|["Addressing Conditional Heteroscedasticity in SVAR Models"](https://www.aptech.com/blog/addressing-conditional-heteroscedasticity-in-svar-models/)|09/14/2022|
+|[Unobserved components model](time_series/unobserved-components-9-22)|["Unobserved Components Model: The Local Level Model"](https://www.aptech.com/blog/unobserved-components-models-the-local-level-model/)|09/05/2022|
+|[State-space models](time_series/real-business-cycle-7-22)|["Understanding State-Space Models (An Inflation Example)"](https://www.aptech.com/blog/understanding-state-space-models-an-inflation-example/)|08/03/2022|
+|[Advanced plotting techniques](graphics/advanced-formatting-aer-quality)|["Advanced Formatting Techniques for Creating AER Quality Plots"](https://www.aptech.com/blog/advanced-formatting-techniques-for-creating-aer-quality-plots/)|07/27/2022|
+|[Data cleaning](econometrics/data-cleaning-11.24.2021)|["Getting to Know Your Data with GAUSS 22"](https://www.aptech.com/blog/getting-to-know-your-data-with-gauss-22/)|12/02/2021|
+|[SVAR](time_series/svar-monetary-policy-9.27.21)|["The Structural VAR Model at Work: Analyzing Monetary Policy"](https://www.aptech.com/blog/the-structural-var-model-at-work-analyzing-monetary-policy/)|09/29/2021|
 |[Missing Values](econometrics/missing-values-8-13-21)|["Introduction to Handling Missing Values"](https://www.aptech.com/blog/introduction-to-handling-missing-values/)|08/20/2021|
 |[Granger causality](time_series/granger-causality-6.29.21)|["Introduction to Granger Causality"](https://www.aptech.com/blog/introduction-to-granger-causality/)|06/29/2021|
 |[Impulse response functions](econometrics/irf-fevd-4.30.21)|["The Intuition Behind Impulse Response Functions and Forecast Error Variance Decomposition"](https://www.aptech.com/blog/the-intuition-behind-impulse-response-functions-and-forecast-error-variance-decomposition/)|05/18/2021|
