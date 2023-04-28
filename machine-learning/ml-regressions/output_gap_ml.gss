@@ -138,7 +138,7 @@ proc (1) = osaLasso(y_train, x_train, x_test, lambda);
     mdl = lassoFit(y_train, x_train, lambda);
     
     // Make predictions using test data
-    lasso_prediction = lrPredict(mdl, x_test);
+    lasso_prediction = lmPredict(mdl, x_test);
     
     retp(lasso_prediction);
 endp;
@@ -157,7 +157,7 @@ proc (1) = osaRidge(y_train, x_train, x_test, lambda);
     mdl = ridgeFit(y_train, x_train, lambda);
     
     // Make predictions using test data
-    ridge_prediction = lrPredict(mdl, x_test);
+    ridge_prediction = lmPredict(mdl, x_test);
     
     retp(ridge_prediction);
 endp;
