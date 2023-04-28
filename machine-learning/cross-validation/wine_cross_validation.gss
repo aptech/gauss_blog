@@ -1,0 +1,73 @@
+new;
+library gml;
+rndseed 23423;
+
+/*
+** Load data and prepare data
+*/
+// Load wine quality dataset
+dataset = loadd(getGAUSSHome("pkgs/gml/examples/winequality.csv"));
+
+// Shuffle the dataset (sample without replacement),
+// because cvSplit does not shuffle.
+dataset = sampleData(dataset, rows(dataset));
+
+y = dataset[.,"quality"];
+X = delcols(dataset, "quality");
+
+/*
+** Model settings
+*/
+// The dfModel structure holds the trained model
+struct dfModel dfm;
+
+// Declare 'dfc' to be a dfControl
+// structure and fill with default settings
+struct dfControl dfc;
+dfc = dfControlCreate();
+
+// Compute variable importance and out-of-bag error
+dfc.variableImportanceMethod = 1;
+dfc.oobError = 1;
+
+// Create 200 decision trees
+dfc.numTrees = 200;
+
+// Stop splitting if impurity at
+// a node is less than 0.15
+dfc.impurityThreshold = 0.15;
+
+// Only consider 2 features per split
+dfc.featuresPerSplit = 2;
+
+/*
+** Cross validation
+** decision forest model
+*/
+// Specify number of folds
+nfolds = 5;
+
+// Pre-allocate vector to hold the results
+accuracy = zeros(nfolds, 1);
+
+for i(1, nfolds, 1);
+    { y_train, y_test, X_train, X_test } = cvSplit(y, X, nfolds, i);
+    
+    // Fit model using this fold's training data
+    dfm = decForestCFit(y_train, X_train, dfc);
+    
+    // Make predictions using this fold's test data
+    predictions = decForestPredict(dfm, X_test);
+    
+    accuracy[i] = meanc(predictions .== y_test);
+endfor;
+
+/*
+** Print Results
+*/
+sprintf("%7s %10s", "Fold", "Accuracy");;
+sprintf("%7d %10.2f", seqa(1,1,nfolds), accuracy);
+sprintf("Total model accuracy %10.2f:", meanc(accuracy));
+sprintf("Accuracy variation across folds %10.4f:", stdc(accuracy));
+
+
