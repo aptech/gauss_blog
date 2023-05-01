@@ -39,84 +39,79 @@ dfc = dfControlCreate();
 // Turn on out-of-bag error calculation
 dfc.oobError = 1;
 
-// Set features per node
-dfc.featuresPerNode = 6;
+// Set features per split
+dfc.featuresPerSplit = 6;
 
 /*
 ** Initialize grid and
 ** storage matrices
 */
 // Set potential values for
-// minimum samples per leaf
-minimumSamplesLeaf = seqa(1, 1, 20);
+// minimum obs per leaf
+minObsLeaf = seqa(1, 1, 20);
 
-// Set potential values for
-// percentage of sample
-// per tree
-pctSample = seqa(0.1, 0.1, 10);
-
+// Set potential values for 
+// percentage of observations
+// in tree
+pctObs = seqa(0.7, 0.1, 4);
+ 
 // Storage matrices
-test_mse = zeros(rows(minimumSamplesLeaf), rows(pctSample));
-train_mse = zeros(rows(minimumSamplesLeaf), rows(pctSample));
+test_mse = zeros(rows(minObsLeaf), rows(pctObs));
 
-for j(1, rows(minimumSamplesLeaf), 1);
-    
-    // Set the minimum samples per leaf
-    dfc.minObsNode = minimumSamplesLeaf[j];
-    
-    for i(1, rows(pctSample), 1);
-        
-        // Set percentage of sample per tree
-        dfc.obsPerTree = pctSample[i];
-        
+for i(1, rows(minObsLeaf), 1);
+ 
+    // Set the minimum obs per leaf
+    dfc.minObsLeaf = minObsLeaf[i];
+ 
+    for j(1, rows(pctObs), 1);
+ 
+        // Set percentage of obs used for each tree
+        dfc.pctObsPerTree = pctObs[j];
+ 
         /*
         ** Decision Forest Model
         */
         // Declare 'mdl' to be an instance of a
         // dfModel structure to hold the estimation results
         struct dfModel mdl;
-        
+ 
         // Estimate the model with default settings
-        mdl = decForestRFit(y_train, x_train, dfc);
-        
-        // Make predictions using training data
-        df_prediction_train = decForestPredict(mdl, x_train);
-        
+        mdl = decForestRFit(y_train, X_train, dfc);
+ 
         // Make predictions using testing data
-        df_prediction_test = decForestPredict(mdl, x_test);
-        
+        df_prediction_test = decForestPredict(mdl, X_test);
+ 
         /*
         ** Compute and store mse
         */
-        // Training set MSE
-        train_mse[j, i] = meanSquaredError(y_train, df_prediction_train);
-        
         // Testing set MSE
-        test_mse[j, i] = meanSquaredError(y_test, df_prediction_test);
-  
+        test_mse[i, j] = meanSquaredError(y_test, df_prediction_test);
+ 
     endfor;
 endfor;
 
 /*
-** Locate minimum for each 
-** for each value of dfc.obsPerTree
-** and associated dfc.minObsNode
+** Finding minimum MSE values in 
+** output matrix
 */
-// Find row indices of minimum MSE
-// for each potential value of dfc.obsPerTree
-indx1 = minindc(test_mse);
+// Create a column vector with the minimum MSE
+// values for each column
+mse_col_mins = minc(test_mse);
+ 
+// Find the index of the smallest
+// value in 'mse_col_mins'
+idx_col_min = minindc(mse_col_mins);
 
-// Find values of minimum MSE for
-// each potential value of dfc.obsPerTree
-tmp = minc(test_mse);
+// Find the row that contains the smallest MSE value
+idx_row_min = minindc(test_mse[.,idx_col_min]);
+ 
+// Extract the lowest MSE across all
+// combinations of tuning parameters
+MSE_optimal = test_mse[idx_row_min, idx_col_min];
+ 
+// Print results
+sprintf( "Minimum testing MSE: %4f", MSE_optimal);
+print "Minimum MSE occurs with";
+sprintf("  minimum samples per leaf      : %d", minObsLeaf[idx_row_min]);
+sprintf("  percentage of samples per tree: %g%%", 100 * pctObs[idx_col_min]); 
 
-/*
-** Locate optimal MSE
-*/
-indx2 = minindc(tmp);
-MSE_optimal = minc(tmp);
-
-sprintf("Minimum MSE occurs at a minimum samples per leaf of %d  
-combined with a percentage of samples per tree of %1.0f%%.", 
-        minimumSamplesLeaf[indx1[indx2]], 100*pctSample[indx2]);
-sprintf( "Minimum testing MSE %4f.", MSE_optimal);

@@ -1,6 +1,6 @@
 new;
 library gml;
-//rndseed 23423;
+
 
 /*
 ** Load data and prepare data
@@ -45,55 +45,58 @@ dfc.oobError = 1;
 */
 // Create vector of possible
 // features per node values
-featuresPerNode = seqa(1, 1, cols(X));
+featuresPerSplit = seqa(1, 1, cols(X));
  
 // Create storage matrix for oob
-oob_error = zeros(rows(featuresPerNode), 1);
+oob_error = zeros(rows(featuresPerSplit), 1);
  
 // Create storage dataframe for MSE
 // with one column for training mse
 // and one column for testing mse
-mse = asDF(zeros(rows(featuresPerNode), 2), "Train", "Test");
+mse = asDF(zeros(rows(featuresPerSplit), 2), "Train", "Test");
 
-for i(1, rows(featuresPerNode), 1);
-    
-    // Set featuresPerNode parameter
-    dfc.featuresPerNode = featuresPerNode[i];
-    
+// Loop over all potential values
+// of features per node
+for i(1, rows(featuresPerSplit), 1);
+ 
+    // Set featuresPerSplit parameter
+    dfc.featuresPerSplit = featuresPerSplit[i];
+ 
     /*
     ** Decision Forest Model
     */
     // Declare 'mdl' to be an instance of a
     // dfModel structure to hold the estimation results
     struct dfModel mdl;
-
-    // Estimate the model with default settings
-    mdl = decForestRFit(y_train, x_train, dfc);
-    
+ 
+    // Fit the model with default settings
+    mdl = decForestRFit(y_train, X_train, dfc);
+ 
     // Make predictions using training data
-    df_prediction_train = decForestPredict(mdl, x_train);
-    
+    df_prediction_train = decForestPredict(mdl, X_train);
+ 
     // Make predictions using testing data
-    df_prediction_test = decForestPredict(mdl, x_test);
-    
+    df_prediction_test = decForestPredict(mdl, X_test);
+ 
     /*
     ** Compute and store mse
     */
     // Training set MSE
-    mse[i, 1] = meanSquaredError(y_train, df_prediction_train);
-    
+    mse[i, "Train"] = meanSquaredError(y_train, df_prediction_train);
+ 
     // Testing set MSE
-    mse[i, 2] = meanSquaredError(y_test, df_prediction_test);
-    
-    // Store oob
-    oob_error[i] = mdl.oobError;
+    mse[i, "Test"] = meanSquaredError(y_test, df_prediction_test);
+ 
 endfor;
 
-// Find lowest MSE
-ind = minindc(mse[., "Test"]);
+// Find the row index of the lowest MSE
+idx = minindc(mse[., "Test"]);
+ 
+// NOTE: two semi-colons at the end of a print statement
+//       prevents it from printing a newline at the end
+print "Optimal features per node: ";; featuresPerSplit[idx];
+print "Minimum test MSE:";; asmatrix(mse[idx, "Test"]);
 
-print "Optimal features per node setting: "; featuresPerNode[ind];
-print "Minimum testing MSE:"; mse[ind, "Test"];
 
 
 /*
@@ -124,6 +127,6 @@ plotSetLegend(&plt, "Training"$|"Testing", "top left");
 // Title
 plotSetTitle(&plt, "Prediction MSE");
 //plotLayout(1, 2, 2);
-plotXY(plt, featuresPerNode, mse);
+plotXY(plt, featuresPerSplit, mse);
 
 
