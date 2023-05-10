@@ -1,0 +1,64 @@
+/*
+**
+*/
+new;
+library gml;
+rndseed 8906876;
+
+/*
+** Load datafile
+*/
+airline_data = loadd("airline_survey.gdat");
+airline_data = delcols(airline_data, "id");
+airline_data[., "Arrival Delay in Minutes"] = where(airline_data[., "Arrival Delay in Minutes"] .== miss(), airline_data[., "Departure Delay in Minutes"], airline_data[., "Arrival Delay in Minutes"]);
+
+// Split data
+y = airline_data[., "satisfaction"];
+X = delcols(airline_data, "satisfaction");
+
+/*  
+** Preliminary data exploration
+*/
+// Quicnfolds data summary
+dstatmt(airline_data);
+
+// Examine our outcome variable
+frequency(airline_data, "satisfaction");
+
+/*
+** Hyperparameter tuning
+** using nfolds-fold cross validation
+*/
+
+// Vector of potential lambda
+lambda = seqa(0.1, 0.1, 1000);
+
+// Number of folds
+nfolds = 5;
+
+// Create storage matrices
+total_accuracy = zeros(rows(lambda), 1);
+accuracy = zeros(nfolds, rows(lambda));
+
+// Declare 'mdl' to be an instance of a
+// lassoModel structure to hold the estimation results
+struct lassoModel mdl;
+
+// Hyper-parameter tuning
+// cross-validation loop
+
+// Loop over all lambdas
+for j(1, nfolds, 1);
+        { y_train, y_test, X_train, X_test } = cvSplit(y, X, nfolds, j);
+    
+        // Estimate the model with default settings
+        mdl = lassoFit(y_train, X_train, lambda);
+  
+endfor;
+    
+total_accuracy = meanc(accuracy);
+//endfor;
+
+        
+
+

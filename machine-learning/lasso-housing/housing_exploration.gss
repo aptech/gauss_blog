@@ -1,0 +1,107 @@
+new;
+library gml;
+rndseed 8906876;
+
+/*
+** Load datafile
+*/
+load_path = "data";
+fname = "housing.csv";
+
+// Load and remove missing values
+housing_data = loadd(load_path $+ "/" $+ fname);
+
+
+/*
+** Preliminary data exploration
+** with descriptive statistics
+*/
+// Descriptive statistics
+dstatmt(housing_data);
+
+// Check statistics for missing
+// total bedrooms observations
+dstatmt(selif(housing_data, housing_data[., "total_bedrooms"] .== miss()));
+
+// Check statistics for dataset without 
+// missing total bedrooms observations
+dstatmt(delif(housing_data, housing_data[., "total_bedrooms"] .== miss()));
+
+// Remove missing values
+housing_data = packr(housing_data);
+
+/*
+** Data visualizations to 
+** to check for outliers
+*/
+// Set up plot control
+struct plotControl plt;
+plt = plotGetDefaults("bar");
+
+// Set fonts
+plotSetFonts(&plt, "title", "Arial", 14);
+plotSetFonts(&plt, "ticks", "Arial", 12);
+
+// Get variable names
+vars = getColNames(housing_data);
+
+// Loop through variables for histogram
+for i(1, rows(vars)-1, 1);
+    plotSetTitle(&plt, vars[i]);
+    plotLayout(3, 3, i);
+    plotHist(plt, housing_data[., vars[i]], 50);
+endfor;
+
+plotOpenWindow();
+for i(1, rows(vars)-1, 1);
+    plotSetTitle(&plt, vars[i]);
+    plotLayout(3, 3, i);
+    plotBox(plt, vars[i], housing_data[., vars[i]]);
+endfor;
+
+// Filter outliers
+housing_data = delif(housing_data, housing_data[., "total_rooms"] .>= 10000);
+housing_data = delif(housing_data, housing_data[., "total_bedrooms"] .>= 2000);
+housing_data = delif(housing_data, housing_data[., "households"] .>= 2000);
+housing_data = delif(housing_data, housing_data[., "population"] .>= 6000);
+
+plotOpenWindow();
+for i(1, rows(vars)-1, 1);
+    plotSetTitle(&plt, vars[i]);
+    plotLayout(3, 3, i);
+    plotHist(plt, housing_data[., vars[i]], 50);
+endfor;
+
+plotOpenWindow();
+for i(1, rows(vars)-1, 1);
+    plotSetTitle(&plt, vars[i]);
+    plotLayout(3, 3, i);
+    plotBox(plt, vars[i], housing_data[., vars[i]]);
+endfor;
+
+plotClearLayout();
+
+/*
+** Check scatter plots of 
+** select variables relative to
+** outcome variable
+*/
+
+// Total rooms
+plotOpenWindow();
+plotLayout(2, 2, 1);
+plotScatter(housing_data, "median_house_value~total_rooms");
+
+// Total bedrooms
+plotLayout(2, 2, 2);
+plotScatter(housing_data, "median_house_value~total_bedrooms");
+
+// Population
+plotLayout(2, 2, 3);
+plotScatter(housing_data, "median_house_value~population");
+
+// Households
+plotLayout(2, 2, 4);
+plotScatter(housing_data, "median_house_value~households");
+
+saved(housing_data, load_path $+ "/model_data.gdat");
