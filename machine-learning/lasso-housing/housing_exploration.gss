@@ -1,49 +1,63 @@
+// Clear workspaces
+// and load library
 new;
 library gml;
+
+// Set random seed
 rndseed 8906876;
 
 /*
-** Load datafile
+** Import datafile
 */
 load_path = "data";
-fname = "housing.csv";
+fname = "/housing.csv";
 
 // Load and remove missing values
-housing_data = loadd(load_path $+ "/" $+ fname);
-
+housing_data = loadd(load_path $+ fname);
 
 /*
 ** Preliminary data exploration
 ** with descriptive statistics
 */
-// Descriptive statistics
+// Find descriptive statistics
+// for all variables in housing_data
 dstatmt(housing_data);
 
-// Check statistics for missing
-// total bedrooms observations
-dstatmt(selif(housing_data, housing_data[., "total_bedrooms"] .== miss()));
+// Conditional check 
+// for missing values
+e = housing_data[., "total_bedrooms"] .== miss();
 
-// Check statistics for dataset without 
-// missing total bedrooms observations
-dstatmt(delif(housing_data, housing_data[., "total_bedrooms"] .== miss()));
+// Get descriptive statistics
+// for dataset with missing values
+dstatmt(selif(housing_data, e));
 
-// Remove missing values
+// Get descriptive statistics
+// for dataset without missing values
+dstatmt(delif(housing_data, e));
+
+// Remove rows with missing values
+// from housing_data
 housing_data = packr(housing_data);
 
 /*
 ** Data visualizations to 
 ** to check for outliers
 */
-// Set up plot control
+/*
+** Histogram
+*/
+// Get variables names
+vars = getColNames(housing_data);
+
+// Set up plotControl 
+// structure for formatting
+// graphs
 struct plotControl plt;
 plt = plotGetDefaults("bar");
 
 // Set fonts
 plotSetFonts(&plt, "title", "Arial", 14);
 plotSetFonts(&plt, "ticks", "Arial", 12);
-
-// Get variable names
-vars = getColNames(housing_data);
 
 // Loop through variables for histogram
 for i(1, rows(vars)-1, 1);
@@ -52,56 +66,135 @@ for i(1, rows(vars)-1, 1);
     plotHist(plt, housing_data[., vars[i]], 50);
 endfor;
 
+/*
+** Box plots with full data
+*/
+outlier_vars = "total_rooms"$|"total_bedrooms"$|"households"$|"population";
+
+// Set up plot control
+struct plotControl plt2;
+plt2 = plotGetDefaults("box");
+
+// Set fonts
+plotSetFonts(&plt2, "title", "Arial", 14);
+plotSetFonts(&plt2, "yticks", "Arial", 10);
+plotSetFonts(&plt2, "xticks", "Arial", 14);
+
 plotOpenWindow();
-for i(1, rows(vars)-1, 1);
-    plotSetTitle(&plt, vars[i]);
-    plotLayout(3, 3, i);
-    plotBox(plt, vars[i], housing_data[., vars[i]]);
+plotClearLayout();
+
+for i(1, rows(outlier_vars), 1);
+    plotLayout(2, 2, i);
+    plotBox(plt2, outlier_vars[i], housing_data[., outlier_vars[i]]);
 endfor;
 
-// Filter outliers
+/*
+** Filter to remove outliers
+*/
+// Delete total_rooms greater than or equal to 10000
 housing_data = delif(housing_data, housing_data[., "total_rooms"] .>= 10000);
-housing_data = delif(housing_data, housing_data[., "total_bedrooms"] .>= 2000);
-housing_data = delif(housing_data, housing_data[., "households"] .>= 2000);
-housing_data = delif(housing_data, housing_data[., "population"] .>= 6000);
 
+// Delete total_bedrooms greater than or equal to 20000
+housing_data = delif(housing_data, housing_data[., "total_bedrooms"] .>= 2000);
+
+// Delete households greater than or equal to 2000
+housing_data = delif(housing_data, housing_data[., "households"] .>= 2000);
+
+// Delete population greater than or equal to 6000
+housing_data = delif(housing_data, housing_data[., "population"] .>= 6000);
+/*
+** Box plots with outliers 
+** removed
+*/
 plotOpenWindow();
-for i(1, rows(vars)-1, 1);
-    plotSetTitle(&plt, vars[i]);
-    plotLayout(3, 3, i);
-    plotHist(plt, housing_data[., vars[i]], 50);
+for i(1, rows(outlier_vars), 1);
+    plotSetTitle(&plt, outlier_vars[i]);
+    plotLayout(2, 2, i);
+    plotHist(plt, housing_data[., outlier_vars[i]], 50);
 endfor;
 
 plotOpenWindow();
-for i(1, rows(vars)-1, 1);
-    plotSetTitle(&plt, vars[i]);
-    plotLayout(3, 3, i);
-    plotBox(plt, vars[i], housing_data[., vars[i]]);
+for i(1, rows(outlier_vars), 1);
+    plotLayout(2, 2, i);
+    plotBox(plt2, outlier_vars[i], housing_data[., outlier_vars[i]]);
 endfor;
 
 plotClearLayout();
 
+
 /*
-** Check scatter plots of 
-** select variables relative to
-** outcome variable
+** Examine truncated data
 */
+// Count most frequently occurring 
+// value of median house value
+print "The most frequently occurring value of median_house_value:";
+modec(housing_data[., "median_house_value"]);
 
-// Total rooms
-plotOpenWindow();
-plotLayout(2, 2, 1);
-plotScatter(housing_data, "median_house_value~total_rooms");
+print "Counts:";
+sumc(housing_data[., "median_house_value"] .== modec(housing_data[., "median_house_value"]));
 
-// Total bedrooms
-plotLayout(2, 2, 2);
-plotScatter(housing_data, "median_house_value~total_bedrooms");
+// Count most frequently occurring 
+// value of housing_median_age
+print "The most frequently occurring value of housing_median_age:";
+modec(housing_data[., "housing_median_age"]);
 
-// Population
-plotLayout(2, 2, 3);
-plotScatter(housing_data, "median_house_value~population");
+print "Counts:";
+sumc(housing_data[., "housing_median_age"] .== modec(housing_data[., "housing_median_age"]));
 
-// Households
-plotLayout(2, 2, 4);
-plotScatter(housing_data, "median_house_value~households");
 
-saved(housing_data, load_path $+ "/model_data.gdat");
+// Delete observations at truncation point 
+// for housing_median_age
+trunc_pt = modec(housing_data[., "housing_median_age"]);
+cond_ = housing_data[., "housing_median_age"] .== trunc_pt;
+housing_data = delif(housing_data, cond_);
+
+// Delete observations at truncation point 
+// for median_housing_value
+trunc_pt = modec(housing_data[., "median_house_value"]);
+cond_ = housing_data[., "median_house_value"] .== trunc_pt;
+housing_data = delif(housing_data, cond_);
+
+/*
+** Feature modifications
+*/
+// Rescale median income variable
+housing_data[., "median_house_value"] = 
+housing_data[., "median_house_value"]/10000;
+
+/*
+** Create per capita variables
+** using population
+*/
+total_rooms_pc = 
+housing_data[., "total_rooms"]./housing_data[., "population"];
+
+total_bedrooms_pc = 
+housing_data[., "total_bedrooms"]./housing_data[., "population"];
+
+household_pc = 
+housing_data[., "households"]./housing_data[., "population"];
+
+// Rename variables
+pc_data = setColNames(total_rooms_pc~total_bedrooms_pc~household_pc, "rooms_pc"$|"bedrooms_pc"$|"households_pc");
+
+/*
+** Categorical data
+*/
+// Check frequency of
+// ocean_proximity categories
+frequency(housing_data, "ocean_proximity");
+
+// Generate dummy variables for 
+// the categorical ocean_proximity variable
+dummy_matrix = oneHot(housing_data[., "ocean_proximity"]);
+
+/*
+** Save data
+*/
+// Build matrix of features
+// Note we exclude ISLAND
+// dummy variable
+model_data = housing_data~pc_data~delcols(dummy_matrix, "ocean_proximity_ISLAND");
+
+// Saved data matrix
+saved(model_data, load_path $+ "/model_data.gdat");
