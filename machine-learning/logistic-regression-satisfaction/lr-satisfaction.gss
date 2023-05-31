@@ -8,56 +8,167 @@ rndseed 8906876;
 /*
 ** Load datafile
 */
-airline_data = loadd("airline_survey.gdat");
-airline_data = delcols(airline_data, "id");
-airline_data[., "Arrival Delay in Minutes"] = where(airline_data[., "Arrival Delay in Minutes"] .== miss(), airline_data[., "Departure Delay in Minutes"], airline_data[., "Arrival Delay in Minutes"]);
+load_path = "data";
+fname = "/airline_satisfaction.gdat";
+
+// Load all data except id
+airline_data = loadd(load_path $+ fname);
+//airline_data = delcols(airline_data, "id");
 
 // Split data
 y = airline_data[., "satisfaction"];
-X = delcols(airline_data, "satisfaction");
+X = delcols(airline_data, "satisfaction"$|"id");
+
+/*
+** Create dummy variables
+*/
+// Get all variable names
+col_names = getColNames(X);
+
+// Get types of all variables
+col_types = getColTypes(X);
+
+// Select names of variables
+// that are categorical
+cat_names = selif(col_names, col_types .== "category");
+
+// Loop through categorical variables
+// to create dummy variables
+// Note there are 19 cat variables
+dummy_vars = {};
+for i(1, rows(cat_names), 1); 
+    dummy_vars = dummy_vars~oneHot(X[., cat_names[i]]);
+endfor;
+
+X = delcols(x, cat_names)~dummy_vars;
+
+// Split data into 70% training and 30% test set
+{ y_train, y_test, X_train, X_test } = trainTestSplit(y, X, 0.7);
 
 /*  
 ** Preliminary data exploration
 */
-// Quicnfolds data summary
-dstatmt(airline_data);
-
 // Examine our outcome variable
 frequency(airline_data, "satisfaction");
 
+/*************************************
+** Base case model
+** No regularization
+*************************************/
+print "No regularization";
 /*
-** Hyperparameter tuning
-** using nfolds-fold cross validation
+** Training
 */
+// Declare 'lr_mdl' to be an 'logisticRegModel' structure
+// to hold the trained model
+struct logisticRegModel lr_mdl;
 
-// Vector of potential lambda
-lambda = seqa(0.1, 0.1, 1000);
+// Train the logistic regression classifier
+lr_mdl = logisticRegFit(y_train, X_train);
 
-// Number of folds
-nfolds = 5;
+/*
+** Testing
+*/
+// Make predictions on the test set, from our trained model
+y_hat =lmPredict(lr_mdl, X_test);
 
-// Create storage matrices
-total_accuracy = zeros(rows(lambda), 1);
-accuracy = zeros(nfolds, rows(lambda));
+/*
+** Model evaluation
+*/
+call classificationMetrics(y_test, y_hat);
 
-// Declare 'mdl' to be an instance of a
-// lassoModel structure to hold the estimation results
-struct lassoModel mdl;
+/*************************************
+** L1 Regularization
+*************************************/
+print "L1 regularization";
 
-// Hyper-parameter tuning
-// cross-validation loop
+/*
+** Training
+*/
+// Declare 'lr_mdl' to be an 'logisticRegModel' structure
+// to hold the trained model
+struct logisticRegModel lr_mdl;
 
-// Loop over all lambdas
-for j(1, nfolds, 1);
-        { y_train, y_test, X_train, X_test } = cvSplit(y, X, nfolds, j);
-    
-        // Estimate the model with default settings
-        mdl = lassoFit(y_train, X_train, lambda);
-  
-endfor;
-    
-total_accuracy = meanc(accuracy);
-//endfor;
+// Declare 'lrc' to be a logisticRegControl
+// structure and fill with default settings 
+struct logisticRegControl lrc;
+lrc = logisticRegControlCreate();
+
+// Set regularization parameters
+lrc.l1 = 0.3;
+
+// Train the logistic regression classifier
+lr_mdl = logisticRegFit(y_train, X_train, lrc);
+
+/*
+** Testing
+*/
+// Make predictions on the test set, from our trained model
+y_hat_l1 = lmPredict(lr_mdl, X_test);
+
+/*
+** Model evaluation
+*/
+call classificationMetrics(y_test, y_hat_l1);
+
+/*************************************
+** L2 Regularization
+*************************************/
+print "L2 regularization";
+/*
+** Training
+*/
+// Set regularization parameters
+lrc.l1 = 0;
+lrc.l2 = 0.3;
+
+// Train the logistic regression classifier
+lr_mdl = logisticRegFit(y_train, X_train, lrc);
+
+/*
+** Testing
+*/
+// Make predictions on the test set, from our trained model
+y_hat_l2 =lmPredict(lr_mdl, X_test);
+
+/*
+** Model evaluation
+*/
+call classificationMetrics(y_test, y_hat_l2);
+
+/*************************************
+** L1 & L2 Regularization
+*************************************/
+print "L1 & L2 regularization";
+/*
+** Training
+*/
+// Declare 'lr_mdl' to be an 'logisticRegModel' structure
+// to hold the trained model
+struct logisticRegModel lr_mdl;
+
+// Declare 'lrc' to be a logisticRegControl
+// structure and fill with default settings 
+struct logisticRegControl lrc;
+lrc = logisticRegControlCreate();
+
+// Set regularization parameters
+lrc.l1 = 0.3;
+lrc.l2 = 0.3;
+
+// Train the logistic regression classifier
+lr_mdl = logisticRegFit(y_train, X_train, lrc);
+
+/*
+** Testing
+*/
+// Make predictions on the test set, from our trained model
+y_hat_l12 =lmPredict(lr_mdl, X_test);
+
+/*
+** Model evaluation
+*/
+call classificationMetrics(y_test, y_hat_l12);
 
         
 
