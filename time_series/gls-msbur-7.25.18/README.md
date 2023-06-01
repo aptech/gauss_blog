@@ -8,9 +8,11 @@ structural breaks?]( https://www.aptech.com/blog/the-changing-trend-in-home-valu
 
 ## Getting Started
 ### Prerequisites
-The program files require a working copy of **GAUSS 18+**. Many can be run on earlier versions with some small revisions.
+The program files require a working copy of **GAUSS 18+**.
 
-In addition it requires the [Time Series MT](https://store.aptech.com/gauss-applications-category/time-series-mt.html) application from Aptech and the **msbur** library included in this repository.
+In addition it requires either:
+1. The [Time Series MT](https://store.aptech.com/gauss-applications-category/time-series-mt.html) application from Aptech and the **msbur** library included in this repository.
+2. [The TSPDLIB library](https://docs.aptech.com/gauss/tspdlib/docs/tspdlib-landing.html) available for free installation using the [GAUSS Package Manager](https://www.aptech.com/blog/gauss-package-manager-basics/)  and the **msbur** library included in this repository.
 
 The **msbur** library includes:
 1. The original **GAUSS** GLS-MSBUR code provided by [Josep Lluís Carrion-i-Silvestre](https://webgrec.ub.edu/webpages/personal/cat/000698_carrion.ub.edu.html) which is based on the code provided by Serena Ng and Pierre Perron (Econometrica, 2001).
