@@ -3,7 +3,7 @@ library gml;
 rndseed 23423;
 
 /*
-** Load data and prepare data
+** Load data and split
 */
 // Load dataset
 dataset = __FILE_DIR $+ "reg_data.gdat";
@@ -35,9 +35,6 @@ struct dfControl dfc;
 // Set default values for
 // structure members
 dfc = dfControlCreate();
-
-// Turn on out-of-bag error calculation
-dfc.oobError = 1;
 
 // Set features per split
 dfc.featuresPerSplit = 6;
