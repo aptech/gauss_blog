@@ -1,6 +1,6 @@
 new;
 library gml;
-rndseed 8906876;
+rndseed 896876;
 
 /*
 ** Load datafile
@@ -16,7 +16,7 @@ housing_data = loadd(load_path $+ fname);
 */
 // Separate dependent and independent data
 y = housing_data[., "median_house_value"];
-X = delcols(housing_data, "median_house_value"$|"ocean_proximity");
+X = delcols(housing_data, "median_house_value");
 
 // Split into 70% training data 
 // and 30% testing data
@@ -25,8 +25,8 @@ X = delcols(housing_data, "median_house_value"$|"ocean_proximity");
 /*
 ** LASSO Model
 */
-// Set lambda
-lambda = 0.3;
+// Set lambda values
+lambda = { 0, 0.1, 0.3 };
 
 // Declare 'mdl' to be an instance of a
 // lassoModel structure to hold the estimation results
@@ -42,3 +42,47 @@ predictions = lmPredict(mdl, x_test);
 // Get MSE
 testing_MSE = meanSquaredError(predictions, y_test);
 print "Testing MSE"; testing_MSE;
+
+/*
+** Feature Engineering
+*/
+/*
+** Create per capita variables
+** using population
+*/
+pc_data = housing_data[., "total_rooms" "total_bedrooms" "households"] 
+    ./ housing_data[., "population"];
+
+// Convert to a dataframe and add variable names
+pc_data = asdf(pc_data, "rooms_pc"$|"bedrooms_pc"$|"households_pc");
+
+// Bedrooms per a room
+beds_per_room = X[.,"total_bedrooms"] ./ X[.,"total_rooms"];
+
+// Remake X
+X = X ~ pc_data ~ asdf(beds_per_room, "beds_per_room");
+
+// Reset the random seed so we get the
+// same test and train splits as our previous model
+rndseed 896876;
+ 
+// Split our new X into train and test splits
+{ y_train, y_test, X_train, X_test } = trainTestSplit(y, X, 0.7);
+ 
+// Set lambda values
+lambda = { 0, 0.1, 0.3 };
+ 
+// Declare 'mdl' to be an instance of a
+// lassoModel structure to hold the estimation results
+struct lassoModel mdl;
+ 
+// Estimate the model with default settings
+mdl = lassoFit(y_train, X_train, lambda);
+ 
+// Predictions
+predictions = lmPredict(mdl, X_test);
+ 
+// Get MSE
+testing_MSE = meanSquaredError(predictions, y_test);
+print "Testing MSE"; testing_MSE;
+

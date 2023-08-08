@@ -1,6 +1,6 @@
 new;
 library gml;
-rndseed 23423;
+rndseed 754931;
 
 /*
 ** Load data and prepare data
@@ -25,10 +25,6 @@ struct dfModel dfm;
 // structure and fill with default settings
 struct dfControl dfc;
 dfc = dfControlCreate();
-
-// Compute variable importance and out-of-bag error
-dfc.variableImportanceMethod = 1;
-dfc.oobError = 1;
 
 // Create 200 decision trees
 dfc.numTrees = 200;

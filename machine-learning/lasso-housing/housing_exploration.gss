@@ -69,7 +69,6 @@ endfor;
 /*
 ** Box plots with full data
 */
-outlier_vars = "total_rooms"$|"total_bedrooms"$|"households"$|"population";
 
 // Set up plot control
 struct plotControl plt2;
@@ -77,9 +76,12 @@ plt2 = plotGetDefaults("box");
 
 // Set fonts
 plotSetFonts(&plt2, "title", "Arial", 14);
-plotSetFonts(&plt2, "yticks", "Arial", 10);
-plotSetFonts(&plt2, "xticks", "Arial", 14);
+plotSetFonts(&plt2, "ticks", "Arial", 12);
 
+// Names of box plot variables
+string box_vars = { "total_rooms", "total_bedrooms", "households", "population" };
+
+// Open new window and clear layout
 plotOpenWindow();
 plotClearLayout();
 
@@ -90,18 +92,20 @@ endfor;
 
 /*
 ** Filter to remove outliers
+**
+** Delete:
+**    - total_rooms greater than or equal to 10000
+**    - total_bedrooms greater than or equal to 20000
+**    - households greater than or equal to 2000
+**    - population greater than or equal to 6000
 */
-// Delete total_rooms greater than or equal to 10000
-housing_data = delif(housing_data, housing_data[., "total_rooms"] .>= 10000);
+mask = housing_data[., "total_rooms"] .>= 10000;
+mask = mask .or housing_data[., "total_bedrooms"] .>= 2000;
+mask = mask .or housing_data[., "households"] .>= 2000;
+mask = mask .or housing_data[., "population"] .>= 6000;
+ 
+housing_data = delif(housing_data, mask);
 
-// Delete total_bedrooms greater than or equal to 20000
-housing_data = delif(housing_data, housing_data[., "total_bedrooms"] .>= 2000);
-
-// Delete households greater than or equal to 2000
-housing_data = delif(housing_data, housing_data[., "households"] .>= 2000);
-
-// Delete population greater than or equal to 6000
-housing_data = delif(housing_data, housing_data[., "population"] .>= 6000);
 /*
 ** Box plots with outliers 
 ** removed
@@ -127,32 +131,29 @@ plotClearLayout();
 */
 // Count most frequently occurring 
 // value of median house value
-print "The most frequently occurring value of median_house_value:";
-modec(housing_data[., "median_house_value"]);
+mode_value = modec(housing_data[., "median_house_value"]);
+print "Most frequent median_house_value:" mode_value;
 
 print "Counts:";
-sumc(housing_data[., "median_house_value"] .== modec(housing_data[., "median_house_value"]));
+sumc(housing_data[., "median_house_value"] .== mode_value);
 
 // Count most frequently occurring 
 // value of housing_median_age
-print "The most frequently occurring value of housing_median_age:";
-modec(housing_data[., "housing_median_age"]);
-
+// House age
+mode_age = modec(housing_data[., "housing_median_age"]);
+print "Most frequent housing_median_age:" mode_age;
+ 
 print "Counts:";
-sumc(housing_data[., "housing_median_age"] .== modec(housing_data[., "housing_median_age"]));
+sumc(housing_data[., "housing_median_age"] .== mode_age);
 
-
-// Delete observations at truncation point 
-// for housing_median_age
-trunc_pt = modec(housing_data[., "housing_median_age"]);
-cond_ = housing_data[., "housing_median_age"] .== trunc_pt;
-housing_data = delif(housing_data, cond_);
-
-// Delete observations at truncation point 
-// for median_housing_value
-trunc_pt = modec(housing_data[., "median_house_value"]);
-cond_ = housing_data[., "median_house_value"] .== trunc_pt;
-housing_data = delif(housing_data, cond_);
+// Create binary vector with a 1 if either
+// 'housing_median_age' or 'median_house_value'
+// equal their mode value.
+mask = (housing_data[., "housing_median_age"] .== mode_age)
+       .or (housing_data[., "median_house_value"] .== mode_value);
+ 
+// Delete the rows if they meet our above criteria
+housing_data = delif(housing_data, mask);
 
 /*
 ** Feature modifications
@@ -161,21 +162,6 @@ housing_data = delif(housing_data, cond_);
 housing_data[., "median_house_value"] = 
 housing_data[., "median_house_value"]/10000;
 
-/*
-** Create per capita variables
-** using population
-*/
-total_rooms_pc = 
-housing_data[., "total_rooms"]./housing_data[., "population"];
-
-total_bedrooms_pc = 
-housing_data[., "total_bedrooms"]./housing_data[., "population"];
-
-household_pc = 
-housing_data[., "households"]./housing_data[., "population"];
-
-// Rename variables
-pc_data = setColNames(total_rooms_pc~total_bedrooms_pc~household_pc, "rooms_pc"$|"bedrooms_pc"$|"households_pc");
 
 /*
 ** Categorical data
@@ -194,7 +180,7 @@ dummy_matrix = oneHot(housing_data[., "ocean_proximity"]);
 // Build matrix of features
 // Note we exclude ISLAND
 // dummy variable
-model_data = housing_data~pc_data~delcols(dummy_matrix, "ocean_proximity_ISLAND");
+model_data = delcols(housing_data, "ocean_proximity")~delcols(dummy_matrix, "ocean_proximity_ISLAND");
 
 // Saved data matrix
 saved(model_data, load_path $+ "/model_data.gdat");
