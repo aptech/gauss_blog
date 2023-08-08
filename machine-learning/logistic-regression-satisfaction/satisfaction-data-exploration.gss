@@ -27,9 +27,6 @@ isunique(airline_data);
 call dstatmt(airline_data);
 
 
-
-
-
 /*
 ** By gender
 */

@@ -45,6 +45,18 @@ X = delcols(x, cat_names)~dummy_vars;
 // Split data into 70% training and 30% test set
 { y_train, y_test, X_train, X_test } = trainTestSplit(y, X, 0.7);
 
+/*
+** Data rescaling
+*/
+// Number of variables to rescale
+numeric_vars = 4;
+ 
+// Rescale training data
+{ X_train[.,1:numeric_vars], x_mu, x_sd } = rescale(X_train[.,1:numeric_vars], "standardize");
+ 
+// Rescale test data using same scaling factors as x_train
+X_test[.,1:numeric_vars] = rescale(X_test[.,1:numeric_vars], x_mu, x_sd);
+
 /*  
 ** Preliminary data exploration
 */
@@ -77,39 +89,6 @@ y_hat =lmPredict(lr_mdl, X_test);
 */
 call classificationMetrics(y_test, y_hat);
 
-/*************************************
-** L1 Regularization
-*************************************/
-print "L1 regularization";
-
-/*
-** Training
-*/
-// Declare 'lr_mdl' to be an 'logisticRegModel' structure
-// to hold the trained model
-struct logisticRegModel lr_mdl;
-
-// Declare 'lrc' to be a logisticRegControl
-// structure and fill with default settings 
-struct logisticRegControl lrc;
-lrc = logisticRegControlCreate();
-
-// Set regularization parameters
-lrc.l1 = 0.3;
-
-// Train the logistic regression classifier
-lr_mdl = logisticRegFit(y_train, X_train, lrc);
-
-/*
-** Testing
-*/
-// Make predictions on the test set, from our trained model
-y_hat_l1 = lmPredict(lr_mdl, X_test);
-
-/*
-** Model evaluation
-*/
-call classificationMetrics(y_test, y_hat_l1);
 
 /*************************************
 ** L2 Regularization
@@ -118,9 +97,13 @@ print "L2 regularization";
 /*
 ** Training
 */
+// Declare 'lrc' to be a logisticRegControl
+// structure and fill with default settings 
+struct logisticRegControl lrc;
+lrc = logisticRegControlCreate();
+
 // Set regularization parameters
-lrc.l1 = 0;
-lrc.l2 = 0.3;
+lrc.l2 = 0.05;
 
 // Train the logistic regression classifier
 lr_mdl = logisticRegFit(y_train, X_train, lrc);
@@ -135,41 +118,5 @@ y_hat_l2 =lmPredict(lr_mdl, X_test);
 ** Model evaluation
 */
 call classificationMetrics(y_test, y_hat_l2);
-
-/*************************************
-** L1 & L2 Regularization
-*************************************/
-print "L1 & L2 regularization";
-/*
-** Training
-*/
-// Declare 'lr_mdl' to be an 'logisticRegModel' structure
-// to hold the trained model
-struct logisticRegModel lr_mdl;
-
-// Declare 'lrc' to be a logisticRegControl
-// structure and fill with default settings 
-struct logisticRegControl lrc;
-lrc = logisticRegControlCreate();
-
-// Set regularization parameters
-lrc.l1 = 0.3;
-lrc.l2 = 0.3;
-
-// Train the logistic regression classifier
-lr_mdl = logisticRegFit(y_train, X_train, lrc);
-
-/*
-** Testing
-*/
-// Make predictions on the test set, from our trained model
-y_hat_l12 =lmPredict(lr_mdl, X_test);
-
-/*
-** Model evaluation
-*/
-call classificationMetrics(y_test, y_hat_l12);
-
-        
 
 
