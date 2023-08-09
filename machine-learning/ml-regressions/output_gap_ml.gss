@@ -98,7 +98,7 @@ plotSetFonts(&plt, "ticks legend", "Arial", 14);
 plotSetFonts(&plt, "Title", "Arial", 18);
 
 // Set up legends
-labels = "Ridge"$|"Lasso"$|"Decision Forest"$|"Observed";
+labels = "LASSO"$|"Ridge"$|"Decision Forest"$|"Observed";
 plotSetLegend(&plt, labels, "bottom left");
 
 // Set Canvas size

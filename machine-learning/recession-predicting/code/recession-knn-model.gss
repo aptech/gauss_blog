@@ -20,6 +20,7 @@ shuffle = "False";
 /*
 ** Train the model
 */
+// Specify the number of neighbors
 k = 5;
 
 struct knnModel mdl;

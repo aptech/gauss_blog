@@ -1,12 +1,12 @@
 new;
-library gmldev;
+library gml;
 
 /*
 ** Step One: Loading data from FRED
 */
 // Set observation_start parameter
 // to use all data on or after 1985-01-01
-params_cpi = fred_set("observation_start", "1990-01-01");
+params_cpi = fred_set("observation_start", "1990-01-01", "observation_end", "2023-03-01");
 
 // Load data from FRED
 data = fred_load("GS3M + GS6M + GS1 + GS3 + GS5 + GS10", params_cpi);
@@ -22,17 +22,11 @@ head(data);
 // the yields, but not the 'Date' variable
 yields = delcols(data, "date");
 
-// Compute the means and standard
-// deviations for each variable
-mu = meanc(yields);
-sd = stdc(yields);
-
 // Standardize yields using rescale
 { yields_norm2, location, scale_factor } = rescale(yields, "standardize");
-varnames = "GS3M"$|"GS6M"$|"GS1"$|"GS3"$|"GS5"$|"GS10";
-
 yields_norm = asDF(yields_norm2, "GS3M","GS6M","GS1","GS3","GS5","GS10");
 
+// Preview yields
 head(yields_norm);
 
 /*
