@@ -1,0 +1,126 @@
+new;
+
+// Load trip data
+trip_data = loadd("trip_data.gdat");
+
+head(trip_data);
+
+// Load vehicle data
+veh_data = loadd("veh_data.gdat");
+
+/*
+** Duplicates
+*/
+// Check for duplicates
+isunique(trip_data);
+
+// Get duplicates
+getduplicates(trip_data);
+
+/*
+** Cleaning step one
+*/
+// Check frequency of the trip type
+frequency(trip_data, "TRIPPURP", 1);
+
+// Split the data 
+tmp = strsplit(trip_data[., "TRIPPURP"], "(");
+tmp = strtrim(tmp);
+
+// Rename variables
+tmp = setColNames(tmp, "TRIP_DESC"$|"TRIP_ABBR");
+
+// Check preview
+head(tmp);
+
+/*
+** Remove the right paranthese
+*/
+// Find indx of the ")"
+tmp[., 2]  = strreplace(tmp[., 2], ")", "");
+tmp[., 2] = strtrimr(tmp[., 2]);
+
+// Check frequency 
+frequency(tmp, "TRIP_DESC + TRIP_ABBR");
+
+/*
+** Recode missing label
+*/
+// Add missing label for NA
+tmp[., 2] = recodecatlabels(tmp[., 2], "", "NA", "TRIP_ABBR");
+
+// Check frequency 
+frequency(tmp, "TRIP_DESC + TRIP_ABBR");
+
+// Concatenate data
+trip_data = trip_data~tmp;
+
+/*
+** Contingency tables
+*/
+// Original table
+tab_df = tabulate(trip_data, "VEHTYPE ~ URBRUR");
+
+// Compute percentages within urban and rural areas
+// by dividing by column totals using sumc
+tab_df[., 1]~100*(tab_df[., 2:3]./sumc(tab_df[., 2:3])');
+
+// Compute percentages across urban and rural areas
+// by dividing by row totals using sumr
+tab_df[., 1]~100*(tab_df[., 2:3]./sumr(tab_df[., 2:3]));
+
+/*
+** Advanced contingency table options
+*/
+// Declare structure
+struct tabControl tbCtl;
+
+// Fill defaults
+tbCtl = tabControlCreate();
+
+// Set to leave out 'Valid skip'
+tbCtl.exclude = "VEHTYPE:Valid skip";
+
+// Original table
+tab_df2 = tabulate(trip_data, "VEHTYPE ~ URBRUR", tbCtl);
+
+tab_df2 = dfname(move(tab_df2), "Urban"$|"Rural", "URBRUR_Urban"$|"URBRUR_Rural");
+tab_df2 = setcollabels(move(tab_df2), "Car/Stationwagon"$|"MotorcycleMoped"$|"Other Truck"$|"Pickup Truck"$|"RV/Motorhome"$|"SUV"$|"Van", seqa(0, 1, 7), "VEHTYPE");
+
+/*
+** Frequency plot
+*/
+// Get frequency plot
+plotFreq(trip_data, "CENSUS_R", 1);
+
+/*
+** Bar plot
+*/
+// Get category labels
+labels = getCategories(tab_df2, "VEHTYPE");
+
+// Convert to string array
+labels_sa = ntos(labels);
+
+// Plot table
+plotBar(labels_sa, tab_df2[., "Urban" "Rural"]);
+
+/*
+** Stacked bar plot
+*/
+// Declare structure
+struct plotControl plt;
+
+// Fill defaults
+plt = plotGetDefaults("bar");
+
+// Set bars to be solid and stacked
+plotSetBar(&plt, 1, 1);
+
+// Plot contingency table
+plotBar(plt, labels_sa, tab_df2[., "Urban" "Rural"]);
+
+/*
+** Scatter plot
+*/
+plotScatter(trip_data, "TRPMILES ~ GASPRICE + by(CENSUS_R)");

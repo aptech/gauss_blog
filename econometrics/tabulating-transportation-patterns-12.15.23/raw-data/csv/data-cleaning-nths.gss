@@ -1,0 +1,63 @@
+/* 
+** This file converts raw data Travel Survey Core Data to 
+** a GAUSS data using the associated codebook. 
+** 
+** Data Source:
+** Federal Highway Administration. (2022). 2022 NextGen National Household Travel Survey Core
+** Data, U.S. Department of Transportation, Washington, DC. Available online:
+** http://nhts.ornl.gov. 
+*/
+new;
+
+// TRIP DATA
+// Load raw trip data
+trippub = loadd(__FILE_DIR $+ "trippub.csv");
+
+// Select variables of interest
+trippub = trippub[., "HOUSEID" "PERSONID" "TRIPID" "SEQ_TRIPID" "VEHCASEID" "FRSTHM" "PARK" "TRAVDAY" "DWELTIME" "PUBTRANS" "TRIPPURP" "WHYTRP1S" "TRVLCMIN" "TRPTRANS" "NUMONTRP" "NONHHCNT" "HHACCCNT" "WHYTO" "WALK" "TRPMILES" "VMT_MILE" "GASPRICE" "NUMADLT" "HOMEOWN" "RAIL" "CENSUS_D" "CENSUS_R" "CDIVMSAR" "HHFAMINC" "HH_RACE" "HHSIZE" "HHVEHCNT" "MSACAT" "MSASIZE" "URBAN" "URBANSIZE" "URBRUR" "TDAYDATE" "WRKCOUNT" "R_AGE" "R_SEX" "R_RACE" "EDUC" "VEHTYPE"];
+
+// Recode variables using codebook
+// List of categorical variables
+cat_vars = "FRSTHM"$|"PARK"$|"TRAVDAY"$|"PUBTRANS"$|"TRIPPURP"$|"WHYTRP1S"$|"TRPTRANS"$|"WHYTO"$|"WALK"$|"HOMEOWN"$|"RAIL"$|"CENSUS_D"$|"CENSUS_R"$|"CDIVMSAR"$|"HHFAMINC"$|"HH_RACE"$|"MSACAT"$|"MSASIZE"$|"URBAN"$|"URBANSIZE"$|"URBRUR"$|"R_SEX"$|"R_RACE"$|"EDUC"$|"VEHTYPE";
+
+// Load keys and labels
+recode_info = loadd(__FILE_DIR $+ "trip_codebook.csv");
+recode_info = dftype(move(recode_info), META_TYPE_STRING, "key");
+
+// Change var types types
+for i(1, rows(cat_vars), 1);
+    i;
+    recode_tmp = selif(recode_info, strtrim(recode_info[., "Name"]) .== strtrim(cat_vars[i]));
+    trippub = dftype(move(trippub), META_TYPE_CATEGORY, cat_vars[i]); 
+    trippub = recodecatlabels(trippub, recode_tmp[., "key"], ntos(recode_tmp[., "labels"]), cat_vars[i]);
+    frequency(trippub, cat_vars[i]);
+endfor;
+
+saved(trippub, "trip_data.gdat");
+
+// VEHICLE DATA
+// Load raw trip data
+vehpub = loadd(__FILE_DIR $+ "vehpub.csv");
+
+// Select variables of interest
+vehpub = vehpub[., "HOUSEID" "VEHYEAR" "MAKE" "VEHTYPE" "VEHFUEL" "ANNMILES" "HYBRID" "VEHAGE" "NUMADLT" "HOMEOWN" "CENSUS_D" "CENSUS_R" "CDIVMSAR" "HHFAMINC" "HH_RACE" "HHSIZE" "MSASIZE" "TRAVDAY" "URBAN" "URBANSIZE" "TDAYDATE"];
+
+// Recode variables using codebook
+// List of categorical variables
+cat_vars = "CDIVMSAR"$|"CENSUS_D"$|"CENSUS_R"$|"HHFAMINC"$|"HH_RACE"$|"HYBRID"$|"MAKE"$|"VEHTYPE"$|"VEHFUEL"$|"HOMEOWN"$|"MSASIZE"$|"TRAVDAY"$|"URBAN"$|"URBANSIZE";
+
+// Load keys and labels
+recode_info = loadd(__FILE_DIR $+ "vehicle_codebook.csv");
+recode_info = dftype(move(recode_info), META_TYPE_STRING, "key");
+
+// Change var types types
+for i(1, rows(cat_vars), 1);
+    i;
+    cat_vars[i];
+    recode_tmp = selif(recode_info, strtrim(recode_info[., "Name"]) .== strtrim(cat_vars[i]));
+    vehpub = dftype(move(vehpub), META_TYPE_CATEGORY, cat_vars[i]); 
+    vehpub = recodecatlabels(vehpub, recode_tmp[., "key"], ntos(recode_tmp[., "label"]), cat_vars[i]);
+    frequency(vehpub, cat_vars[i]);
+endfor;
+
+saved(vehpub, "veh_data.gdat");
