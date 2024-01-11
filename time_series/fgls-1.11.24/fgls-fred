@@ -1,0 +1,24 @@
+/*
+** This code accompanies the GAUSS data analytics blog
+** available at https://www.aptech.com/blog/
+*/
+new;
+
+/*
+** Step One: Data Loading 
+*/
+// Load data 
+fred_fgls = loadd("fred_fgls.gdat");
+
+// Preview data
+head(fred_fgls);
+tail(fred_fgls);
+
+// Plot data
+plotCanvasSize("px", 600|400);
+plotXY(fred_fgls, "CPIAUCSL + COE ~date");
+
+/*
+** Step Two: Ordinary least squares
+*/
+call olsmt(fred_fgls, "CPIAUCSL~COE");

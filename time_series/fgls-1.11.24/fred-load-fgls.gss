@@ -1,0 +1,21 @@
+/*
+** This code accompanies the GAUSS data analytics blog
+** available at https://www.aptech.com/blog/
+*/
+new;
+
+FRED_API_KEY = "7a756a099f64c52f4657b4accc942137";
+
+// Set params to:
+//  1) load average quarterly data
+//  2) transform to percent change
+params_fred = fred_set("frequency", "q", "aggregation_method", "avg", "units", "cch");
+
+
+// Load COE and CPI with specified transformations
+reg_data = fred_load("COE + CPIAUCSL", params_fred);
+
+// Tranform to decimal representation
+reg_data[., "CPIAUCSL" "COE"] = reg_data[., "CPIAUCSL" "COE"]/100;
+
+saved(packr(reg_data), "fred_fgls.gdat");
