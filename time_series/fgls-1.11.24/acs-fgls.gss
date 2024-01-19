@@ -1,0 +1,105 @@
+/*
+** This code accompanies the GAUSS data analytics blog
+** available at https://www.aptech.com/blog/
+*/
+new;
+
+/*
+** Step One: Data Loading 
+** Using the 2019 ACS 
+*/
+// Load data 
+acs_fgls = loadd("acs2019sample.dta", "income + age + hours_worked");
+
+// Preview data
+dstatmt(acs_fgls);
+
+// Remove missing values
+acs_fgls = packr(acs_fgls);
+
+// Transform income
+acs_fgls[., "income"] = acs_fgls[., "income"]/1000;
+
+// Filter out cases with negative incomes
+acs_fgls = delif(acs_fgls, acs_fgls[., "income"] .< 0);
+
+/*****************************************
+** Step Two: Ordinary least squares
+*****************************************/
+// Declare 'ols_ctl' to be an olsmtControl structure
+// and fill with default settings
+struct olsmtControl ols_ctl;
+ols_ctl = olsmtControlCreate();
+
+// Set the 'res' member of the olsmtControl structure
+// so that 'olsmt' will compute residuals and the Durbin-Watson statistic
+ols_ctl.res = 1;
+
+// Declare 'ols_out' to be an olsmtOut structure
+// to hold the results of the computations
+struct olsmtOut ols_out;
+
+// Perform estimation, using settings in the 'ols_ctl'
+// control structure and store the results in 'ols_out'
+ols_out = olsmt(acs_fgls, "income ~ age + hours_worked", ols_ctl);
+
+/*****************************************
+* Step three: Evaluate results
+*****************************************/
+// Set up plot format
+plotCanvasSize("px", 600|400);
+
+// Plot control structure
+struct plotControl plt;
+plt = plotGetDefaults("scatter");
+
+// Set fonts
+plotSetFonts(&plt, "axes", "Arial", 12);
+plotSetFonts(&plt, "ticks", "Arial", 10);
+
+/*
+** Plot a histogram of the squared residuals 
+** Check for skewed distribution
+*/
+plotHist(ols_out.resid, 50);
+
+/*
+** Plot squared residuals against independent variables
+** Check for increasing or decreasing variance 
+** as the independent variable changes.
+*/
+plotOpenWindow();
+plotSetYLabel(&plt, "Residuals");
+plotSetXLabel(&plt, "Age");
+plotScatter(plt, acs_fgls[., "age"], ols_out.resid);
+
+plotOpenWindow();
+plotSetYLabel(&plt, "Residuals");
+plotSetXLabel(&plt, "Hours Worked (per week)");
+plotScatter(plt, acs_fgls[., "hours_worked"], ols_out.resid);
+
+/*
+** Plot residuals against fitted values
+** Look for fan-shaped or funnel-shaped pattern, 
+** indicating that the variance of the residuals 
+** is not constant across all levels of the 
+** independent variable.
+*/
+// Generate fitted values
+y_hat = (ones(rows(ols_out.resid), 1)~acs_fgls[., "age" "hours_worked" ])*ols_out.b;
+
+// Plot residual againt data
+plotClearLayout();
+plotOpenWindow();
+plotSetYLabel(&plt, "Residuals");
+plotSetXLabel(&plt, "Predicted Income (Thousands of USD)");
+plotScatter(plt, y_hat, ols_out.resid);
+
+/*****************************************
+* Step four: FGLS Estimation
+*****************************************/
+// Estimate FGLS parameters using
+// default setting
+struct fglsOut fOut;
+fOut = fgls(acs_fgls, "income ~ age + hours_worked", "HC1");
+

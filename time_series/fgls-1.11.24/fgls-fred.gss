@@ -1,0 +1,127 @@
+/*
+** This code accompanies the GAUSS data analytics blog
+** available at https://www.aptech.com/blog/
+*/
+new;
+library tsmt;
+
+/*
+** Step One: Data Loading 
+*/
+// Load data 
+fred_fgls = loadd("fred_fgls.gdat");
+
+// Preview data
+head(fred_fgls);
+tail(fred_fgls);
+
+// Plot data
+plotCanvasSize("px", 600|400);
+plotXY(fred_fgls, "CPIAUCSL + COE ~date");
+
+/*****************************************
+** Step Two: Ordinary least squares
+*****************************************/
+// Declare 'ols_ctl' to be an olsmtControl structure
+// and fill with default settings
+struct olsmtControl ols_ctl;
+ols_ctl = olsmtControlCreate();
+
+// Set the 'res' member of the olsmtControl structure
+// so that 'olsmt' will compute residuals and the Durbin-Watson statistic
+ols_ctl.res = 1;
+
+// Declare 'ols_out' to be an olsmtOut structure
+// to hold the results of the computations
+struct olsmtOut ols_out;
+
+// Perform estimation, using settings in the 'ols_ctl'
+// control structure and store the results in 'ols_out'
+ols_out = olsmt(fred_fgls, "CPIAUCSL~COE", ols_ctl);
+
+/*****************************************
+* Step three: Evaluate results
+*****************************************/
+// Checking for heteroscedasticity
+// Squared the residuals
+res_sq = ols_out.resid.^2;
+
+/*
+** Plot a histogram of the squared residuals 
+** Check for skewed distribution
+*/
+plotHist(res_sq, 50);
+
+/*
+** Plot squared residuals against COE
+** Check for increasing or decreasing variance 
+** as the independent variable changes.
+*/
+plotScatter(fred_fgls[., "COE"], ols_out.resid);
+
+// Add random normal observations to our scatter plot
+// scale by 100 to put on same scale as residuals
+rndseed 897680;
+plotAddScatter(fred_fgls[., "COE"], rndn(rows(ols_out.resid), 1)/100);
+
+/*
+** Plot residuals against fitted values
+** Look for fan-shaped or funnel-shaped pattern, 
+** indicating that the variance of the residuals 
+** is not constant across all levels of the 
+** independent variable.
+*/
+// Generate fitted values
+y_hat = (ones(rows(ols_out.resid), 1)~fred_fgls[., "COE"])*ols_out.b;
+
+// Plot residual againt data
+plotScatter(y_hat, ols_out.resid);
+
+// Checking for autocorrelation
+/*
+** Plot the residuals over time and 
+** look for cycles or trends to 
+** check for autocorrelation.
+*/
+plotXY(fred_fgls[., "date"], ols_out.resid);
+
+/*
+** Plot residuals over time and 
+** look for cycles or trends to 
+** check for autocorrelation.
+*/
+plotScatter(trimr(ols_out.resid, 1, 0), trimr(lagn(ols_out.resid, 1), 1, 0));
+
+/*****************************************
+* Step four: FGLS Estimation
+*****************************************/
+// Estimate FGLS parameters using
+// default setting
+struct fglsOut fOut;
+fOut = fgls(fred_fgls, "CPIAUCSL~COE");
+
+// Plot residuals
+plotOpenWindow();
+lagged_resid = packr(lagn(fOut.resid, 1));
+plotScatter(trimr(fOut.resid,1,0), lagged_resid);
+
+end;
+
+// Try arima model
+lagorder = 3;
+struct automtOut aOut;
+aOut = autoregmt(fred_fgls[., "COE"], fred_fgls[., "CPIAUCSL"], 1, lagorder);
+
+y_lags = lagn(fred_fgls[ ., "CPIAUCSL"], seqa(1, 1, lagorder));
+x = ones(rows(fred_fgls), 1)~lagn(fred_fgls[., "COE"], 1);
+y_hat = trimr(x*aOut.coefs, lagorder, 0)+trimr(y_lags, lagorder, 0)*aOut.phi;
+resid_auto = y_hat - trimr(fred_fgls[ ., "CPIAUCSL"], lagorder, 0);
+
+// Plot residuals
+plotOpenWindow();
+lagged_resid = packr(lagn(resid_auto, 1));
+plotScatter(trimr(resid_auto, 1, 0), lagged_resid);
+
+// ACF plot
+plotACF(resid_auto, 20, 0);
+
