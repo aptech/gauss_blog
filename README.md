@@ -7,7 +7,7 @@ This repository houses the code and data to accompany the [Aptech **GAUSS** blog
 
 ## Getting Started
 ### Prerequisites
-These program files require a working copy of **GAUSS 22+**. Many can be run on earlier versions with some small revisions.
+These program files require a working copy of **GAUSS 24+**. Many can be run on earlier versions with some small revisions.
 
 ### Installing
 Installation instructions for the individual codes are provided in blog-specific README files.
@@ -15,6 +15,11 @@ Installation instructions for the individual codes are provided in blog-specific
 ## Coverage
 |Topic|Blog Title|Date|
 |:----|:----|:----|
+|[Cleaning survey data](econometrics/tabulating-transportation-patterns-12.15.23)|["Getting Started With Survey Data In GAUSS"](https://www.aptech.com/blog/getting-started-with-survey-data-in-gauss/)|01/11/2024|    
+|[Panel data cleaning](econometrics/pivoting-to-long-form-12-6-23)|["Transforming Panel Data to Long Form in GAUSS"](https://www.aptech.com/blog/transforming-panel-data-to-long-form-in-gauss/)|12/12/2023|    
+|[Machine learning classification](machine-learning/lasso-regression-satisfaction)|["Classification with Regularized Logistic Regression"](https://www.aptech.com/blog/classification-with-regularized-logistic-regression/)|06/07/2023|    
+|[Machine learning](machine-learning/lasso-housing)|["Understanding Cross-Validation"](https://www.aptech.com/blog/machine-learning-with-real-world-data/)|05/15/2023|    
+|[Cross-validation](machine-learning/cross-validation)|["Understanding Cross-Validation"](https://www.aptech.com/blog/understanding-cross-validation/)|05/02/2023|    
 |[Hyperparameter tuning](machine-learning/parameter-tuning)|["Fundamentals of Tuning Machine Learning Hyperparameters"](https://www.aptech.com/blog/fundamentals-of-tuning-machine-learning-hyperparameters/)|04/24/2023|
 |[Machine learning regression](machine-learning/ml-regressions)|["Predicting the Output Gap With Machine Learning Regression Models"](https://www.aptech.com/blog/predicting-the-output-gap-with-machine-learning-regression-models/)|04/12/2023|
 |[String data](programming/working-with-strings-3.06.23)|["Managing String Data with GAUSS Dataframes"](https://www.aptech.com/blog/managing-string-data-with-gauss-dataframes/)|03/28/2023|
@@ -69,7 +74,7 @@ Installation instructions for the individual codes are provided in blog-specific
 |[Unit root testing with multiple structural breaks](time_series/gls-msbur-7.25.18)|["Why the GLS-unit root test with multiple structural breaks"](https://www.aptech.com/blog/the-changing-trend-in-home-values/)|7/25/2018|
 
 ## Contacts
-[Erica Clower](mailto:ericar@aptech.com)  
+[Eric Clower](mailto:eric@aptech.com)  
 [Aptech Systems, Inc](https://www.aptech.com/)  
 [![alt text][1.1]][1]
 [![alt text][2.1]][2]
