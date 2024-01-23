@@ -42,15 +42,11 @@ ols_out = olsmt(fred_fgls, "CPIAUCSL~COE", ols_ctl);
 /*****************************************
 * Step three: Evaluate results
 *****************************************/
-// Checking for heteroscedasticity
-// Squared the residuals
-res_sq = ols_out.resid.^2;
-
 /*
 ** Plot a histogram of the squared residuals 
 ** Check for skewed distribution
 */
-plotHist(res_sq, 50);
+plotHist(ols_out.resid, 50);
 
 /*
 ** Plot squared residuals against COE
@@ -103,7 +99,7 @@ fOut = fgls(fred_fgls, "CPIAUCSL~COE");
 // Plot residuals
 plotOpenWindow();
 lagged_resid = packr(lagn(fOut.resid, 1));
-plotScatter(trimr(fOut.resid,1,0), lagged_resid);
+plotScatter(trimr(fOut.resid, 1, 0), lagged_resid);
 
 end;
 
