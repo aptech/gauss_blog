@@ -4,7 +4,9 @@
 */
 new;
 
-FRED_API_KEY = "7a756a099f64c52f4657b4accc942137";
+// Put your FRED API key here
+// API keys can be requested from https://fred.stlouisfed.org/docs/api/api_key.html
+FRED_API_KEY = "";
 
 // Set params to:
 //  1) load average quarterly data
