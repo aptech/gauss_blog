@@ -86,7 +86,8 @@ plotXY(fred_fgls[., "date"], ols_out.resid);
 ** look for cycles or trends to 
 ** check for autocorrelation.
 */
-plotScatter(trimr(ols_out.resid, 1, 0), trimr(lagn(ols_out.resid, 1), 1, 0));
+lagged_resid = lagn(ols_out.resid, 1);
+plotScatter(lagged_resid, ols_out.resid);
 
 /*****************************************
 * Step four: FGLS Estimation
@@ -98,26 +99,5 @@ fOut = fgls(fred_fgls, "CPIAUCSL~COE");
 
 // Plot residuals
 plotOpenWindow();
-lagged_resid = packr(lagn(fOut.resid, 1));
-plotScatter(trimr(fOut.resid, 1, 0), lagged_resid);
-
-end;
-
-// Try arima model
-lagorder = 3;
-struct automtOut aOut;
-aOut = autoregmt(fred_fgls[., "COE"], fred_fgls[., "CPIAUCSL"], 1, lagorder);
-
-y_lags = lagn(fred_fgls[ ., "CPIAUCSL"], seqa(1, 1, lagorder));
-x = ones(rows(fred_fgls), 1)~lagn(fred_fgls[., "COE"], 1);
-y_hat = trimr(x*aOut.coefs, lagorder, 0)+trimr(y_lags, lagorder, 0)*aOut.phi;
-resid_auto = y_hat - trimr(fred_fgls[ ., "CPIAUCSL"], lagorder, 0);
-
-// Plot residuals
-plotOpenWindow();
-lagged_resid = packr(lagn(resid_auto, 1));
-plotScatter(trimr(resid_auto, 1, 0), lagged_resid);
-
-// ACF plot
-plotACF(resid_auto, 20, 0);
-
+lagged_resid = lagn(fOut.resid, 1);
+plotScatter(lagged_resid, fOut.resid);
