@@ -1,0 +1,40 @@
+new;
+cls;
+
+library tspdlib, pdlib;
+
+/*
+** Perform import
+*/
+pd_reg_data = loadd("C:/Users/eclow/OneDrive/Desktop/research/panel-data-project/pd_reg_data.gdat");
+
+// Convert rgdpe variable to wide data
+// Specify columns to pull new column names from
+names_from = "country";
+
+// Specify columns to pull new column values from
+values_from = "rgdpe";
+
+// Convert to wide form
+df_wide = dfWider(pd_reg_data[., "country" "year" "rgdpe"], names_from, values_from);
+
+/*
+** Panel Fourier KPSS 
+** stationarity test 
+*/
+
+// Run test with break in level and trend
+model = 2;
+
+// Fourier frequency
+k = 4;
+
+// Run test
+{ Nkpss, FZk, pval } = PDfzk(df_wide, model, k);
+
+// OLS model
+call olsmt(pd_reg_data, "ln(rgdpe) ~ csh_c + emp + country");
+
+
+
+
