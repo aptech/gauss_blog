@@ -1,9 +1,6 @@
-// Loading data
 struct LoadFileControl _ctl;
 _ctl = LoadFileControlCreate();
 _ctl.missing_vals_str = "NA";
 commute_data = loadd("C:/Users/eclow/Documents/GitHub/gauss_blog/econometrics/getting-started-choice-models/mc_commute_wide.csv", ". - X1", _ctl);
 commute_data[., "choice"] = reclassify(commute_data[., "choice"], 3|0|1|2, 0|1|2|3);
 commute_data = setcollabels(move(commute_data), "Walk"$|"Car"$|"Cycle"$|"HSR", seqa(0, 1, 4), "choice");
-
-
