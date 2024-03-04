@@ -1,0 +1,72 @@
+new;
+cls;
+
+// Set control struct
+// to add `NA` to missing values
+struct LoadFileControl _ctl;
+_ctl = LoadFileControlCreate();
+_ctl.missing_vals_str = "NA";
+
+// Load the attributes data
+commute_attributes = loadd("C:/Users/eclow/Documents/GitHub/gauss_blog/econometrics/getting-started-choice-models/mc_commute_attributes.csv", ". - X1", _ctl);
+
+// Load the choice data
+commute_choice = loadd("C:/Users/eclow/Documents/GitHub/gauss_blog/econometrics/getting-started-choice-models/mc_commute_choice.csv");
+
+// Reclassify the choice data
+// and make the `walk` the base case
+commute_choice[., "choice"] = reclassify(commute_choice[., "choice"], 3|0|1|2, 0|1|2|3);
+commute_choice = setcollabels(move(commute_choice), "Walk"$|"Car"$|"Cycle"$|"HSR", seqa(0, 1, 4), "choice");
+
+/*
+** Merge the dataframes
+*/
+reg_data = outerJoin(commute_choice, "id", commute_attributes, "id");
+
+// Check for uniques
+isunique(reg_data, "id");
+isunique(reg_data);
+
+/*
+** Data exploration and cleaning
+*/
+// Check summary statistics
+dstatmt(reg_data);
+
+// Filter data for ages <= 25
+reg_data = selif(reg_data, reg_data[., "age"] .<= 25);
+
+// Get frequencies of choice
+frequency(reg_data, "choice");
+
+// Create two-way table of choice by gender
+call tabulate(reg_data, "choice ~ gender");
+
+// Summary statistics by choice
+dstatmt(reg_data, "street_density + by(choice)");
+
+/*
+** Data visualization
+*/
+// Scatter plot
+plotScatter(reg_data, "street_density ~ sidewalk_density + by(choice)");
+
+// Frequency plot
+plotFreq(reg_data, "prefer_travel_alone");
+
+/*
+** Generating new variables
+*/
+choice_walk = reg_data[., "choice"] .== "Walk";
+
+// Save as dataframe and concatenate
+reg_data = asDF(choice_walk, "choice_walk")~reg_data;
+
+// Change type
+reg_data = asDF(choice_walk, "choice_walk")~reg_data;
+
+// Update labels
+reg_data = setcollabels(move(reg_data), "Not Walk"$|"Walk", seqa(0, 1, 2), "choice_walk");
+
+saved(reg_data, "transportation.gdat");
+
