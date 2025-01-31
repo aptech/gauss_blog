@@ -1,0 +1,80 @@
+/*
+** This file accompanies the GAUSS blog
+** Exploring and Cleaning Panel Data with GAUSS 25
+** available at www.aptech.com
+*/
+
+/*
+** Loading panel data
+*/
+// Load data from 'pwt_10.gdat
+// Using __FILE_DIR to specify data path
+pwt_10 = loadd(__FILE_DIR $+ "pwt_10.gdat");
+
+// Preview data 
+head(pwt_10);
+
+// Check column types
+getcoltypes(pwt_10);
+
+/*
+** Preparing the data
+*/
+
+// Change the order of our variables
+// Put country and year first
+pwt_10 = order(pwt_10, "country"$|"year");
+
+/*
+** Examining data structure
+*/
+// Check for balance
+print "Panel is balanced:";
+pdAllBalanced(pwt_10);
+
+// Check for consecutiveness
+print "Panel is consecutive:";
+pdAllConsecutive(pwt_10);
+
+// Get summary of panel dimensions
+{ num_grps, T, balanced } = pdSize(pwt_10);
+
+// Check timespans for variables
+pwt_model_timepsans = pdTimeSpans(pwt_10, "emp"$|"rgdpo");
+pwt_model_timepsans;
+
+/*
+** Summary statistics
+*/
+// Filter to include only Euro using countries
+pwt_10 = selif(pwt_10, pwt_10[., "currency_unit"] .$== "Euro");
+
+// Get summary statistics
+call pdSummary(pwt_10);
+
+/*
+** Transforming data for modeling
+*/
+// Take natural log of rgdpo
+ln_rgdpo = ln(pwt_10[., "rgdpo"]);
+
+// Add to pwt_10 dataframe
+// we need to do this so GAUSS
+// can identify the group and time variables 
+// for our panel 
+pwt_10 = pwt_10 ~ asDF(ln_rgdpo, "ln_rgdpo");
+
+// Take first difference of ln_rgdpo
+gr_rgdpo = pdDiff(pwt_10[., "country" "year" "ln_rgdpo"]);
+
+// Summarize gr_rgdpo
+call pdSummary(gr_rgdpo);
+
+// Create subset of countries 
+country_list = "Austria"$|"France"$|"Germany"$|"Spain"$|"Italy";
+
+// Select data for plot
+plot_data = selif(gr_rgdpo, sumr(gr_rgdpo[., "country"] .$== country_list'));
+
+// Plot rgdpo growth variable by country
+plotXY(plot_data, "ln_rgdpo~year + by(country)");
