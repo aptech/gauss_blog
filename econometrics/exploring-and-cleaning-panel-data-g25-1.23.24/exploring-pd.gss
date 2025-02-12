@@ -7,9 +7,10 @@
 /*
 ** Loading panel data
 */
-// Load data from 'pwt_10.gdat
+// Load data from 'pwt_10.gdat'
 // Using __FILE_DIR to specify data path
-pwt_10 = loadd(__FILE_DIR $+ "pwt_10.gdat");
+pwt_10 = loadd("C:/Users/Owner/Desktop/pwt_10.gdat");
+//pwt_10 = loadd(__FILE_DIR $+ "pwt_10.gdat");
 
 // Preview data 
 head(pwt_10);
@@ -24,6 +25,9 @@ getcoltypes(pwt_10);
 // Change the order of our variables
 // Put country and year first
 pwt_10 = order(pwt_10, "country"$|"year");
+
+// Sort the data 
+pwt_10 = pdSort(pwt_10);
 
 /*
 ** Examining data structure

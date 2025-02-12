@@ -1,0 +1,71 @@
+/*
+** Data loading
+*/
+
+// Specify file name
+fname = "waldtest_data_50.csv";
+
+// Load data
+data = loadd(fname);
+
+/*
+** Example one: 
+** Testing a single hypothesis 
+** after OLS
+*/
+// Run OLS estimation
+struct olsmtOut ols_out;
+ols_out = olsmt(data, "income ~ education + experience + hours");
+
+// Test if coefficients for education_years and work_experience are equal
+R = "education - experience";
+call waldTest(ols_out, R);
+
+/*
+** Example two: 
+** Testing a multiple hypotheses
+** after GLM
+*/
+// Run GLM estimation with normal family (equivalent to OLS)
+struct glmOut glm_out;
+glm_out = glm(data, "income ~ education + experience + hours", "normal");
+
+// Define multiple hypotheses:
+// 1. education - experience = 0
+// 2. education + hours = 1
+R = "education - experience" $| "education + hours";
+q = 0 | 1;
+
+// Perform Wald test for joint hypotheses
+call waldTest(glm_out, R, q);
+
+
+/*
+** Example three: 
+** Using data matrices inputs
+*/
+// Run OLSMT estimation with manual computation of beta and sigma
+X = ones(rows(data), 1) ~ data[., "education" "experience" "hours"];
+y = data[., "income"];
+
+// Compute beta manually
+_beta = invpd(X'X) * X'y;
+
+// Compute residuals and sigma
+residuals = y - X * _beta;
+n = rows(y);
+k = cols(X);
+sigma = (residuals'residuals) / (n - k) * invpd(X'X);
+
+// Define hypothesis: education - experience = 0
+R = "education - experience";
+q = 0;
+
+// Find degrees of freedom 
+df_residuals = n - k;
+
+// Specify variable names
+varnames = "CONSTANT"$|"experience"$|"education"$|"hours";
+
+// Perform Wald test
+call waldTest(sigma, _beta, R, q, n - k, varnames);
