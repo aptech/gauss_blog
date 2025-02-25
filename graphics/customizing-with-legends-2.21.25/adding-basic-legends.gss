@@ -1,0 +1,78 @@
+/*
+** This code accompanies the GAUSS data analytics 
+** blog: 
+** The full blog can be found at:
+*/
+
+// Set canvas size
+plotCanvasSize("px", 600|400);
+
+/*****************
+Basic Example
+******************/
+// Declare plot control structure
+struct plotControl myPlot;
+
+// Fill with default settings for xy plot
+myPlot = plotGetDefaults("xy");
+
+// Sample data
+x = seqa(1, 1, 10);
+y1 = x + rndn(10, 1);
+y2 = x - 0.5 + rndn(10, 1);
+
+// Specify legend labels
+// using '$|" to concatenate 
+// individual labels
+label = "Group 1"$|"Group 2";
+
+// Set up basic legend
+plotSetLegend(&myPlot, label);
+
+// Create scatter plot
+plotXY(myPlot, x, y1~y2);
+
+/*****************
+Change location
+******************/
+// Open a new window so previous plot
+// is not overwritten
+plotOpenWindow;
+
+// Specify legend labels
+// using '$|" to concatenate 
+// individual labels
+label = "Group 1"$|"Group 2";
+
+// Place in bottom right corner
+location = "bottom right";
+
+// Set legend
+plotSetLegend(&myPlot, label, location);
+
+// Create scatter plot
+plotXY(myPlot, x, y1~y2);
+
+/*****************
+Change orientation
+******************/
+plotOpenWindow;
+
+// Specify legend labels
+// using '$|" to concatenate 
+// individual labels
+label = "Group 1"$|"Group 2";
+
+// Place in bottom right corner
+location = "bottom right";
+
+// Set to horizontal list
+orientation = 0;
+
+// Set legend
+plotSetLegend(&myPlot, label, location, orientation);
+
+// Create scatter plot
+plotXY(myPlot, x, y1~y2);
+
+

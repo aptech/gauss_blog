@@ -1,0 +1,70 @@
+/*
+** This code accompanies the GAUSS data analytics 
+** blog: 
+** The full blog can be found at:
+*/
+
+// Set canvas size
+plotCanvasSize("px", 600|400);
+
+/*
+** Create the sequence 0.25, 0.5, 0.75...3
+*/
+x = seqa(0.25, 0.25, 12);
+y = sin(x);
+
+// Declare plotControl structure
+// and fill with default settings for XY plots
+struct plotControl myPlot;
+myPlot = plotGetDefaults("xy");
+
+/*
+** Basic legend settings
+*/
+// Set label
+label = "\sin{x}";
+
+// Set location
+location = "bottom hcenter outside";
+
+// Set legend 
+plotSetLegend(&myPlot, label, location);
+
+/*
+** Legend font
+*/
+// Set font
+font_style = "Arial";
+
+// Set font size
+font_size = 14;
+
+// Set font color
+font_color = "dark blue";
+
+// Set all legend font properties
+plotSetLegendFont(&myPlot, font_style, font_size, font_color);
+
+
+/*
+** Legend border
+*/
+
+// Set border color
+border_clr = "light gray";
+
+// Border width
+border_width = 2;
+
+// Set the legend border to light gray
+// and 2 pixels thick
+plotSetLegendBorder(&myPlot, border_clr, border_width);
+
+/*
+** Set text interpret to interpret
+** latex for legend labels
+*/
+plotSetTextInterpreter(&myPlot, "latex", "legend");
+
+// Plot data 
+plotXY(myPlot, x, y);
