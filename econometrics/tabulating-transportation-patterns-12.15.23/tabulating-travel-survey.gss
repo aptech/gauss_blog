@@ -23,6 +23,7 @@ getduplicates(trip_data);
 // Check frequency of the trip type
 frequency(trip_data, "TRIPPURP", 1);
 
+
 // Split the data 
 tmp = strsplit(trip_data[., "TRIPPURP"], "(");
 tmp = strtrim(tmp);
@@ -61,13 +62,43 @@ trip_data = trip_data~tmp;
 // Original table
 tab_df = tabulate(trip_data, "VEHTYPE ~ URBRUR");
 
-// Compute percentages within urban and rural areas
-// by dividing by column totals using sumc
-tab_df[., 1]~100*(tab_df[., 2:3]./sumc(tab_df[., 2:3])');
 
-// Compute percentages across urban and rural areas
-// by dividing by row totals using sumr
-tab_df[., 1]~100*(tab_df[., 2:3]./sumr(tab_df[., 2:3]));
+/*
+** Column percentages
+*/
+
+// Declare structure
+struct tabControl tbCtl;
+
+// Fill defaults
+tbCtl = tabControlCreate();
+
+// Specify to exclude the 'Valid skip' category
+// from the 'VEHTYPE' variable
+tbCtl.columnPercent = 1;
+
+// Compute percentages within urban and rural areas
+// by finding the column percentages
+call tabulate(trip_data, "VEHTYPE ~ URBRUR", tbCtl);
+
+
+/*
+** Row percentages
+*/
+// Declare structure
+struct tabControl tbCtl;
+
+// Fill defaults
+tbCtl = tabControlCreate();
+
+// Specify to exclude the 'Valid skip' category
+// from the 'VEHTYPE' variable
+tbCtl.rowPercent = 1;
+
+// Compute percentages within urban and rural areas
+// by finding the column percentages
+call tabulate(trip_data, "VEHTYPE ~ URBRUR", tbCtl);
+
 
 /*
 ** Advanced contingency table options
@@ -90,6 +121,8 @@ tab_df2 = setcollabels(move(tab_df2), "Car/Stationwagon"$|"MotorcycleMoped"$|"Ot
 /*
 ** Frequency plot
 */
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
 // Get frequency plot
 plotFreq(trip_data, "CENSUS_R", 1);
 
@@ -103,7 +136,10 @@ labels = getCategories(tab_df2, "VEHTYPE");
 labels_sa = ntos(labels);
 
 // Plot table
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
 plotBar(labels_sa, tab_df2[., "Urban" "Rural"]);
+
 
 /*
 ** Stacked bar plot
@@ -118,9 +154,13 @@ plt = plotGetDefaults("bar");
 plotSetBar(&plt, 1, 1);
 
 // Plot contingency table
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
 plotBar(plt, labels_sa, tab_df2[., "Urban" "Rural"]);
 
 /*
 ** Scatter plot
 */
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
 plotScatter(trip_data, "TRPMILES ~ GASPRICE + by(CENSUS_R)");

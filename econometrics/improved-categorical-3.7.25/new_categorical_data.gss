@@ -1,0 +1,72 @@
+/*
+** This example file accompanies the blog
+** "Mastering Categorical Data in GAUSS 25: 
+**  New Features in Tabulation and Frequency Plotting"
+**
+** https://www.aptech.com/blog/
+*/
+new;
+
+/*
+** Sample product sales data
+*/
+// Import sales dataframe
+product_data = loadd(__FILE_DIR $+ "product_data.csv");
+
+/*
+** Compute frequency counts
+*/
+frequency(product_data, "Product_Type");
+
+// Compute sorted frequency counts
+frequency(product_data, "Product_Type", 1);
+
+/*
+** Tabulations
+*/
+// Generate cross-tabulation with row and column percentages
+call tabulate(product_data, "Product_Type ~ Region");
+
+/*
+** Relative row tabulations
+*/ 
+struct tabControl tCtl;
+tCtl = tabControlCreate();
+
+// Specify row percentages
+tCtl.rowPercent = 1;
+
+// Tabulate
+call tabulate(product_data, "Product_Type ~ Region", tCtl);
+
+/*
+** Relative column tabulations
+*/ 
+struct tabControl tCtl;
+tCtl = tabControlCreate();
+
+// Specify row percentages
+tCtl.columnPercent = 1;
+
+// Tabulate
+call tabulate(product_data, "Product_Type ~ Region", tCtl);
+
+/*
+** Visualizations
+*/
+// Generate frequency plot
+plotCanvasSize("px", 800|600);
+plotFreq(product_data, "Product_Type + by(Region)");
+
+/*
+**
+*/
+// Sorted and percentage frequency plot
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
+plotFreq(product_data, "Product_Type + by(Region)", 1, 1);
+
+// Sorted and percentage frequency plot
+plotOpenWindow();
+plotCanvasSize("px", 800|600);
+plotFreq(product_data, "Product_Type", 1, 1);

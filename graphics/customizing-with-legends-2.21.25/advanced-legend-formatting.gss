@@ -58,7 +58,7 @@ border_width = 2;
 
 // Set the legend border to light gray
 // and 2 pixels thick
-plotSetLegendBorder(&myPlot, border_clr, border_width);
+plotSetLegendBorder(&myPlot, border_clr, border_width, 2);
 
 /*
 ** Set text interpret to interpret
