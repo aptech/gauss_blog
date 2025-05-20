@@ -15,7 +15,6 @@ data_shortrun = loadd(fname);
 // Three endogenous variable
 // No exogenous variables  
 formula = "Inflat + Unempl + Fedfunds";
-formula = "Inflat + Unempl + Fedfunds ~ trend + trendsq";
 
 /*
 ** Estimating default VAR model
