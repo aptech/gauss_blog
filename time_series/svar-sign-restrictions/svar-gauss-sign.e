@@ -2,11 +2,10 @@
 new;
 library tsmt;
 
-
 /*
 ** Data import
 */
-fname = "data_narsignrestrict.dta";
+fname = "data_narrsignrestrict.dta";
 data_shortrun = loadd(fname);
 
 /*
@@ -14,54 +13,60 @@ data_shortrun = loadd(fname);
 */
 // Three endogenous variable
 // No exogenous variables  
-formula = "Inflat + Unempl + Fedfunds";
-formula = "Inflat + Unempl + Fedfunds ~ trend + trendsq";
-
-/*
-** Estimating default VAR model
-*/
-struct svarOut sOut;
-sOut = svarFit(data_shortrun, formula);
-
-/*
-** Customizing the model
-*/
-// Three endogenous variable
-// Two exogenous variables  
-formula = "Inflat + Unempl + Fedfunds ~ trend + trendsq";
-
-// Identification method
-ident = "oir";
+formula = "lninflat + lnunempl + lnfedfunds";
 
 // Estimate VAR(2)
 lags = 2;
 
-// Constant off
-const = 0;
+// Constant
+const = 1;
 
-// Control structure
-struct svarControl sCtl;
-sCtl = svarControlCreate();
+/*
+** Sign restriction setup
+*/
+// Specify identication method
+ident = "sign";
 
-// Set up user lags
-sCtl.irf.nsteps = 40;
-sCtl.irf.cl = 0.68;
+// Declare controls structure
+// Fill with defaults
+struct svarControl Sctl;
+Sctl = svarControlCreate();
+
+// Specify to use sign restrictions
+Sctl.irf.ident = "sign";
+
+// Specify which shock variable is restricted
+Sctl.irf.restrictedShock = { 1, 2, 3 };
+
+// Set up restrictions horizon
+Sctl.irf.restrictionHorizon = { 1, 1, 1 };
+
+// Set up restrictions matrix
+// A row for each shock, and a column for each variable
+//             lninflat     lnunempl     lnfedfunds
+// shock           
+// supply          -           -             -
+// demand          +           -             +
+// monetary        -           +             +
+sCtl.irf.signRestrictions = { -1 -1 -1,
+                               1 -1  1,
+                              -1  1  1 };
 
 /*
 ** Estimate VAR model
 */
-struct svarOut sOut2;
-sOut2 = svarFit(data_shortrun, formula, ident, const, lags, sCtl);
+struct svarOut sOut;
+sOut = svarFit(data_shortrun, formula, ident, const, lags, sCtl);
 
 /*
 ** Visualizing dynamics
 */
 // Plot IRFs
-plotIRF(sout2, "Inflat");
+plotIRF(sOut, "lnunempl", 1);
 
 // Plot FEVDs
-plotFEVD(sout2, "Inflat");
+plotFEVD(sOut, "lnunempl", 1);
 
 // Plot HDs
-plotHD(sout2, "Inflat");
+plotHD(sOut, "lnunempl", 1);
 
